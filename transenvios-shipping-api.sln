@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32407.343
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transenvios.Shipping.Api", "Transenvios.Shipping.Api\Transenvios.Shipping.Api.csproj", "{3476614C-B140-4C8F-92AF-711A4A6CF75C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transenvios.Shipping.Tests", "Transenvios.Shipping.Tests\Transenvios.Shipping.Tests.csproj", "{69C3CB39-4963-4166-BD79-63612CEF8005}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3476614C-B140-4C8F-92AF-711A4A6CF75C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3476614C-B140-4C8F-92AF-711A4A6CF75C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3476614C-B140-4C8F-92AF-711A4A6CF75C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3476614C-B140-4C8F-92AF-711A4A6CF75C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69C3CB39-4963-4166-BD79-63612CEF8005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69C3CB39-4963-4166-BD79-63612CEF8005}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69C3CB39-4963-4166-BD79-63612CEF8005}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69C3CB39-4963-4166-BD79-63612CEF8005}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D6E777C4-5CF0-46E9-91DF-C785688869D3}
+	EndGlobalSection
+EndGlobal
