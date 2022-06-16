@@ -19,6 +19,7 @@ RESTful de integración de Transporte para Transenvios
 * [Tutorial: Create a web API with ASP.NET Core](https://docs-microsoft-com.translate.goog/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-6.0&tabs=visual-studio-code&_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=op%2Cwapp)
 * [EF cli](https://docs.microsoft.com/en-us/ef/core/cli/dotnet)
 * [EF cli tutorial](https://www.entityframeworktutorial.net/efcore/cli-commands-for-ef-core-migration.aspx)
+* [The Fluent API IsRequired Method](https://www.learnentityframeworkcore.com/configuration/fluent-api/isrequired-method)
 
 ### EF
 
@@ -62,5 +63,9 @@ ASPNETCORE_ENVIRONMENT=Production dotnet ef migrations add InitialCreate --conte
 Add-Migration DBInit6
 Update-Database
 
-dotnet ef database update InitialCreate
+dotnet ef database update InitialCreate --context SqliteDataContext
 ```
+
+### Free MySQL Database
+
+[free mysql hosting](https://www.freemysqlhosting.net/)

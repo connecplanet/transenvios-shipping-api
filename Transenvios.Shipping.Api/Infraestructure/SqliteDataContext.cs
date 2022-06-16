@@ -11,5 +11,10 @@ namespace Transenvios.Shipping.Api.Infraestructure
             // connect to sqlite database
             options.UseSqlite(Configuration.GetConnectionString("ApiDatabase"));
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.UserConfiguration();
+        }
     }
 }

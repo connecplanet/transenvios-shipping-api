@@ -35,7 +35,6 @@ var builder = WebApplication.CreateBuilder(args);
     services.AddScoped<IRemoveUser, UserMediator>();
 }
 
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -47,6 +46,7 @@ using (var scope = app.Services.CreateScope())
 {
     var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
     dataContext.Database.Migrate();
+    DbInitializer.Initialize(dataContext, builder.Environment);
 }
 
 // Configure the HTTP request pipeline.
