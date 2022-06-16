@@ -2,7 +2,7 @@
 
 namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
 {
-    public class AuthenticateResponse
+    public class UserAuthenticateResponse
     {
         public Guid Id { get; set; }
         public string? FirstName { get; set; }

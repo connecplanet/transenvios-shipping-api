@@ -2,7 +2,7 @@
 
 namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
 {
-    public class AuthenticateRequest
+    public class UserAuthenticateRequest
     {
         [Required]
         public string? Email { get; set; }

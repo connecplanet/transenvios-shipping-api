@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
-using Transenvios.Shipping.Api.Domains.UserService.UserPage;
-using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 
 namespace Transenvios.Shipping.Api.Infraestructure
 {
@@ -10,7 +8,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
         public AutoMapperProfile()
         {
             // User -> AuthenticateResponse
-            CreateMap<User, AuthenticateResponse>();
+            CreateMap<User, UserAuthenticateResponse>();
 
             // RegisterRequest -> User
             CreateMap<UserRegisterRequest, User>();

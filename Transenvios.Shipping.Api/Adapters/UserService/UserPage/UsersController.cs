@@ -18,16 +18,16 @@ namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
         public UsersController(
             ILogger<UsersController> logger,
             IOptions<AppSettings> appSettings,
-            UserProcessor retrieveUserProcessor)
+            UserProcessor userProcessor)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _userProcessor = retrieveUserProcessor ?? throw new ArgumentNullException(nameof(retrieveUserProcessor));
+            _userProcessor = userProcessor ?? throw new ArgumentNullException(nameof(userProcessor));
             _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public async Task<IActionResult> AuthenticateAsync(AuthenticateRequest model)
+        public async Task<IActionResult> AuthenticateAsync(UserAuthenticateRequest model)
         {
             var response = await _userProcessor.AuthenticateAsync(model);
             return Ok(response);
@@ -42,14 +42,14 @@ namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<AuthenticateResponse>>> GetAllAsync()
+        public async Task<ActionResult<IList<UserAuthenticateResponse>>> GetAllAsync()
         {
             var users = await _userProcessor.GetAllAsync();
             return Ok(users);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AuthenticateResponse>> GetByIdAsync(Guid id)
+        public async Task<ActionResult<UserAuthenticateResponse>> GetByIdAsync(Guid id)
         {
             var user = await _userProcessor.GetByIdAsync(id);
 

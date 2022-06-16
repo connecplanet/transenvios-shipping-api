@@ -52,21 +52,21 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             };
         }
 
-        public async Task<IList<AuthenticateResponse>> GetAllAsync()
+        public async Task<IList<UserAuthenticateResponse>> GetAllAsync()
         {
             var response = await _getUser.GetAllAsync();
-            var users = _mapper.Map<IList<AuthenticateResponse>>(response);
+            var users = _mapper.Map<IList<UserAuthenticateResponse>>(response);
             return users;
         }
 
-        public async Task<AuthenticateResponse> GetByIdAsync(Guid id)
+        public async Task<UserAuthenticateResponse> GetByIdAsync(Guid id)
         {
             var user = await GetUserAsync(id);
-            var response = _mapper.Map<AuthenticateResponse>(user);
+            var response = _mapper.Map<UserAuthenticateResponse>(user);
             return response;
         }
 
-        public async Task<AuthenticateResponse> AuthenticateAsync(AuthenticateRequest model)
+        public async Task<UserAuthenticateResponse> AuthenticateAsync(UserAuthenticateRequest model)
         {
             var user = await _getUser.GetByEmailAsync(model.Email);
 
@@ -76,7 +76,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             }
 
             // authentication successful
-            var response = _mapper.Map<AuthenticateResponse>(user);
+            var response = _mapper.Map<UserAuthenticateResponse>(user);
             response.Token = _jwtUtils.GenerateToken(user);
             return response;
         }
