@@ -31,6 +31,10 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
 
         public async Task<UserStateResponse> RegisterAsync(UserRegisterRequest model)
         {
+
+            try
+            {
+
             // validate
             if (await _getUser.ExistsEmail(model.Email))
             {
@@ -50,6 +54,17 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
                 Items = items,
                 Message = "Registration successful"
             };
+
+
+            }
+            catch (Exception ex)
+            {
+
+                return new UserStateResponse
+                {
+                    Message = ex.Message
+                };
+            }
         }
 
         public async Task<IList<UserAuthenticateResponse>> GetAllAsync()

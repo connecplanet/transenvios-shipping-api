@@ -15,7 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
     if (env.IsProduction())
         services.AddDbContext<DataContext>();
     else
-        services.AddDbContext<DataContext, SqliteDataContext>();
+        services.AddDbContext<DataContext>();
+    //services.AddDbContext<DataContext, SqliteDataContext>();
 
     services.AddCors();
     services.AddControllers();
