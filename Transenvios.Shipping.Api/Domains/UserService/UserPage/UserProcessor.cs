@@ -31,25 +31,35 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
 
         public async Task<UserStateResponse> RegisterAsync(UserRegisterRequest model)
         {
-            // validate
-            if (await _getUser.ExistsEmail(model.Email))
+            try
             {
-                throw new AppException($"Email '{model.Email}' is already registered");
+                // validate
+                if (await _getUser.ExistsEmail(model.Email))
+                {
+                    throw new AppException($"Email '{model.Email}' is already registered");
+                }
+
+                // map model to new user object
+                var user = _mapper.Map<User>(model);
+
+                // hash password
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
+                var items = await _registerUser.RegisterAsync(user);
+
+                return new UserStateResponse
+                {
+                    Id = user.Id,
+                    Items = items,
+                    Message = "Registration successful"
+                };
             }
-
-            // map model to new user object
-            var user = _mapper.Map<User>(model);
-
-            // hash password
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
-            var items = await _registerUser.RegisterAsync(user);
-
-            return new UserStateResponse
+            catch (Exception ex)
             {
-                Id = user.Id,
-                Items = items,
-                Message = "Registration successful"
-            };
+                return new UserStateResponse
+                {
+                    Message = ex.Message
+                };
+            }
         }
 
         public async Task<IList<UserAuthenticateResponse>> GetAllAsync()

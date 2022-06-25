@@ -11,8 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
     var services = builder.Services;
     var env = builder.Environment;
 
-    // use sql server db in production and sqlite db in development
-    if (env.IsProduction())
+    // Update ASPNETCORE_ENVIRONMENT={Development} to use MySQL
+    if (env.IsProduction() || env.IsDevelopment())
+        services.AddDbContext<DataContext, MySqlDataContext>();
+    else if (env.IsStaging())
         services.AddDbContext<DataContext>();
     else
         services.AddDbContext<DataContext, SqliteDataContext>();

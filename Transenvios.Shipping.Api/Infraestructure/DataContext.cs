@@ -17,6 +17,6 @@ namespace Transenvios.Shipping.Api.Infraestructure
         {
             // connect to sql server database
             options.UseSqlServer(Configuration.GetConnectionString("ApiDatabase"));
-        }        
+        }
     }
 }
