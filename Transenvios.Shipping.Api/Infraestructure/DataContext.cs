@@ -16,7 +16,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             // connect to sql server database
-            options.UseMySql(Configuration.GetConnectionString("ApiDatabase"), ServerVersion.AutoDetect(Configuration.GetConnectionString("ApiDatabase")));
-        }        
+            options.UseSqlServer(Configuration.GetConnectionString("ApiDatabase"));
+        }
     }
 }
