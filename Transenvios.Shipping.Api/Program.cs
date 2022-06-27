@@ -13,11 +13,17 @@ var builder = WebApplication.CreateBuilder(args);
 
     // Update ASPNETCORE_ENVIRONMENT={Development} to use MySQL
     if (env.IsProduction() || env.IsDevelopment())
+    {
         services.AddDbContext<DataContext, MySqlDataContext>();
+    }
     else if (env.IsStaging())
-        services.AddDbContext<DataContext>();
+    {
+        services.AddDbContext<DataContext, SqliteDataContext>();        
+    }
     else
-        services.AddDbContext<DataContext, SqliteDataContext>();
+    {
+        services.AddDbContext<DataContext>();
+    }
 
     services.AddCors();
     services.AddControllers();
