@@ -14,9 +14,6 @@ namespace Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity
         public async Task Invoke(HttpContext context, IGetAuthorizeUser userService, IJwtUtils jwtUtils)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ")?.Last();
-            if (token == null) { 
-                return; 
-            }
             var userId = jwtUtils.ValidateToken(token);
             if (userId != null)
             {

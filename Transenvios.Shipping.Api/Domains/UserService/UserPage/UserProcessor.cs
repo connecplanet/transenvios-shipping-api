@@ -60,7 +60,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             {
                 return new UserStateResponse
                 {
-                    Message = ex.Message
+                    Message = ex.GetBaseException().Message
                 };
             }
         }
