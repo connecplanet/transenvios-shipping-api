@@ -59,11 +59,20 @@ ASPNETCORE_ENVIRONMENT=Production dotnet ef migrations add InitialCreate --conte
 
 ### Update EF
 
+Powershell
 ```
 Add-Migration DBInit6
 Update-Database
-
+```
+Console
+```
+dotnet ef migrations add MyFirstMigration --context SqliteDataContext
 dotnet ef database update InitialCreate --context SqliteDataContext
+```
+Console 2022-06-27
+```
+dotnet ef migrations add US3-register-shipping-requester --context MySqlDataContext  --output-dir Migrations/MySqlMigrations
+dotnet ef database update --context MySqlDataContext
 ```
 
 ### Free MySQL Database
