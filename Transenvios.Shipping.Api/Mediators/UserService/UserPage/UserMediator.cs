@@ -1,16 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 using Transenvios.Shipping.Api.Infraestructure;
 
 namespace Transenvios.Shipping.Api.Mediators.UserService.UserPage
 {
-    public class UserMediator: IRegisterUser, IGetUser, IUpdateUser, IRemoveUser
+    public class UserMediator: IRegisterUser, IGetUser, IUpdateUser, IRemoveUser, IGetAuthorizeUser
     {
         private readonly DataContext _context;
 
         public UserMediator(DataContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context ?? throw new ArgumentNullException(nameof(context));            
         }
 
         public async Task<int> RegisterAsync(User user)

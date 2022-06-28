@@ -17,6 +17,9 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(500);
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.PasswordHash).IsRequired().HasMaxLength(2000);
+                entity.Property(e => e.CountryCode).HasMaxLength(5);
+                entity.Property(e => e.Phone).HasMaxLength(10);
+                entity.Property(e => e.Role).HasMaxLength(2);
             });
         }
     }

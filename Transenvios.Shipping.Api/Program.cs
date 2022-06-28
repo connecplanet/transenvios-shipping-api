@@ -13,11 +13,17 @@ var builder = WebApplication.CreateBuilder(args);
 
     // Update ASPNETCORE_ENVIRONMENT={Development} to use MySQL
     if (env.IsProduction() || env.IsDevelopment())
-        services.AddDbContext<DataContext, MySqlDataContext>();
+    {
+        services.AddDbContext<DataContext, MySqlDataContext>(ServiceLifetime.Transient);
+    }
     else if (env.IsStaging())
-        services.AddDbContext<DataContext>();
+    {
+        services.AddDbContext<DataContext, SqliteDataContext>(ServiceLifetime.Transient);        
+    }
     else
-        services.AddDbContext<DataContext, SqliteDataContext>();
+    {
+        services.AddDbContext<DataContext>(ServiceLifetime.Transient);
+    }
 
     services.AddCors();
     services.AddControllers();
@@ -32,6 +38,7 @@ var builder = WebApplication.CreateBuilder(args);
     services.AddScoped<IJwtUtils, JwtUtils>();
     services.AddScoped<UserProcessor>();
     services.AddScoped<IRegisterUser, UserMediator>();
+    services.AddTransient<IGetAuthorizeUser, UserMediator>();
     services.AddScoped<IGetUser, UserMediator>();
     services.AddScoped<IUpdateUser, UserMediator>();
     services.AddScoped<IRemoveUser, UserMediator>();
