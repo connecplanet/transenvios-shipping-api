@@ -12,6 +12,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         private readonly IGetUser _getUser;        
         private readonly IUpdateUser _updateUser;
         private readonly IRemoveUser _removeUser;
+        private readonly IGetAuthorizeUser _getAuthorizeUser;
 
         public UserProcessor(
             IMapper mapper,
@@ -19,7 +20,8 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             IRegisterUser registerUser,
             IGetUser getUser,
             IUpdateUser updateUser,
-            IRemoveUser removeUser)
+            IRemoveUser removeUser,
+            IGetAuthorizeUser getAuthorizeUser)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _jwtUtils = jwtUtils ?? throw new ArgumentNullException(nameof(jwtUtils));
@@ -27,6 +29,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             _getUser = getUser ?? throw new ArgumentNullException(nameof(getUser));
             _updateUser = updateUser ?? throw new ArgumentNullException(nameof(updateUser));
             _removeUser = removeUser ?? throw new ArgumentNullException(nameof(removeUser));
+            _getAuthorizeUser = getAuthorizeUser ?? throw new ArgumentNullException(nameof(getAuthorizeUser));
         }
 
         public async Task<UserStateResponse> RegisterAsync(UserRegisterRequest model)
@@ -135,7 +138,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
 
         private async Task<User> GetUserAsync(Guid id)
         {
-            var user = await _getUser.GetByIdAsync(id);
+            var user = await _getAuthorizeUser.GetByIdAsync(id);
             if (user == null)
             {
                 throw new KeyNotFoundException("User not found");
