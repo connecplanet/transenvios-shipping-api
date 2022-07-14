@@ -58,11 +58,8 @@ namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
         [HttpPost("forgotPassword")]
         public async Task<ActionResult<UserStateResponse>> ForgotPassword(UserAuthenticateRequest data)
         {
-
             var response = await _mailProcessor.PasswordResetAsync(data.Email);
             return Ok(response);
-
-            //return null;
         }
 
         [HttpGet]

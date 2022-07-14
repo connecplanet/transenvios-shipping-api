@@ -2,7 +2,6 @@
 {
     public interface IPasswordReset
     {
-        Task<UserStateResponse> PasswordResetAsync(string email);
-        public bool ManangerMail(string parameterReset);
+        Task<UserStateResponse> PasswordResetAsync(string email, string newPassword);
     }
 }

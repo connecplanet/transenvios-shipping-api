@@ -39,23 +39,13 @@ var builder = WebApplication.CreateBuilder(args);
     // configure DI for application services
     services.AddScoped<IJwtUtils, JwtUtils>();
     services.AddScoped<MailProcessor>();
-    services.AddScoped<IPasswordReset, ManagerMailMediator>();
-
-
-    //services.AddScoped<IPasswordReset,ManagerMailMediator>();
+    services.AddScoped<IPasswordReset, ManagerMailMediator>();;
     services.AddScoped<UserProcessor>();
-
     services.AddScoped<IRegisterUser, UserMediator>();
-
-    
-    
     services.AddTransient<IGetAuthorizeUser, UserMediator>();
-
-
     services.AddScoped<IGetUser, UserMediator>();
     services.AddScoped<IUpdateUser, UserMediator>();
     services.AddScoped<IRemoveUser, UserMediator>();
-
 }
 
 

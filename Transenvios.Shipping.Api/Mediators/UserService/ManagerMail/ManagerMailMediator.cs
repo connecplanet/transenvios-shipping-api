@@ -54,13 +54,14 @@ namespace Transenvios.Shipping.Api.Mediators.UserService.ManagerMail
             await cliente.SendMailAsync(message);
         }
 
-        public async Task<UserStateResponse> PasswordResetAsync(string mail)
+        public async Task<UserStateResponse> PasswordResetAsync(string mail,string newPassword)
         {
             try
             {
               var sendValue=  EnviarCorreo(mail,
                                        "Cambio contraseña TransEnvios",
-                                       "<h1>Mensaje en HTML<h1><p>Contenido</p>",
+                                       "<p>Nueva Contraseña</p>"+
+                                       "<h1>" + newPassword + "<h1>",
                                        true);
 
                 return new UserStateResponse

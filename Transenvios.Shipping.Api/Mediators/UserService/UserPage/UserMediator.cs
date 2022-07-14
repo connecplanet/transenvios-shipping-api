@@ -52,7 +52,7 @@ namespace Transenvios.Shipping.Api.Mediators.UserService.UserPage
             return await _context.SaveChangesAsync();
         }
 
-        public Task<UserStateResponse> PasswordResetAsync(string email)
+        public Task<UserStateResponse> PasswordResetAsync(string email, string newPassword)
         {
             throw new NotImplementedException();
         }
