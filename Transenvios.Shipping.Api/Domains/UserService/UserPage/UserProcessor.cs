@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
 using Transenvios.Shipping.Api.Infraestructure;
+using Transenvios.Shipping.Api.Mediators.UserService.ManagerMail;
+using Transenvios.Shipping.Api.Mediators.UserService.UserPage;
 
 namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
 {
@@ -21,7 +23,8 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             IGetUser getUser,
             IUpdateUser updateUser,
             IRemoveUser removeUser,
-            IGetAuthorizeUser getAuthorizeUser)
+            IGetAuthorizeUser getAuthorizeUser
+            )
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _jwtUtils = jwtUtils ?? throw new ArgumentNullException(nameof(jwtUtils));
@@ -36,8 +39,10 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         {
             try
             {
+                var result = await _getUser.ExistsEmail(model.Email);
+
                 // validate
-                if (await _getUser.ExistsEmail(model.Email))
+                if (result)
                 {
                     throw new AppException($"Email '{model.Email}' is already registered");
                 }
@@ -79,12 +84,32 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             return response;
         }
 
+        //public async Task<UserStateResponse> PasswordResetAsync(UserRegisterRequest model)
+        //{
+        //    var user = await _passwordReset.PasswordResetAsync(model);
+
+        //    // validate
+        //    if (user == null) {
+        //        throw new AppException("Username not exit");
+        //    }
+
+        //    // authentication successful
+        //    var response = _passwordReset.ManangerMail(model.Email);
+
+        //    return new UserStateResponse
+        //    {
+        //        Message = "User deleted successfully"
+        //    };
+
+        //}
+
         public async Task<UserAuthenticateResponse> AuthenticateAsync(UserAuthenticateRequest model)
         {
             var user = await _getUser.GetByEmailAsync(model.Email);
 
             // validate
-            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash)) {
+            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
+            {
                 throw new AppException("Username or password is incorrect");
             }
 

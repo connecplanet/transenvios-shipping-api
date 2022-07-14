@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Transenvios.Shipping.Api.Adapters.UserService.AuthorizationEntity;
+using Transenvios.Shipping.Api.Domains.MailService.MailPage;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 using Transenvios.Shipping.Api.Infraestructure;
+using Transenvios.Shipping.Api.Mediators.UserService.ManagerMail;
 
 namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
 {
@@ -14,14 +16,20 @@ namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
         private readonly ILogger<UsersController> _logger;
         private readonly AppSettings _appSettings;
         private readonly UserProcessor _userProcessor;
+        
+        private readonly MailProcessor _mailProcessor;
+
 
         public UsersController(
             ILogger<UsersController> logger,
             IOptions<AppSettings> appSettings,
-            UserProcessor userProcessor)
+            UserProcessor userProcessor
+            ,MailProcessor mailProcessor
+            )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _userProcessor = userProcessor ?? throw new ArgumentNullException(nameof(userProcessor));
+            _mailProcessor = mailProcessor ?? throw new ArgumentNullException(nameof(mailProcessor)); 
             _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
@@ -44,6 +52,17 @@ namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
 
             var response = await _userProcessor.RegisterAsync(model);
             return Ok(response);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("forgotPassword")]
+        public async Task<ActionResult<UserStateResponse>> ForgotPassword(UserAuthenticateRequest data)
+        {
+
+            var response = await _mailProcessor.PasswordResetAsync(data.Email);
+            return Ok(response);
+
+            //return null;
         }
 
         [HttpGet]

@@ -5,13 +5,13 @@ using Transenvios.Shipping.Api.Infraestructure;
 
 namespace Transenvios.Shipping.Api.Mediators.UserService.UserPage
 {
-    public class UserMediator: IRegisterUser, IGetUser, IUpdateUser, IRemoveUser, IGetAuthorizeUser
+    public class UserMediator : IRegisterUser, IGetUser, IUpdateUser, IRemoveUser, IGetAuthorizeUser, IPasswordReset
     {
         private readonly DataContext _context;
 
         public UserMediator(DataContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));            
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<int> RegisterAsync(User user)
@@ -50,6 +50,16 @@ namespace Transenvios.Shipping.Api.Mediators.UserService.UserPage
         {
             _context.Users.Remove(user);
             return await _context.SaveChangesAsync();
+        }
+
+        public Task<UserStateResponse> PasswordResetAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ManangerMail(string parameterReset)
+        {
+            throw new NotImplementedException();
         }
     }
 }

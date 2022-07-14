@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Transenvios.Shipping.Api.Domains.MailService.MailPage;
 using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 using Transenvios.Shipping.Api.Infraestructure;
+using Transenvios.Shipping.Api.Mediators.UserService.ManagerMail;
 using Transenvios.Shipping.Api.Mediators.UserService.UserPage;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,11 +16,12 @@ var builder = WebApplication.CreateBuilder(args);
     // Update ASPNETCORE_ENVIRONMENT={Development} to use MySQL
     if (env.IsProduction() || env.IsDevelopment())
     {
+
         services.AddDbContext<DataContext, MySqlDataContext>(ServiceLifetime.Transient);
     }
     else if (env.IsStaging())
     {
-        services.AddDbContext<DataContext, SqliteDataContext>(ServiceLifetime.Transient);        
+        services.AddDbContext<DataContext, SqliteDataContext>(ServiceLifetime.Transient);
     }
     else
     {
@@ -33,16 +36,28 @@ var builder = WebApplication.CreateBuilder(args);
 
     // configure strongly typed settings object
     services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
-
     // configure DI for application services
     services.AddScoped<IJwtUtils, JwtUtils>();
+    services.AddScoped<MailProcessor>();
+    services.AddScoped<IPasswordReset, ManagerMailMediator>();
+
+
+    //services.AddScoped<IPasswordReset,ManagerMailMediator>();
     services.AddScoped<UserProcessor>();
+
     services.AddScoped<IRegisterUser, UserMediator>();
+
+    
+    
     services.AddTransient<IGetAuthorizeUser, UserMediator>();
+
+
     services.AddScoped<IGetUser, UserMediator>();
     services.AddScoped<IUpdateUser, UserMediator>();
     services.AddScoped<IRemoveUser, UserMediator>();
+
 }
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
