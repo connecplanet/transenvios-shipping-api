@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Transenvios.Shipping.Api.Domains.MailService.MailPage;
 using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 using Transenvios.Shipping.Api.Infraestructure;
-using Transenvios.Shipping.Api.Mediators.UserService.ManagerMail;
+using Transenvios.Shipping.Api.Mediators.UserService.ForgotPasswordPage;
 using Transenvios.Shipping.Api.Mediators.UserService.UserPage;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,8 +37,7 @@ var builder = WebApplication.CreateBuilder(args);
     services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
     // configure DI for application services
     services.AddScoped<IJwtUtils, JwtUtils>();
-    services.AddScoped<MailProcessor>();
-    services.AddScoped<IPasswordReset, ManagerMailMediator>();;
+    services.AddScoped<IPasswordReset, EmailMediator>();;
     services.AddScoped<UserProcessor>();
     services.AddScoped<IRegisterUser, UserMediator>();
     services.AddTransient<IGetAuthorizeUser, UserMediator>();
@@ -89,5 +87,4 @@ using (var scope = app.Services.CreateScope())
 
     app.MapControllers();
 }
-
 app.Run();

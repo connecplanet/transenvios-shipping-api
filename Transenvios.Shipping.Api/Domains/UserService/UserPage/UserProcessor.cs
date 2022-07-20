@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
 using Transenvios.Shipping.Api.Infraestructure;
-using Transenvios.Shipping.Api.Mediators.UserService.ManagerMail;
+using Transenvios.Shipping.Api.Mediators.UserService.ForgotPasswordPage;
 using Transenvios.Shipping.Api.Mediators.UserService.UserPage;
 
 namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
@@ -11,10 +11,11 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         private readonly IMapper _mapper;
         private readonly IJwtUtils _jwtUtils;
         private readonly IRegisterUser _registerUser;
-        private readonly IGetUser _getUser;        
+        private readonly IGetUser _getUser;
         private readonly IUpdateUser _updateUser;
         private readonly IRemoveUser _removeUser;
         private readonly IGetAuthorizeUser _getAuthorizeUser;
+        private readonly IPasswordReset _passwordReset;
 
         public UserProcessor(
             IMapper mapper,
@@ -23,7 +24,8 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             IGetUser getUser,
             IUpdateUser updateUser,
             IRemoveUser removeUser,
-            IGetAuthorizeUser getAuthorizeUser
+            IGetAuthorizeUser getAuthorizeUser,
+            IPasswordReset passwordReset
             )
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -33,6 +35,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             _updateUser = updateUser ?? throw new ArgumentNullException(nameof(updateUser));
             _removeUser = removeUser ?? throw new ArgumentNullException(nameof(removeUser));
             _getAuthorizeUser = getAuthorizeUser ?? throw new ArgumentNullException(nameof(getAuthorizeUser));
+            _passwordReset = passwordReset ?? throw new ArgumentNullException(nameof(passwordReset));
         }
 
         public async Task<UserStateResponse> RegisterAsync(UserRegisterRequest model)
@@ -41,16 +44,12 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             {
                 var result = await _getUser.ExistsEmail(model.Email);
 
-                // validate
                 if (result)
                 {
                     throw new AppException($"Email '{model.Email}' is already registered");
                 }
 
-                // map model to new user object
                 var user = _mapper.Map<User>(model);
-
-                // hash password
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
                 var items = await _registerUser.RegisterAsync(user);
 
@@ -83,37 +82,15 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             var response = _mapper.Map<UserAuthenticateResponse>(user);
             return response;
         }
-
-        //public async Task<UserStateResponse> PasswordResetAsync(UserRegisterRequest model)
-        //{
-        //    var user = await _passwordReset.PasswordResetAsync(model);
-
-        //    // validate
-        //    if (user == null) {
-        //        throw new AppException("Username not exit");
-        //    }
-
-        //    // authentication successful
-        //    var response = _passwordReset.ManangerMail(model.Email);
-
-        //    return new UserStateResponse
-        //    {
-        //        Message = "User deleted successfully"
-        //    };
-
-        //}
-
         public async Task<UserAuthenticateResponse> AuthenticateAsync(UserAuthenticateRequest model)
         {
             var user = await _getUser.GetByEmailAsync(model.Email);
 
-            // validate
             if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
             {
                 throw new AppException("Username or password is incorrect");
             }
 
-            // authentication successful
             var response = _mapper.Map<UserAuthenticateResponse>(user);
             response.Token = _jwtUtils.GenerateToken(user);
             return response;
@@ -124,22 +101,19 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             var currentUser = await GetUserAsync(id);
             var emailUser = await _getUser.GetByEmailAsync(model.Email);
 
-            // validate
             if (emailUser != null && currentUser.Id != emailUser.Id)
             {
                 throw new AppException($"Email '{model.Email}' is already taken");
             }
 
-            // hash password if it was entered
             if (!string.IsNullOrEmpty(model.Password))
             {
                 currentUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
             }
 
-            // copy model to user and save
             _mapper.Map(model, currentUser);
             var items = await _updateUser.UpdateAsync(currentUser);
-            
+
             return new UserStateResponse
             {
                 Id = currentUser.Id,
@@ -169,6 +143,27 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
                 throw new KeyNotFoundException("User not found");
             }
             return user;
+        }
+        public async Task<UserStateResponse> PasswordResetAsync(string email)
+        {
+            var user = await _getUser.GetByEmailAsync(email);
+
+            if (user == null)
+            {
+                throw new AppException("Username not exit");
+            }
+
+            var random = new Random();
+            var value = random.Next(0, 100);
+            string newPassword = string.Concat(user.FirstName, user.FirstName, value);
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            var update = _updateUser.UpdateAsync(user);
+            var emailUser = await _passwordReset.PasswordResetAsync(email, newPassword);
+
+            return new UserStateResponse
+            {
+                Message = emailUser.Message
+            };
         }
     }
 }
