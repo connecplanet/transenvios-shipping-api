@@ -14,8 +14,6 @@ namespace Transenvios.Shipping.Api.Mediators.UserService.ManagerMail
         public ManagerMailMediator(
             IOptions<AppSettings> appSettings)
         {
-
-
             _appSettings = appSettings.Value;
 
             cliente = new SmtpClient(_appSettings.EmailHost, Int32.Parse(_appSettings.EmailPort))
@@ -23,26 +21,14 @@ namespace Transenvios.Shipping.Api.Mediators.UserService.ManagerMail
                 EnableSsl = _appSettings.EmailEnableSsl,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
-                //Port = Int32.Parse(_appSettings.EmailPort),
-
                 Credentials = new NetworkCredential(_appSettings.EmailUser, _appSettings.EmailPassword)
             };
         }
         public bool EnviarCorreo(string destinatario, string asunto, string mensaje, bool esHtlm = false)
         {
-            try
-            {
-                email = new MailMessage(_appSettings.EmailUser, destinatario, asunto, mensaje);
-                email.IsBodyHtml = esHtlm;
-                cliente.Send(email);
-
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
+            email = new MailMessage(_appSettings.EmailUser, destinatario, asunto, mensaje);
+            email.IsBodyHtml = esHtlm;
+            cliente.Send(email);
             return true;
         }
         public void EnviarCorreo(MailMessage message)
@@ -54,58 +40,28 @@ namespace Transenvios.Shipping.Api.Mediators.UserService.ManagerMail
             await cliente.SendMailAsync(message);
         }
 
-        public async Task<UserStateResponse> PasswordResetAsync(string mail,string newPassword)
+        public async Task<UserStateResponse> PasswordResetAsync(string mail, string newPassword)
         {
             try
             {
-              var sendValue=  EnviarCorreo(mail,
-                                       "Cambio contraseña TransEnvios",
-                                       "<p>Nueva Contraseña</p>"+
-                                       "<h1>" + newPassword + "<h1>",
-                                       true);
+                var sendValue = EnviarCorreo(mail,
+                                         "Cambio contraseña TransEnvios",
+                                         "<p>Nueva Contraseña</p>" +
+                                         "<h1>" + newPassword + "<h1>",
+                                         true);
 
                 return new UserStateResponse
                 {
                     Message = "Mail send is " + sendValue
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return new UserStateResponse
+                {
+                    Message = ex.InnerException.ToString()
+                };
             }
-          }
-
-        public bool ManangerMail(string parameterReset)
-            {
-                throw new NotImplementedException();
-            }
-
-
-            //public Task<UserStateResponse> PasswordResetAsync(UserRegisterRequest data)
-            //{
-            //    var user = await _passwordReset.PasswordResetAsync(model);
-
-            //    // validate
-            //    if (user == null)
-            //    {
-            //        throw new AppException("Username not exit");
-            //    }
-
-            //    // authentication successful
-            //    var response = _passwordReset.ManangerMail(data.Email);
-
-            //    return new UserStateResponse
-            //    {
-            //        Message = "User deleted successfully"
-            //    };
-            //}
-
-            //public bool ManangerMail(string parameterReset)
-            //{
-            //    return  EnviarCorreo("inforfercho@gmail.com",
-            //                               "Prueba",
-            //                               "<h1>Mensaje en HTML<h1><p>Contenido</p>",
-            //                               true);
-            //}
         }
     }
+}

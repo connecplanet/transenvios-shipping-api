@@ -15,6 +15,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         private readonly IUpdateUser _updateUser;
         private readonly IRemoveUser _removeUser;
         private readonly IGetAuthorizeUser _getAuthorizeUser;
+        private readonly IPasswordReset _passwordReset;
 
         public UserProcessor(
             IMapper mapper,
@@ -23,7 +24,8 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             IGetUser getUser,
             IUpdateUser updateUser,
             IRemoveUser removeUser,
-            IGetAuthorizeUser getAuthorizeUser
+            IGetAuthorizeUser getAuthorizeUser,
+            IPasswordReset passwordReset
             )
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -33,6 +35,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             _updateUser = updateUser ?? throw new ArgumentNullException(nameof(updateUser));
             _removeUser = removeUser ?? throw new ArgumentNullException(nameof(removeUser));
             _getAuthorizeUser = getAuthorizeUser ?? throw new ArgumentNullException(nameof(getAuthorizeUser));
+            _passwordReset = passwordReset ?? throw new ArgumentNullException(nameof(passwordReset));
         }
 
         public async Task<UserStateResponse> RegisterAsync(UserRegisterRequest model)
@@ -83,26 +86,6 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             var response = _mapper.Map<UserAuthenticateResponse>(user);
             return response;
         }
-
-        //public async Task<UserStateResponse> PasswordResetAsync(UserRegisterRequest model)
-        //{
-        //    var user = await _passwordReset.PasswordResetAsync(model);
-
-        //    // validate
-        //    if (user == null) {
-        //        throw new AppException("Username not exit");
-        //    }
-
-        //    // authentication successful
-        //    var response = _passwordReset.ManangerMail(model.Email);
-
-        //    return new UserStateResponse
-        //    {
-        //        Message = "User deleted successfully"
-        //    };
-
-        //}
-
         public async Task<UserAuthenticateResponse> AuthenticateAsync(UserAuthenticateRequest model)
         {
             var user = await _getUser.GetByEmailAsync(model.Email);
@@ -169,6 +152,33 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
                 throw new KeyNotFoundException("User not found");
             }
             return user;
+        }
+        public async Task<UserStateResponse> PasswordResetAsync(string email)
+        {
+            var user = await _getUser.GetByEmailAsync(email);
+
+            // validate
+            if (user == null)
+            {
+                throw new AppException("Username not exit");
+            }
+            var random = new Random();
+
+            var value = random.Next(0, 100);
+
+            string newPassword = string.Concat(user.FirstName, user.FirstName, value);
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
+            var update = _updateUser.UpdateAsync(user);
+            //if (int.Parse( update) >0)
+                var emailUser = await _passwordReset.PasswordResetAsync(email, newPassword);
+
+            // authentication successful
+            return new UserStateResponse
+            {
+                Message = emailUser.Message
+            };
         }
     }
 }
