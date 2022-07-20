@@ -15,9 +15,6 @@ namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
         private readonly AppSettings _appSettings;
         private readonly UserProcessor _userProcessor;
         
-        //private readonly ForgotPasswordPage _mailProcessor;
-
-
         public UsersController(
             ILogger<UsersController> logger,
             IOptions<AppSettings> appSettings,
@@ -26,7 +23,6 @@ namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _userProcessor = userProcessor ?? throw new ArgumentNullException(nameof(userProcessor));
-            //_mailProcessor = mailProcessor ?? throw new ArgumentNullException(nameof(mailProcessor)); 
             _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
