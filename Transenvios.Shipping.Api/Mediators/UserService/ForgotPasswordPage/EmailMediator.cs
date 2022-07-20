@@ -4,19 +4,18 @@ using System.Net.Mail;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 using Transenvios.Shipping.Api.Infraestructure;
 
-namespace Transenvios.Shipping.Api.Mediators.UserService.ManagerMail
+namespace Transenvios.Shipping.Api.Mediators.UserService.ForgotPasswordPage
 {
-    public class ManagerMailMediator : IPasswordReset
+    public class EmailMediator : IPasswordReset
     {
         private SmtpClient cliente;
         private readonly AppSettings _appSettings;
         private MailMessage email;
-        public ManagerMailMediator(
-            IOptions<AppSettings> appSettings)
+        public EmailMediator(IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings.Value;
 
-            cliente = new SmtpClient(_appSettings.EmailHost, Int32.Parse(_appSettings.EmailPort))
+            cliente = new SmtpClient(_appSettings.EmailHost, int.Parse(_appSettings.EmailPort))
             {
                 EnableSsl = _appSettings.EmailEnableSsl,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
@@ -24,18 +23,18 @@ namespace Transenvios.Shipping.Api.Mediators.UserService.ManagerMail
                 Credentials = new NetworkCredential(_appSettings.EmailUser, _appSettings.EmailPassword)
             };
         }
-        public bool EnviarCorreo(string destinatario, string asunto, string mensaje, bool esHtlm = false)
+        public bool SendEmail(string mailTo, string subject, string body, bool isHtlm = false)
         {
-            email = new MailMessage(_appSettings.EmailUser, destinatario, asunto, mensaje);
-            email.IsBodyHtml = esHtlm;
+            email = new MailMessage(_appSettings.EmailUser, mailTo, subject, body);
+            email.IsBodyHtml = isHtlm;
             cliente.Send(email);
             return true;
         }
-        public void EnviarCorreo(MailMessage message)
+        public void SendEmail(MailMessage message)
         {
             cliente.Send(message);
         }
-        public async Task EnviarCorreoAsync(MailMessage message)
+        public async Task SendEmailAsync(MailMessage message)
         {
             await cliente.SendMailAsync(message);
         }
@@ -44,7 +43,7 @@ namespace Transenvios.Shipping.Api.Mediators.UserService.ManagerMail
         {
             try
             {
-                var sendValue = EnviarCorreo(mail,
+                var sendValue = SendEmail(mail,
                                          "Cambio contraseña TransEnvios",
                                          "<p>Nueva Contraseña</p>" +
                                          "<h1>" + newPassword + "<h1>",
@@ -59,7 +58,7 @@ namespace Transenvios.Shipping.Api.Mediators.UserService.ManagerMail
             {
                 return new UserStateResponse
                 {
-                    Message = ex.InnerException.ToString()
+                    Message = ex.GetBaseException().Message
                 };
             }
         }
