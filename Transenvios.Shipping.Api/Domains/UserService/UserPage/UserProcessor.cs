@@ -11,7 +11,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         private readonly IMapper _mapper;
         private readonly IJwtUtils _jwtUtils;
         private readonly IRegisterUser _registerUser;
-        private readonly IGetUser _getUser;        
+        private readonly IGetUser _getUser;
         private readonly IUpdateUser _updateUser;
         private readonly IRemoveUser _removeUser;
         private readonly IGetAuthorizeUser _getAuthorizeUser;
@@ -44,16 +44,12 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             {
                 var result = await _getUser.ExistsEmail(model.Email);
 
-                // validate
                 if (result)
                 {
                     throw new AppException($"Email '{model.Email}' is already registered");
                 }
 
-                // map model to new user object
                 var user = _mapper.Map<User>(model);
-
-                // hash password
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
                 var items = await _registerUser.RegisterAsync(user);
 
@@ -90,13 +86,11 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         {
             var user = await _getUser.GetByEmailAsync(model.Email);
 
-            // validate
             if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
             {
                 throw new AppException("Username or password is incorrect");
             }
 
-            // authentication successful
             var response = _mapper.Map<UserAuthenticateResponse>(user);
             response.Token = _jwtUtils.GenerateToken(user);
             return response;
@@ -107,22 +101,19 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             var currentUser = await GetUserAsync(id);
             var emailUser = await _getUser.GetByEmailAsync(model.Email);
 
-            // validate
             if (emailUser != null && currentUser.Id != emailUser.Id)
             {
                 throw new AppException($"Email '{model.Email}' is already taken");
             }
 
-            // hash password if it was entered
             if (!string.IsNullOrEmpty(model.Password))
             {
                 currentUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
             }
 
-            // copy model to user and save
             _mapper.Map(model, currentUser);
             var items = await _updateUser.UpdateAsync(currentUser);
-            
+
             return new UserStateResponse
             {
                 Id = currentUser.Id,
@@ -157,24 +148,18 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         {
             var user = await _getUser.GetByEmailAsync(email);
 
-            // validate
             if (user == null)
             {
                 throw new AppException("Username not exit");
             }
+
             var random = new Random();
-
             var value = random.Next(0, 100);
-
             string newPassword = string.Concat(user.FirstName, user.FirstName, value);
-
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
-
             var update = _updateUser.UpdateAsync(user);
-            //if (int.Parse( update) >0)
-                var emailUser = await _passwordReset.PasswordResetAsync(email, newPassword);
+            var emailUser = await _passwordReset.PasswordResetAsync(email, newPassword);
 
-            // authentication successful
             return new UserStateResponse
             {
                 Message = emailUser.Message
