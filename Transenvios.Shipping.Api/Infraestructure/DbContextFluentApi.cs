@@ -26,7 +26,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
         }
         public static void CitiesConfiguration(this ModelBuilder builder)
         {
-            builder.Entity<Citie>(entity =>
+            builder.Entity<ShipmentCity>(entity =>
             {
                 entity.ToTable("Cities");
                 entity.HasKey(e => e.Id);
@@ -35,7 +35,22 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.Property(e => e.Code).IsRequired().HasMaxLength(5);
                 entity.HasIndex(e => e.Code).IsUnique();
                 entity.Property(e => e.Active).IsRequired();
-                entity.HasIndex(e => e.Active).IsUnique();
+            });
+        }
+
+        public static void RouteConfiguration(this ModelBuilder builder)
+        {
+            builder.Entity<ShipmentRoute>(entity =>
+            {
+                entity.ToTable("Routes");
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.Id).IsUnique();
+                entity.Property(e => e.FromCity).IsRequired().HasMaxLength(5);
+                entity.Property(e => e.ToCity).IsRequired().HasMaxLength(5);
+                entity.Property(e => e.InitialPriceKg);
+                entity.Property(e => e.AdditionalPriceKg);
+                entity.Property(e => e.PriceCm3);
+                entity.Property(e => e.Active).IsRequired();
             });
         }
     }

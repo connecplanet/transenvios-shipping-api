@@ -8,7 +8,8 @@ namespace Transenvios.Shipping.Api.Infraestructure
     {
         protected readonly IConfiguration Configuration;
         public virtual DbSet<User>? Users { get; set; }
-        public virtual DbSet<Citie>? Cities { get; set; }
+        public virtual DbSet<ShipmentCity>? Cities { get; set; }
+        public virtual DbSet<ShipmentRoute>? Routes { get; set; }
 
         public DataContext(IConfiguration configuration)
         {
