@@ -10,7 +10,6 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         public string? Email { get; set; }
         public string? CountryCode { get; set; }
         public string? Phone { get; set; }
-
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Token { get; set; }
     }

@@ -19,6 +19,74 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                 .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage.ShipmentCity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool?>("Active")
+                        .IsRequired()
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar(5)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("Cities", (string)null);
+                });
+
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage.ShipmentRoute", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool?>("Active")
+                        .IsRequired()
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<decimal?>("AdditionalPriceKg")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("FromCity")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar(5)");
+
+                    b.Property<decimal?>("InitialPriceKg")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal?>("PriceCm3")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("ToCity")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar(5)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("Routes", (string)null);
+                });
+
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.UserPage.User", b =>
                 {
                     b.Property<Guid>("Id")

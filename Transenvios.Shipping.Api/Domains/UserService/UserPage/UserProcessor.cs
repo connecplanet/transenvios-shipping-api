@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
 using Transenvios.Shipping.Api.Infraestructure;
-using Transenvios.Shipping.Api.Mediators.UserService.ForgotPasswordPage;
-using Transenvios.Shipping.Api.Mediators.UserService.UserPage;
 
 namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
 {

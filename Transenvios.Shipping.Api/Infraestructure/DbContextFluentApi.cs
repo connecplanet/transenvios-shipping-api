@@ -45,10 +45,11 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.ToTable("Routes");
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.Id).IsUnique();
-                entity.Property(e => e.FromCity).IsRequired().HasMaxLength(5);
-                entity.Property(e => e.ToCity).IsRequired().HasMaxLength(5);
-                entity.Property(e => e.InitialPriceKg);
-                entity.Property(e => e.AdditionalPriceKg);
+                entity.Property(e => e.FromCityCode).IsRequired().HasMaxLength(5);
+                entity.Property(e => e.ToCityCode).IsRequired().HasMaxLength(5);
+                entity.HasIndex(e => new { e.FromCityCode, e.ToCityCode }).IsUnique();
+                entity.Property(e => e.InitialKiloPrice);
+                entity.Property(e => e.AdditionalKiloPrice);
                 entity.Property(e => e.PriceCm3);
                 entity.Property(e => e.Active).IsRequired();
             });

@@ -21,7 +21,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity
         {
             // generate token that is valid for 1 days
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(_appSettings.Auth.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
@@ -38,7 +38,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity
                 return null;
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(_appSettings.Auth.Secret);
             try
             {
                 tokenHandler.ValidateToken(token, new TokenValidationParameters

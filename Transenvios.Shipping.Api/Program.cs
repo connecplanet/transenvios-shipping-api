@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
 using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 using Transenvios.Shipping.Api.Infraestructure;
+using Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderPage;
 using Transenvios.Shipping.Api.Mediators.UserService.ForgotPasswordPage;
 using Transenvios.Shipping.Api.Mediators.UserService.UserPage;
 
@@ -44,6 +46,7 @@ var builder = WebApplication.CreateBuilder(args);
     services.AddScoped<IGetUser, UserMediator>();
     services.AddScoped<IUpdateUser, UserMediator>();
     services.AddScoped<IRemoveUser, UserMediator>();
+    services.AddScoped<ICalculateShipmentPrice, ShipmentOrderMediator>();
 }
 
 

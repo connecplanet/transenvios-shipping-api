@@ -15,18 +15,20 @@ namespace Transenvios.Shipping.Api.Mediators.UserService.ForgotPasswordPage
         {
             _appSettings = appSettings.Value;
 
-            cliente = new SmtpClient(_appSettings.EmailHost, int.Parse(_appSettings.EmailPort))
+            cliente = new SmtpClient(_appSettings.Email.Host, int.Parse(_appSettings.Email.Port))
             {
-                EnableSsl = _appSettings.EmailEnableSsl,
+                EnableSsl = _appSettings.Email.EnableSsl,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(_appSettings.EmailUser, _appSettings.EmailPassword)
+                Credentials = new NetworkCredential(_appSettings.Email.User, _appSettings.Email.Password)
             };
         }
-        public bool SendEmail(string mailTo, string subject, string body, bool isHtlm = false)
+        public bool SendEmail(string mailTo, string subject, string body, bool isHtml = false)
         {
-            email = new MailMessage(_appSettings.EmailUser, mailTo, subject, body);
-            email.IsBodyHtml = isHtlm;
+            email = new MailMessage(_appSettings.Email.User, mailTo, subject, body)
+            {
+                IsBodyHtml = isHtml
+            };
             cliente.Send(email);
             return true;
         }
