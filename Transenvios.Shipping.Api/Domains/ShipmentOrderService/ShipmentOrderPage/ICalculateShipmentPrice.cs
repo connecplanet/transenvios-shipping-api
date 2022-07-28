@@ -6,7 +6,8 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPag
     {
         decimal CalculatePriceByWeight(ShipmentRoute route, decimal weight);
         decimal CalculatePriceByVolume(ShipmentRoute route, decimal height, decimal length, decimal width);
-        decimal CalculateInitialPrice(ShipmentRoute route, ShipmentOrderItem package);
-        decimal CalculateAdditionalCharges(ShipmentRoute route, ShipmentOrderItem package, ShipmentConfig config, decimal initialPrice);
+        decimal CalculateInitialPrice(ShipmentRoute route, ShipmentOrderItem orderItem);
+        decimal CalculateAdditionalCharges(ShipmentRoute route, ShipmentOrderItem orderItem, decimal initialPrice);
+        ShipmentOrderResponse CalculatePriceService(ShipmentRoute route, ShipmentOrderRequest order);
     }
 }

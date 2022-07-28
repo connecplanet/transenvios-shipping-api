@@ -2,17 +2,17 @@
 {
     public class AppSettings
     {
-        public AuthConfig Auth { get; set; }
-        public EmailConfig Email { get; set; }
-        public ShipmentConfig Shipment { get; set; }
+        public AuthSettings Auth { get; set; }
+        public EmailSettings Email { get; set; }
+        public ShipmentSettings Shipment { get; set; }
     }
 
-    public class AuthConfig
+    public class AuthSettings
     {
         public string Secret { get; set; }
     }
 
-    public class EmailConfig
+    public class EmailSettings
     {
         public string Host { get; set; }
         public string Port { get; set; }
@@ -21,11 +21,11 @@
         public bool EnableSsl { get; set; }
     }
 
-    public class ShipmentConfig
+    public class ShipmentSettings
     {
         public decimal InsuredAmountRatio { get; set; }
         public decimal UrgentAmountRatio { get; set; }
         public decimal FragileAmountRatio { get; set; }
-        public decimal TaxRatio { get; set; }
+        public decimal TaxAmountRatio { get; set; }
     }
 }

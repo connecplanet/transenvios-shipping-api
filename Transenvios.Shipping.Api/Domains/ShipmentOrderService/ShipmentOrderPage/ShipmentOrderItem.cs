@@ -2,18 +2,18 @@
 {
     public class ShipmentOrderItem
     {
-        public long Weight { get; set; }
+        public decimal? Weight { get; set; }
 
-        public long Height { get; set; }
+        public decimal? Height { get; set; }
 
-        public long Length { get; set; }
+        public decimal? Length { get; set; }
 
-        public long Width { get; set; }
+        public decimal? Width { get; set; }
 
-        public decimal InsuredValue { get; set; }
+        public decimal? InsuredValue { get; set; }
 
-        public bool Fragile { get; set; }
+        public bool IsFragile { get; set; }
 
-        public bool Urgent { get; set; }
+        public bool IsUrgent { get; set; }
     }
 }
