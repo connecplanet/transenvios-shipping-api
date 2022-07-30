@@ -10,7 +10,7 @@
 
         public decimal? Width { get; set; }
 
-        public decimal? InsuredValue { get; set; }
+        public decimal? InsuredAmount { get; set; }
 
         public bool IsFragile { get; set; }
 

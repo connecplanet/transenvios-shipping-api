@@ -10,7 +10,7 @@
 
         public ShipmentOrderPerson? Recipient { get; set; }
 
-        public long Price { get; set; }
+        public long BasePrice { get; set; }
 
         public long Taxes { get; set; }
 

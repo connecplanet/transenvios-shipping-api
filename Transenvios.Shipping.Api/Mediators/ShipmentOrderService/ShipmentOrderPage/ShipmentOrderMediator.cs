@@ -6,46 +6,40 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderP
 {
     public class ShipmentOrderMediator : ICalculateShipmentPrice
     {
-        private readonly ShipmentSettings _shipmentSettings;
+        private readonly ShipmentSettings _settings;
 
         public ShipmentOrderMediator(IOptions<AppSettings> appSettings)
         {
-            _shipmentSettings = appSettings.Value.Shipment ?? throw new ArgumentNullException(nameof(appSettings));
+            _settings = appSettings.Value.Shipment ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
-        public decimal CalculatePriceByWeight(ShipmentRoute route, decimal weight)
+        public decimal CalculateChargesByWeight(ShipmentRoute route, decimal weight)
         {
             decimal price = (route.InitialKiloPrice ?? 0) + 
                 ((weight - 1) * (route.AdditionalKiloPrice ?? 0));
             return price;
         }
 
-        public decimal CalculatePriceByVolume(ShipmentRoute route, decimal height, decimal length, decimal width)
+        public decimal CalculateChargesByVolume(ShipmentRoute route, decimal height, decimal length, decimal width)
         {
             decimal volume = height * length * width;
             decimal price = volume * (route.PriceCm3 ?? 0);
             return price;
         }
 
-        public decimal CalculateInitialPrice(ShipmentRoute route, ShipmentOrderItem orderItem)
+        public decimal CalculateBasePrice(ShipmentRoute route, ShipmentOrderItem item)
         {
-            var priceByWeight = CalculatePriceByWeight(route, orderItem.Weight??0);
-            var priceByVolume = CalculatePriceByVolume(
-                route, orderItem.Height??0, orderItem.Length??0, orderItem.Weight??0);
-            return priceByWeight > priceByVolume ? priceByWeight : priceByVolume;
+            var chargesByWeight = CalculateChargesByWeight(route, item.Weight??0);
+            var chargesByVolume = CalculateChargesByVolume(
+                route, item.Height??0, item.Length??0, item.Weight??0);
+            return chargesByWeight > chargesByVolume ? chargesByWeight : chargesByVolume;
         }
 
-        public decimal CalculateAdditionalCharges(ShipmentRoute route, ShipmentOrderItem orderItem, decimal initialPrice)
+        public decimal CalculateAdditionalCharges(ShipmentRoute route, ShipmentOrderItem item, decimal initialCharge)
         {
-            var insuredAmount = orderItem.InsuredValue > 0 
-                ? orderItem.InsuredValue * _shipmentSettings.InsuredAmountRatio / 100M 
-                : 0;
-            var urgentAmount = orderItem.IsUrgent
-                ? initialPrice * ( 1 + _shipmentSettings.UrgentAmountRatio / 100M)
-                : 0;
-            var fragileAmount = orderItem.IsFragile
-                ? initialPrice * (1 + _shipmentSettings.FragileAmountRatio / 100M)
-                : 0;
+            var insuredAmount = item.InsuredAmount > 0 ? item.InsuredAmount * (_settings.InsuredAmountRatio / 100M) : 0;
+            var urgentAmount = item.IsUrgent ? initialCharge * (_settings.UrgentAmountRatio / 100M) : 0;
+            var fragileAmount = item.IsFragile ? initialCharge * (_settings.FragileAmountRatio / 100M) : 0;
             return (insuredAmount ?? 0) + urgentAmount + fragileAmount;
         }
 
@@ -53,7 +47,7 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderP
         {
             var priceService = new ShipmentOrderResponse
             {
-                InitialPrice = 0M,
+                BasePrice = 0M,
                 Taxes = 0M,
                 Total = 0M
             };
@@ -65,13 +59,13 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderP
             
             foreach (var orderItem in order.Items)
             {
-                var initialPrice = CalculateInitialPrice(route, orderItem);
-                var additionalPrice = CalculateAdditionalCharges(route, orderItem, initialPrice);
-                priceService.InitialPrice += initialPrice + additionalPrice;
+                var basePrice = CalculateBasePrice(route, orderItem);
+                var additionalCharges = CalculateAdditionalCharges(route, orderItem, basePrice);
+                priceService.BasePrice += basePrice + additionalCharges;
             }
             
-            priceService.Taxes = priceService.InitialPrice * _shipmentSettings.TaxAmountRatio / 100M;
-            priceService.Total = priceService.InitialPrice + priceService.Taxes;
+            priceService.Taxes = priceService.BasePrice * (_settings.TaxAmountRatio / 100M);
+            priceService.Total = priceService.BasePrice + priceService.Taxes;
 
             return priceService;
         }

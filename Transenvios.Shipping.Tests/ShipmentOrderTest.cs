@@ -18,7 +18,7 @@ public class ShipmentOrderTest
         
         // Act
         ICalculateShipmentPrice mediator = new ShipmentOrderMediator(AppSettingsMock());
-        var resultPrice = mediator.CalculatePriceByWeight(route, order.Weight??0);
+        var resultPrice = mediator.CalculateChargesByWeight(route, order.Weight??0);
 
         // Assert
         Assert.Equal(resultPrice, expectedPriceByWeight);
@@ -32,7 +32,7 @@ public class ShipmentOrderTest
         const decimal expectedPriceByVolume = 12000M;
 
         ICalculateShipmentPrice mediator = new ShipmentOrderMediator(AppSettingsMock());
-        var resultPrice = mediator.CalculatePriceByVolume(
+        var resultPrice = mediator.CalculateChargesByVolume(
             route, order.Height??0, order.Length??0, order.Width??0);
 
         Assert.Equal(resultPrice, expectedPriceByVolume);
@@ -46,35 +46,43 @@ public class ShipmentOrderTest
         const decimal expectedInitialPrice = 43500M;
 
         ICalculateShipmentPrice mediator = new ShipmentOrderMediator(AppSettingsMock());
-        var resultPrice = mediator.CalculateInitialPrice(route, order);
+        var resultPrice = mediator.CalculateBasePrice(route, order);
 
         Assert.Equal(resultPrice, expectedInitialPrice);
     }
 
     [Theory]
-    // TODO: [InlineData(null, false, false)]
-    // TODO: [InlineData(25000M, true, false)]
-    [InlineData(25000, true, true, 161200, 30628, 191828)]
+    [InlineData(1, 0, false, false, 43500, 8265, 51765)]
+    [InlineData(2, 0, true, false, 65250, 12397.5, 77647.5)]
+    [InlineData(3, 0, false, true, 52200, 9918, 62118)]
+    [InlineData(4, 0, true, true, 73950, 14050.5, 88000.5)]
+    [InlineData(5, 10000, false, false, 43600, 8284, 51884)]
+    [InlineData(6, 10000, true, false, 65350, 12416.5, 77766.5)]
+    [InlineData(7, 10000, false, true, 52300, 9937, 62237)]
+    [InlineData(8, 10000, true, true, 74050, 14069.5, 88119.5)]
     public void CalculatePriceServiceTest(
-        decimal InsuredValue, bool IsUrgent, bool IsFragile, 
-        decimal expectedInitialPrice, decimal expectedTaxes, decimal expectedTotalPrice)
+        int testId, decimal InsuredValue, bool IsUrgent, bool IsFragile, 
+        decimal expectedBasePrice, decimal expectedTaxes, decimal expectedTotal)
     {
         var route = ShipmentRouteMock(15000M, 1500M, 0.3M);
         var order = ShipmentOrderMock(20.0M, 100.0M, 20.0M, 20.0M);
         
         if (order.Items != null)
         {
-            order.Items[0].InsuredValue = InsuredValue;
+            order.Items[0].InsuredAmount = InsuredValue;
             order.Items[0].IsUrgent = IsUrgent;
             order.Items[0].IsFragile = IsFragile;
         }
 
         ICalculateShipmentPrice mediator = new ShipmentOrderMediator(AppSettingsMock());
-        var resultPrice = mediator.CalculatePriceService(route, order);
+        var result = mediator.CalculatePriceService(route, order);
 
-        Assert.Equal(resultPrice.InitialPrice, expectedInitialPrice);
-        Assert.Equal(resultPrice.Taxes, expectedTaxes);
-        Assert.Equal(resultPrice.Total, expectedTotalPrice);
+        Assert.True(result.BasePrice == expectedBasePrice, 
+            $"T{testId} Base price Exp/Act: {expectedBasePrice} / {result.BasePrice}");
+        Assert.True(result.Taxes == expectedTaxes,
+            $"T{testId} Taxes Exp/Act: {expectedTaxes} / {result.Taxes}");
+        Assert.True(result.Total == expectedTotal,
+            $"T{testId} Total Exp/Act: {expectedTotal} / {result.Total}");
     }
 
     private static ShipmentRoute ShipmentRouteMock(

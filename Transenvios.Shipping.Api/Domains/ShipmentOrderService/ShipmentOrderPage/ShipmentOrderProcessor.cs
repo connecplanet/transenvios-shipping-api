@@ -12,7 +12,7 @@
         public async Task<decimal> CalculatePriceAsync(ShipmentOrderRequest request)
         {
             throw new NotImplementedException();
-            // _priceByWeight.CalculatePriceByWeight()
+            // _priceByWeight.CalculateChargesByWeight()
         }
     }
 }
