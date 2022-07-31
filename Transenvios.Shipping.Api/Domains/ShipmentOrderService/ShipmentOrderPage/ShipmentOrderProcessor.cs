@@ -2,17 +2,18 @@
 {
     public class ShipmentOrderProcessor
     {
-        private readonly ICalculateShipmentPrice _priceByWeight;
+        private readonly ICalculateShipmentCharges _calculateShipmentCharges;
 
-        public ShipmentOrderProcessor(ICalculateShipmentPrice priceByWeight)
+        public ShipmentOrderProcessor(ICalculateShipmentCharges calculateShipmentCharges)
         {
-            _priceByWeight = priceByWeight ?? throw new ArgumentNullException(nameof(priceByWeight));
+            _calculateShipmentCharges = calculateShipmentCharges ?? 
+                throw new ArgumentNullException(nameof(calculateShipmentCharges));
         }
 
-        public async Task<decimal> CalculatePriceAsync(ShipmentOrderRequest request)
+        public async Task<decimal> CalculateShipmentChargesAsync(ShipmentOrderRequest order)
         {
             throw new NotImplementedException();
-            // _priceByWeight.CalculateChargesByWeight()
+            // _calculateShipmentCharges.CalculateShipmentCharges()
         }
     }
 }

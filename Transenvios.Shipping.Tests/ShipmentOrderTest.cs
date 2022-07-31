@@ -8,47 +8,57 @@ namespace Transenvios.Shipping.Tests;
 
 public class ShipmentOrderTest
 {
+    const decimal ROUTE_INITIAL_KILO_PRICE = 15000M;
+    const decimal ROUTE_ADDITIONAL_KILO_PRICE = 1500M;
+    const decimal ROUTE_PRICE_CM3 = 0.3M;
+    const decimal PACKAGE_WEIGHT = 20.0M;
+    const decimal PACKAGE_HEIGHT = 100.0M;
+    const decimal PACKAGE_LENGTH = 20.0M;
+    const decimal PACKAGE_WIDTH = 20.0M;
+
     [Fact]
-    public void CalculatePriceByWeightTest()
+    public void Calculate_Payment_Return_WeightCharge()
     {
         // Arrange
-        var route = ShipmentRouteMock(15000M, 1500M, 0.3M);
-        var order = ShipmentOrderItemMock(20.0M, 100.0M, 20.0M, 20.0M);
-        const decimal expectedPriceByWeight = 43500M;
-        
+        var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
+        var order = MockShipmentOrderItem(PACKAGE_WEIGHT, PACKAGE_HEIGHT, PACKAGE_LENGTH, PACKAGE_WIDTH);
+        const decimal expected = 43500M;
+        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock());
+
         // Act
-        ICalculateShipmentPrice mediator = new ShipmentOrderMediator(AppSettingsMock());
-        var resultPrice = mediator.CalculateChargesByWeight(route, order.Weight??0);
+        var actual = mediator.CalculateChargeByWeight(route, order.Weight??0);
 
         // Assert
-        Assert.Equal(resultPrice, expectedPriceByWeight);
+        Assert.Equal(actual, expected);
     }
 
     [Fact]
-    public void CalculatePriceByVolumeTest()
+    public void Calculate_Payment_Return_VolumeCharge()
     {
-        var route = ShipmentRouteMock(15000M, 1500M, 0.3M);
-        var order = ShipmentOrderItemMock(20.0M, 100.0M, 20.0M, 20.0M);
-        const decimal expectedPriceByVolume = 12000M;
+        var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
+        var order = MockShipmentOrderItem(PACKAGE_WEIGHT, PACKAGE_HEIGHT, PACKAGE_LENGTH, PACKAGE_WIDTH);
+        const decimal expected = 12000M;
+        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock());
 
-        ICalculateShipmentPrice mediator = new ShipmentOrderMediator(AppSettingsMock());
-        var resultPrice = mediator.CalculateChargesByVolume(
+        var actual = mediator.CalculateChargeByVolume(
             route, order.Height??0, order.Length??0, order.Width??0);
 
-        Assert.Equal(resultPrice, expectedPriceByVolume);
+        Assert.Equal(actual, expected);
     }
 
-    [Fact]
-    public void CalculateInitialPriceTest()
+    [Theory]
+    [InlineData(1, 20, 100, 20, 20, 43500)]
+    [InlineData(2, 1, 100, 50, 20, 30000)]
+    public void Calculate_Payment_Return_HighestValue(
+        int testId, decimal weight, decimal height, decimal length, decimal width, decimal expected)
     {
-        var route = ShipmentRouteMock(15000M, 1500M, 0.3M);
-        var order = ShipmentOrderItemMock(20.0M, 100.0M, 20.0M, 20.0M);
-        const decimal expectedInitialPrice = 43500M;
+        var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
+        var order = MockShipmentOrderItem(weight, height, length, width);        
+        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock());
 
-        ICalculateShipmentPrice mediator = new ShipmentOrderMediator(AppSettingsMock());
-        var resultPrice = mediator.CalculateBasePrice(route, order);
+        var actual = mediator.CalculateInitialPayment(route, order);
 
-        Assert.Equal(resultPrice, expectedInitialPrice);
+        Assert.True(actual == expected, $"T{testId} Expected/Actual: {expected} / {actual}");
     }
 
     [Theory]
@@ -60,45 +70,42 @@ public class ShipmentOrderTest
     [InlineData(6, 10000, true, false, 65350, 12416.5, 77766.5)]
     [InlineData(7, 10000, false, true, 52300, 9937, 62237)]
     [InlineData(8, 10000, true, true, 74050, 14069.5, 88119.5)]
-    public void CalculatePriceServiceTest(
+    public void Calculate_Payment_Return_ServiceCost(
         int testId, decimal InsuredValue, bool IsUrgent, bool IsFragile, 
-        decimal expectedBasePrice, decimal expectedTaxes, decimal expectedTotal)
+        decimal expectedPrice, decimal expectedTaxes, decimal expectedTotal)
     {
-        var route = ShipmentRouteMock(15000M, 1500M, 0.3M);
-        var order = ShipmentOrderMock(20.0M, 100.0M, 20.0M, 20.0M);
-        
+        var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
+        var order = MockShipmentOrder(PACKAGE_WEIGHT, PACKAGE_HEIGHT, PACKAGE_LENGTH, PACKAGE_WIDTH);
+        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock());
+
         if (order.Items != null)
         {
             order.Items[0].InsuredAmount = InsuredValue;
             order.Items[0].IsUrgent = IsUrgent;
             order.Items[0].IsFragile = IsFragile;
         }
+        
+        var actual = mediator.CalculateShipmentCharges(route, order);
 
-        ICalculateShipmentPrice mediator = new ShipmentOrderMediator(AppSettingsMock());
-        var result = mediator.CalculatePriceService(route, order);
-
-        Assert.True(result.BasePrice == expectedBasePrice, 
-            $"T{testId} Base price Exp/Act: {expectedBasePrice} / {result.BasePrice}");
-        Assert.True(result.Taxes == expectedTaxes,
-            $"T{testId} Taxes Exp/Act: {expectedTaxes} / {result.Taxes}");
-        Assert.True(result.Total == expectedTotal,
-            $"T{testId} Total Exp/Act: {expectedTotal} / {result.Total}");
+        Assert.True(actual.BasePrice == expectedPrice, $"T{testId} Price Exp/Act: {expectedPrice} / {actual.BasePrice}");
+        Assert.True(actual.Taxes == expectedTaxes, $"T{testId} Taxes Exp/Act: {expectedTaxes} / {actual.Taxes}");
+        Assert.True(actual.Total == expectedTotal, $"T{testId} Total Exp/Act: {expectedTotal} / {actual.Total}");
     }
 
-    private static ShipmentRoute ShipmentRouteMock(
-        decimal? initialPrice = null, decimal? additionPrice = null, decimal? priceCm3 = null)
+    private static ShipmentRoute MockShipmentRoute(
+        decimal? initialKiloPrice = null, decimal? additionalKiloPrice = null, decimal? priceCm3 = null)
     {
         return new ShipmentRoute
         {
             FromCityCode = "MTR",
             ToCityCode = "MDE",
-            InitialKiloPrice = initialPrice,
-            AdditionalKiloPrice = additionPrice,
+            InitialKiloPrice = initialKiloPrice,
+            AdditionalKiloPrice = additionalKiloPrice,
             PriceCm3 = priceCm3
         };
     }
 
-    private static ShipmentOrderItem ShipmentOrderItemMock(
+    private static ShipmentOrderItem MockShipmentOrderItem(
         decimal? weight = null, decimal? height = null, decimal? length = null, decimal? width = null) 
     {
         return new ShipmentOrderItem
@@ -110,7 +117,7 @@ public class ShipmentOrderTest
         };
     }
 
-    private static ShipmentOrderRequest ShipmentOrderMock(
+    private static ShipmentOrderRequest MockShipmentOrder(
         decimal? weight = null, decimal? height = null, decimal? length = null, decimal? width = null)
     {
         return new ShipmentOrderRequest

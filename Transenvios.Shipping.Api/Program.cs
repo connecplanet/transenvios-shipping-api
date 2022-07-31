@@ -46,7 +46,7 @@ var builder = WebApplication.CreateBuilder(args);
     services.AddScoped<IGetUser, UserMediator>();
     services.AddScoped<IUpdateUser, UserMediator>();
     services.AddScoped<IRemoveUser, UserMediator>();
-    services.AddScoped<ICalculateShipmentPrice, ShipmentOrderMediator>();
+    services.AddScoped<ICalculateShipmentCharges, ShipmentOrderMediator>();
 }
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

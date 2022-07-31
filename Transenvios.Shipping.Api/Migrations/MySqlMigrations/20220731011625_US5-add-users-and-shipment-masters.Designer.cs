@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Transenvios.Shipping.Api.Infraestructure;
 
@@ -10,9 +11,10 @@ using Transenvios.Shipping.Api.Infraestructure;
 namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 {
     [DbContext(typeof(MySqlDataContext))]
-    partial class MySqlDataContextModelSnapshot : ModelSnapshot
+    [Migration("20220731011625_US5-add-users-and-shipment-masters")]
+    partial class US5addusersandshipmentmasters
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
