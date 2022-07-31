@@ -9,10 +9,24 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService.ShipmentOrderPa
     [Route("api/[controller]")]
     public class ShipmentsController : ControllerBase
     {
+        private readonly ShipmentOrderProcessor _processor;
+
+        public ShipmentsController(ShipmentOrderProcessor processor)
+        {
+            _processor = processor ?? throw new ArgumentNullException(nameof(processor)); ;
+        }
+
         [HttpPost("CalculateCharges")]
         public async Task<ActionResult<ShipmentOrderResponse>> CalculateShipmentPaymentAsync(ShipmentOrderRequest order)
         {
-            throw new NotImplementedException();
+            var response = await _processor.CalculateShipmentChargesAsync(order);
+
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return new BadRequestObjectResult(response.ErrorMessage);
+            }
+
+            return Ok(response);
         }
 
         [HttpPost()]

@@ -46,6 +46,7 @@ var builder = WebApplication.CreateBuilder(args);
     services.AddScoped<IGetUser, UserMediator>();
     services.AddScoped<IUpdateUser, UserMediator>();
     services.AddScoped<IRemoveUser, UserMediator>();
+    services.AddScoped<ShipmentOrderProcessor>();
     services.AddScoped<ICalculateShipmentCharges, ShipmentOrderMediator>();
 }
 

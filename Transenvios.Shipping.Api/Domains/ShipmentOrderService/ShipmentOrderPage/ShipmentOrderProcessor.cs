@@ -10,10 +10,25 @@
                 throw new ArgumentNullException(nameof(calculateShipmentCharges));
         }
 
-        public async Task<decimal> CalculateShipmentChargesAsync(ShipmentOrderRequest order)
+        public async Task<ShipmentOrderResponse> CalculateShipmentChargesAsync(ShipmentOrderRequest order)
         {
-            throw new NotImplementedException();
-            // _calculateShipmentCharges.CalculateShipmentCharges()
+            if(order == null)
+            {
+                return new ShipmentOrderResponse() { ErrorMessage = "Order parameter is null"};
+            }
+
+            // TODO Call RouteProcessor
+            var route = new ShipmentRoute
+            {
+                FromCityCode = order?.Route?.PickUp?.CityCode,
+                ToCityCode = order?.Route?.DropOff?.CityCode,
+                InitialKiloPrice = 15000,
+                AdditionalKiloPrice = 1500,
+                PriceCm3 = 0.3M
+            };
+
+            var calculation = _calculateShipmentCharges.CalculateShipmentCharges(route, order);
+            return calculation;
         }
     }
 }
