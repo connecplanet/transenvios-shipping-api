@@ -14,6 +14,8 @@ namespace Transenvios.Shipping.Api.Infraestructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.UserConfiguration();
+            modelBuilder.CitiesConfiguration();
+            modelBuilder.RouteConfiguration();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 
 namespace Transenvios.Shipping.Api.Infraestructure
@@ -7,6 +8,8 @@ namespace Transenvios.Shipping.Api.Infraestructure
     {
         protected readonly IConfiguration Configuration;
         public virtual DbSet<User>? Users { get; set; }
+        public virtual DbSet<ShipmentCity>? Cities { get; set; }
+        public virtual DbSet<ShipmentRoute>? Routes { get; set; }
 
         public DataContext(IConfiguration configuration)
         {

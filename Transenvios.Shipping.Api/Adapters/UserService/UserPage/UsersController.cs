@@ -27,7 +27,7 @@ namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
         }
 
         [AllowAnonymous]
-        [HttpPost("authenticate")]
+        [HttpPost("Authenticate")]
         public async Task<IActionResult> AuthenticateAsync(UserAuthenticateRequest model)
         {
             var response = await _userProcessor.AuthenticateAsync(model);
@@ -48,7 +48,7 @@ namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
         }
 
         [AllowAnonymous]
-        [HttpPost("forgotPassword")]
+        [HttpPost("ForgotPassword")]
         public async Task<ActionResult<UserStateResponse>> ForgotPassword(UserAuthenticateRequest data)
         {
             var response = await _userProcessor.PasswordResetAsync(data.Email);
