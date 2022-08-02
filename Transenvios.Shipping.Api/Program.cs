@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
 using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
@@ -51,10 +52,7 @@ var builder = WebApplication.CreateBuilder(args);
     services.AddScoped<ShipmentOrderProcessor>();
     services.AddScoped<ICalculateShipmentCharges, ShipmentOrderMediator>();
     services.AddScoped<CityProcessor>();
-    services.AddScoped<IGetCityCatalog, CityMediator>();
-
-
-
+    services.AddScoped<IGetCatalog<City>, CityMediator>();
 }
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

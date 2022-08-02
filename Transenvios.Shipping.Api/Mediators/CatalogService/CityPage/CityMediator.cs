@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
 using Transenvios.Shipping.Api.Infraestructure;
 
 namespace Transenvios.Shipping.Api.Mediators.CodeConfigurationOrderService.CodeConfigurationOrderPage
 {
-    public class CityMediator : IGetCityCatalog
+    public class CityMediator : IGetCatalog<City>
     {
         private readonly DataContext _context;
 

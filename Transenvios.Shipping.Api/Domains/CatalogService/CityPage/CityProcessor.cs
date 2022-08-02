@@ -3,9 +3,9 @@ namespace Transenvios.Shipping.Api.Domains.CatalogService.CityPage
 {
     public class CityProcessor
     {
-        private readonly IGetCityCatalog _getShipmentCity;
+        private readonly IGetCatalog<City> _getShipmentCity;
         
-        public CityProcessor(IGetCityCatalog getShipmentCity)
+        public CityProcessor(IGetCatalog<City> getShipmentCity)
         {
             _getShipmentCity = getShipmentCity 
                 ?? throw new ArgumentNullException(nameof(getShipmentCity));
