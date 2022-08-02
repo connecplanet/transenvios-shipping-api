@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Domains\CodeConfigurationOrderService\**" />
     <Compile Remove="Domains\MailService\**" />
+    <Content Remove="Domains\CodeConfigurationOrderService\**" />
     <Content Remove="Domains\MailService\**" />
+    <EmbeddedResource Remove="Domains\CodeConfigurationOrderService\**" />
     <EmbeddedResource Remove="Domains\MailService\**" />
+    <None Remove="Domains\CodeConfigurationOrderService\**" />
     <None Remove="Domains\MailService\**" />
   </ItemGroup>
 
@@ -31,7 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Domains\CodeConfigurationOrderService\CodeConfigurationOrderPage\" />
+    <Folder Include="Domains\CatalogService\CityPage\" />
+    <Folder Include="Domains\CatalogService\CountryPage\" />
+    <Folder Include="Domains\CatalogService\IdTypePage\" />
     <Folder Include="Migrations\MySqlMigrations\" />
     <Folder Include="Migrations\SqliteMigrations\" />
   </ItemGroup>
