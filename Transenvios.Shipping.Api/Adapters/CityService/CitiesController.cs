@@ -15,13 +15,11 @@ namespace Transenvios.Shipping.Api.Adapters.CityService
             _processor = processor ?? throw new ArgumentNullException(nameof(processor)); ;
         }
 
-
         [HttpGet]
         public async Task<ActionResult<IList<ShipmentCity>>> GetAllAsync()
         {
             var city = await _processor.GetShipmentCityAsync();
             return Ok(city);
         }
-
     }
 }
