@@ -35,9 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Domains\CatalogService\CityPage\" />
-    <Folder Include="Domains\CatalogService\CountryPage\" />
-    <Folder Include="Domains\CatalogService\IdTypePage\" />
     <Folder Include="Migrations\MySqlMigrations\" />
     <Folder Include="Migrations\SqliteMigrations\" />
   </ItemGroup>

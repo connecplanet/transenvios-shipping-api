@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoutePage;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
 using Transenvios.Shipping.Api.Infraestructure;
 

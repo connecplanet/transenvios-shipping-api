@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
 using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
@@ -49,8 +50,8 @@ var builder = WebApplication.CreateBuilder(args);
     services.AddScoped<IRemoveUser, UserMediator>();
     services.AddScoped<ShipmentOrderProcessor>();
     services.AddScoped<ICalculateShipmentCharges, ShipmentOrderMediator>();
-    services.AddScoped<ShipmentCityProcessor>();
-    services.AddScoped<IGetShipmentCity, CodeConfigurationOrderMediator>();
+    services.AddScoped<CityProcessor>();
+    services.AddScoped<IGetCityCatalog, CityMediator>();
 
 
 

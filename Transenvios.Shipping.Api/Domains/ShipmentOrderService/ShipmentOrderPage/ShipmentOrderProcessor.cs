@@ -1,4 +1,6 @@
-﻿namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage
+﻿using Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoutePage;
+
+namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage
 {
     public class ShipmentOrderProcessor
     {

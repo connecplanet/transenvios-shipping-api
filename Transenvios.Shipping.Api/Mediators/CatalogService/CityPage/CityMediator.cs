@@ -1,19 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
+using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
 using Transenvios.Shipping.Api.Infraestructure;
 
 namespace Transenvios.Shipping.Api.Mediators.CodeConfigurationOrderService.CodeConfigurationOrderPage
 {
-    public class CodeConfigurationOrderMediator : IGetShipmentCity
+    public class CityMediator : IGetCityCatalog
     {
         private readonly DataContext _context;
 
-        public CodeConfigurationOrderMediator(DataContext context)
+        public CityMediator(DataContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task<IList<ShipmentCity>> GetCityAllAsync()
+        public async Task<IList<City>> GetAllAsync()
         {
             return await _context.Cities.ToListAsync();
         }
