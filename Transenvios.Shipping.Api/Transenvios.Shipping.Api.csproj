@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Domains\CodeConfigurationOrderService\CodeConfigurationOrderPage\" />
     <Folder Include="Migrations\MySqlMigrations\" />
     <Folder Include="Migrations\SqliteMigrations\" />
   </ItemGroup>

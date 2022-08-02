@@ -8,10 +8,20 @@ namespace Transenvios.Shipping.Api.Adapters.CityService
     [ApiController]
     public class CitiesController : ControllerBase
     {
+        private readonly ShipmentCityProcessor _processor;
+
+        public CitiesController(ShipmentCityProcessor processor)
+        {
+            _processor = processor ?? throw new ArgumentNullException(nameof(processor)); ;
+        }
+
+
         [HttpGet]
         public async Task<ActionResult<IList<ShipmentCity>>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var city = await _processor.GetShipmentCityAsync();
+            return Ok(city);
         }
+
     }
 }
