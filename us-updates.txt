@@ -1,0 +1,12 @@
+US7: Submit Shipment Order
+AC:
+1. Create Model
+   a. Create FK to parent tables (Cities, Routes, IdTypes, Countries, Clients)   
+2. Create the fluent API
+3. Update ShipmentController.SubmitShipmentOrderAsync
+   a. Update dependency injection
+4. Update Domain
+5. Update Processor
+6. Update Mediator
+7. Add EF data migration
+8. Create the table at MySQL
