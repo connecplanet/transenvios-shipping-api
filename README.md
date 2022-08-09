@@ -75,6 +75,10 @@ dotnet ef migrations add US3-register-shipping-requester --context MySqlDataCont
 dotnet ef database update --context MySqlDataContext
 ```
 
+``` $ dotnet ef migrations add US5-add-cities-and-routes --context MySqlDataContext --output-dir Migrations/MySqlMigrations
+```
+```$ dotnet ef database update --context MySqlDataContext
+```
 ### Free MySQL Database
 
 [free mysql hosting](https://www.freemysqlhosting.net/)

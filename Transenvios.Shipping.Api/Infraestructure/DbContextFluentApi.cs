@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
+using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
+using Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoutePage;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 
 namespace Transenvios.Shipping.Api.Infraestructure
@@ -26,7 +27,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
         }
         public static void CitiesConfiguration(this ModelBuilder builder)
         {
-            builder.Entity<ShipmentCity>(entity =>
+            builder.Entity<City>(entity =>
             {
                 entity.ToTable("Cities");
                 entity.HasKey(e => e.Id);

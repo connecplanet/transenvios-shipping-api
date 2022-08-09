@@ -1,4 +1,4 @@
-﻿namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage
+﻿namespace Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoutePage
 {
     public class ShipmentRoute : BaseEntity<Guid>
     {

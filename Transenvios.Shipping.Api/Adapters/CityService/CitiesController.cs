@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
+using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
 
 namespace Transenvios.Shipping.Api.Adapters.CityService
 {
@@ -8,10 +8,18 @@ namespace Transenvios.Shipping.Api.Adapters.CityService
     [ApiController]
     public class CitiesController : ControllerBase
     {
-        [HttpGet]
-        public async Task<ActionResult<IList<ShipmentCity>>> GetAllAsync()
+        private readonly CityProcessor _processor;
+
+        public CitiesController(CityProcessor processor)
         {
-            throw new NotImplementedException();
+            _processor = processor ?? throw new ArgumentNullException(nameof(processor)); ;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IList<City>>> GetAllAsync()
+        {
+            var city = await _processor.GetCitiesAsync();
+            return Ok(city);
         }
     }
 }

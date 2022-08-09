@@ -1,4 +1,6 @@
-﻿namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage
+﻿using Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoutePage;
+
+namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage
 {
     public class ShipmentOrderProcessor
     {
@@ -29,6 +31,14 @@
 
             var calculation = _calculateShipmentCharges.CalculateShipmentCharges(route, order);
             return calculation;
+        }
+
+        public Task<CatalogResponse> GetShipmentCatalogAsync()
+        {
+            // TODO return the cities if exists the shipment route
+            var catalog = new CatalogResponse();
+            var task = Task.FromResult(catalog);
+            return task;
         }
     }
 }

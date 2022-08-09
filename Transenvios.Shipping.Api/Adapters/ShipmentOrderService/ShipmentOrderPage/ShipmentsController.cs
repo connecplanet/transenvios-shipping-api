@@ -16,7 +16,7 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService.ShipmentOrderPa
             _processor = processor ?? throw new ArgumentNullException(nameof(processor)); ;
         }
 
-        [HttpPost("CalculateCharges")]
+        [HttpPost("Calculate")]
         public async Task<ActionResult<ShipmentOrderResponse>> CalculateShipmentPaymentAsync(ShipmentOrderRequest order)
         {
             var response = await _processor.CalculateShipmentChargesAsync(order);
@@ -33,6 +33,13 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService.ShipmentOrderPa
         public async Task<ActionResult<ShipmentOrderResponse>> SubmitShipmentOrderAsync(ShipmentOrderRequest order)
         {
             throw new NotImplementedException();
+        }
+
+        [HttpGet("Catalogs")]
+        public async Task<ActionResult<CatalogResponse>> GetCatalogAsync()
+        {
+            var catalog = await _processor.GetShipmentCatalogAsync();
+            return Ok(catalog);
         }
     }
 }

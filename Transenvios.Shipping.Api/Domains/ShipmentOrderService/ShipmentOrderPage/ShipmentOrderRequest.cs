@@ -4,7 +4,7 @@
     {
         public ShipmentOrderRoute? Route { get; set; }
 
-        public ShipmentOrderItem[]? Items { get; set; }
+        public IList<ShipmentOrderItem>? Items { get; set; }
 
         public ShipmentOrderPerson? Sender { get; set; }
 
