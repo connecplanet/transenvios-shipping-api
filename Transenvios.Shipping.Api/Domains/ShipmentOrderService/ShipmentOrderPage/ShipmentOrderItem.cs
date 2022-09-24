@@ -2,6 +2,9 @@
 {
     public class ShipmentOrderItem
     {
+        public int Id { get; set; }
+        public int IdOrder{ get; set; }
+        
         public decimal? Weight { get; set; }
 
         public decimal? Height { get; set; }

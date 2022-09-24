@@ -4,7 +4,7 @@ using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
 
 namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService.ShipmentOrderPage
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ShipmentsController : ControllerBase
@@ -32,7 +32,15 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService.ShipmentOrderPa
         [HttpPost()]
         public async Task<ActionResult<ShipmentOrderResponse>> SubmitShipmentOrderAsync(ShipmentOrderRequest order)
         {
-            throw new NotImplementedException();
+
+            var response = await _processor.SaveShipmentChargesAsync(order);
+
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return new BadRequestObjectResult(response.ErrorMessage);
+            }
+
+            return Ok(response);
         }
 
         [HttpGet("Catalogs")]

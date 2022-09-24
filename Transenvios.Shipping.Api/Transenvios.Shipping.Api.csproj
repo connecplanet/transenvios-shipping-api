@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Mediators\ClientService\ClientPage\" />
     <Folder Include="Migrations\MySqlMigrations\" />
     <Folder Include="Migrations\SqliteMigrations\" />
   </ItemGroup>

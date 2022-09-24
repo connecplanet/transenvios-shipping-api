@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Transenvios.Shipping.Api.Infraestructure;
 
@@ -10,9 +11,10 @@ using Transenvios.Shipping.Api.Infraestructure;
 namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 {
     [DbContext(typeof(MySqlDataContext))]
-    partial class MySqlDataContextModelSnapshot : ModelSnapshot
+    [Migration("20220904172411_US9-create-Driver-add-driver")]
+    partial class US9createDriveradddriver
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,53 +258,6 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .IsUnique();
 
                     b.ToTable("ShipmentOrders", (string)null);
-                });
-
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage.ShipmentOrderItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("Height")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<int>("IdOrder")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("InsuredAmount")
-                        .IsRequired()
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<bool>("IsFragile")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("IsUrgent")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<decimal?>("Length")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<decimal?>("Weight")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<decimal?>("Width")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("decimal(65,30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
-
-                    b.ToTable("ShipmentOrderItems", (string)null);
                 });
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.UserPage.User", b =>
