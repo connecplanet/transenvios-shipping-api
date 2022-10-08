@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Transenvios.Shipping.Api.Infraestructure;
 
@@ -10,9 +11,10 @@ using Transenvios.Shipping.Api.Infraestructure;
 namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 {
     [DbContext(typeof(MySqlDataContext))]
-    partial class MySqlDataContextModelSnapshot : ModelSnapshot
+    [Migration("20220828213147_US8-create-ShipmentOrder-add-ShipmentOrder")]
+    partial class US8createShipmentOrderaddShipmentOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,14 +98,14 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<long?>("CountryCode")
+                    b.Property<string>("CountryCode")
                         .HasMaxLength(5)
-                        .HasColumnType("bigint");
+                        .HasColumnType("varchar(5)");
 
-                    b.Property<long?>("DocumentId")
+                    b.Property<int>("DocumentId")
                         .HasMaxLength(10)
                         .IsUnicode(true)
-                        .HasColumnType("bigint");
+                        .HasColumnType("int");
 
                     b.Property<string>("DocumentType")
                         .HasMaxLength(5)
@@ -146,55 +148,6 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .IsUnique();
 
                     b.ToTable("Clients", (string)null);
-                });
-
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.DriverService.DriverPage.Driver", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<long?>("CountryCode")
-                        .HasMaxLength(5)
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DocumentId")
-                        .HasMaxLength(10)
-                        .IsUnicode(true)
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("DocumentType")
-                        .HasMaxLength(5)
-                        .HasColumnType("varchar(5)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
-
-                    b.Property<string>("Phone")
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.HasIndex("Id")
-                        .IsUnique();
-
-                    b.ToTable("Drivers", (string)null);
                 });
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage.ShipmentOrder", b =>
@@ -256,53 +209,6 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .IsUnique();
 
                     b.ToTable("ShipmentOrders", (string)null);
-                });
-
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage.ShipmentOrderItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("Height")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<int>("IdOrder")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("InsuredAmount")
-                        .IsRequired()
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<bool>("IsFragile")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("IsUrgent")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<decimal?>("Length")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<decimal?>("Weight")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<decimal?>("Width")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("decimal(65,30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
-
-                    b.ToTable("ShipmentOrderItems", (string)null);
                 });
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.UserPage.User", b =>

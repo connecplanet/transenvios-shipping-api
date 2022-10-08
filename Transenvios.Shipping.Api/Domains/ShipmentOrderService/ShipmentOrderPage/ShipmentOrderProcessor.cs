@@ -1,4 +1,5 @@
 ﻿using Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoutePage;
+using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 
 namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage
 {
@@ -8,15 +9,15 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPag
 
         public ShipmentOrderProcessor(ICalculateShipmentCharges calculateShipmentCharges)
         {
-            _calculateShipmentCharges = calculateShipmentCharges ?? 
+            _calculateShipmentCharges = calculateShipmentCharges ??
                 throw new ArgumentNullException(nameof(calculateShipmentCharges));
         }
 
         public async Task<ShipmentOrderResponse> CalculateShipmentChargesAsync(ShipmentOrderRequest order)
         {
-            if(order == null)
+            if (order == null)
             {
-                return new ShipmentOrderResponse() { ErrorMessage = "Order parameter is null"};
+                return new ShipmentOrderResponse() { ErrorMessage = "Order parameter is null" };
             }
 
             // TODO Call RouteProcessor
@@ -40,5 +41,32 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPag
             var task = Task.FromResult(catalog);
             return task;
         }
+
+        public async Task<ShipmentOrderResponse> SaveShipmentChargesAsync(ShipmentOrderRequest order)
+        {
+            if (order == null)
+            {
+                return new ShipmentOrderResponse() { ErrorMessage = "Order parameter is null" };
+            }
+
+            var items = await _calculateShipmentCharges.SaveShipmentChargesAsync(order);
+
+            if (items == 0)
+            {
+                return new ShipmentOrderResponse
+                {
+                    ErrorMessage = "Error recording"
+                };
+            }
+            else
+            {
+                return new ShipmentOrderResponse
+                {
+                    ErrorMessage = "Registration successful"
+                };
+
+            }
+        }
+
     }
 }

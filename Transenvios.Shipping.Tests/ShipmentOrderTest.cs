@@ -16,6 +16,7 @@ public class ShipmentOrderTest
     const decimal PACKAGE_HEIGHT = 100.0M;
     const decimal PACKAGE_LENGTH = 20.0M;
     const decimal PACKAGE_WIDTH = 20.0M;
+    DataContext context;
 
     [Fact]
     public void Calculate_Payment_Return_WeightCharge()
@@ -24,7 +25,7 @@ public class ShipmentOrderTest
         var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
         var order = MockShipmentOrderItem(PACKAGE_WEIGHT, PACKAGE_HEIGHT, PACKAGE_LENGTH, PACKAGE_WIDTH);
         const decimal expected = 43500M;
-        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock());
+        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock(), context);
 
         // Act
         var actual = mediator.CalculateChargeByWeight(route, order.Weight??0);
@@ -39,7 +40,7 @@ public class ShipmentOrderTest
         var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
         var order = MockShipmentOrderItem(PACKAGE_WEIGHT, PACKAGE_HEIGHT, PACKAGE_LENGTH, PACKAGE_WIDTH);
         const decimal expected = 12000M;
-        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock());
+        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock(), context);
 
         var actual = mediator.CalculateChargeByVolume(
             route, order.Height??0, order.Length??0, order.Width??0);
@@ -55,7 +56,7 @@ public class ShipmentOrderTest
     {
         var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
         var order = MockShipmentOrderItem(weight, height, length, width);        
-        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock());
+        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock(), context);
 
         var actual = mediator.CalculateInitialPayment(route, order);
 
@@ -77,7 +78,7 @@ public class ShipmentOrderTest
     {
         var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
         var order = MockShipmentOrder(PACKAGE_WEIGHT, PACKAGE_HEIGHT, PACKAGE_LENGTH, PACKAGE_WIDTH);
-        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock());
+        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock(), context);
 
         if (order.Items != null)
         {

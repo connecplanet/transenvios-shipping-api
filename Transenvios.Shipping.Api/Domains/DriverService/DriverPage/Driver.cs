@@ -1,6 +1,8 @@
-﻿namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage
+﻿using System.Text.Json.Serialization;
+
+namespace Transenvios.Shipping.Api.Domains.DriverService.DriverPage
 {
-    public class ShipmentOrderPerson
+    public class Driver : BaseEntity<Guid>
     {
         public string? DocumentType { get; set; }
         public long? DocumentId { get; set; }
@@ -9,6 +11,6 @@
         public string? Email { get; set; }
         public long? CountryCode { get; set; }
         public string? Phone { get; set; }
-        public bool isClient { get; set; }
+
     }
 }

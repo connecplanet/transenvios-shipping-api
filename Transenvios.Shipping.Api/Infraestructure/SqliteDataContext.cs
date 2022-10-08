@@ -16,6 +16,11 @@ namespace Transenvios.Shipping.Api.Infraestructure
         {
             modelBuilder.UserConfiguration();
             modelBuilder.CitiesConfiguration();
+            modelBuilder.RouteConfiguration();
+            modelBuilder.ClientConfiguration();
+            modelBuilder.ShipmentOrderConfiguration();
+            modelBuilder.DriverConfiguration();
+            modelBuilder.ShipmentOrderItemConfiguration();
         }
     }
 }

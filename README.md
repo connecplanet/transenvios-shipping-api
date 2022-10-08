@@ -79,6 +79,22 @@ dotnet ef database update --context MySqlDataContext
 ```
 ```$ dotnet ef database update --context MySqlDataContext
 ```
+``` $ dotnet ef migrations add US6-add-clients-add-clients --context MySqlDataContext --output-dir Migrations/MySqlMigrations
+```
+```$ dotnet ef database update --context MySqlDataContext
+
+ ```$dotnet ef migrations add US7-update-clients-add-clients --context MySqlDataContext --output-dir Migrations/MySqlMigrations
+ ```$ dotnet ef database update --context MySqlDataContext
+
+ ```$dotnet ef migrations add US8-create-ShipmentOrder-add-ShipmentOrder --context MySqlDataContext --output-dir Migrations/MySqlMigrations
+ ```$ dotnet ef database update --context MySqlDataContext
+ 
+ ```$dotnet ef migrations add US9-update-Cliente-update-change campos--context MySqlDataContext --output-dir Migrations/MySqlMigrations
+ ```$ dotnet ef database update --context MySqlDataContext
+ 
+ ```$dotnet ef migrations add US10-create-Driver MySqlDataContext --output-dir Migrations/MySqlMigrations
+```$ dotnet ef database update --context MySqlDataContext
+ 
 ### Free MySQL Database
 
 [free mysql hosting](https://www.freemysqlhosting.net/)

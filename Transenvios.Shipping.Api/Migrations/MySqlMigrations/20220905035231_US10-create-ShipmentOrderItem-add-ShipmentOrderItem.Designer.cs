@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Transenvios.Shipping.Api.Infraestructure;
 
@@ -10,9 +11,10 @@ using Transenvios.Shipping.Api.Infraestructure;
 namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 {
     [DbContext(typeof(MySqlDataContext))]
-    partial class MySqlDataContextModelSnapshot : ModelSnapshot
+    [Migration("20220905035231_US10-create-ShipmentOrderItem-add-ShipmentOrderItem")]
+    partial class US10createShipmentOrderItemaddShipmentOrderItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -268,9 +270,6 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .IsRequired()
                         .HasMaxLength(5)
                         .HasColumnType("decimal(65,30)");
-
-                    b.Property<int>("IdOrder")
-                        .HasColumnType("int");
 
                     b.Property<decimal?>("InsuredAmount")
                         .IsRequired()
