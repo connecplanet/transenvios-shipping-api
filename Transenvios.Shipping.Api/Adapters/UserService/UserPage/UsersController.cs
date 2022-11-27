@@ -38,11 +38,6 @@ namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
         [HttpPost()]
         public async Task<ActionResult<UserStateResponse>> RegisterAsync(UserRegisterRequest model)
         {
-            if (string.IsNullOrEmpty(model.Role))
-            {
-                model.Role = UserConstants.Requester;
-            }
-
             var response = await _userProcessor.RegisterAsync(model);
             return Ok(response);
         }

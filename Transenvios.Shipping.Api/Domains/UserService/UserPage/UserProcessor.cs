@@ -40,6 +40,20 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(model.Role))
+                {
+                    model.Role = UserConstants.Requester;
+                }
+                else if (model.Role.ToLower().Equals("admin"))
+                {
+                    model.Role = UserConstants.Administrator;
+                }
+
+                if (string.IsNullOrWhiteSpace(model.CountryCode))
+                {
+                    model.CountryCode = UserConstants.Colombia;
+                }
+
                 var result = await _getUser.ExistsEmail(model.Email);
 
                 if (result)
