@@ -11,25 +11,24 @@ using Transenvios.Shipping.Api.Mediators.UserService.ForgotPasswordPage;
 using Transenvios.Shipping.Api.Mediators.UserService.UserPage;
 
 var builder = WebApplication.CreateBuilder(args);
+var env = builder.Environment;
 
 // Add services to the container.
 {
     var services = builder.Services;
-    var env = builder.Environment;
 
     // Update ASPNETCORE_ENVIRONMENT={Development} to use MySQL
-    if (env.IsProduction() || env.IsDevelopment())
+    if (env.IsEnvironment("NonProd"))
     {
-
-        services.AddDbContext<DataContext, MySqlDataContext>(ServiceLifetime.Transient);
+        services.AddDbContext<DataContext, SqliteDataContext>(ServiceLifetime.Transient); // SqlLite
     }
     else if (env.IsStaging())
     {
-        services.AddDbContext<DataContext, SqliteDataContext>(ServiceLifetime.Transient);
+        services.AddDbContext<DataContext>(ServiceLifetime.Transient); // MsSQL
     }
     else
     {
-        services.AddDbContext<DataContext>(ServiceLifetime.Transient);
+        services.AddDbContext<DataContext, MySqlDataContext>(ServiceLifetime.Transient); // MySQL
     }
 
     services.AddCors();
@@ -77,7 +76,7 @@ using (var scope = app.Services.CreateScope())
         .AllowAnyMethod()
         .AllowAnyHeader());
 
-    if (app.Environment.IsDevelopment())
+    if (app.Environment.IsDevelopment() || env.IsEnvironment("NonProd") || env.IsEnvironment("Debug"))
     {
         app.UseSwagger();
         app.UseSwaggerUI();
