@@ -26,28 +26,42 @@ namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
             _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
-        [AllowAnonymous]
-        [HttpPost("Authenticate")]
+        [AllowAnonymous, HttpPost("Authenticate")] // sign-in
         public async Task<IActionResult> AuthenticateAsync(UserAuthenticateRequest model)
         {
             var response = await _userProcessor.AuthenticateAsync(model);
             return Ok(response);
         }
 
-        [AllowAnonymous]
-        [HttpPost()]
+        [AllowAnonymous, HttpPost] // sign-up
         public async Task<ActionResult<UserStateResponse>> RegisterAsync(UserRegisterRequest model)
         {
             var response = await _userProcessor.RegisterAsync(model);
             return Ok(response);
         }
 
-        [AllowAnonymous]
-        [HttpPost("ForgotPassword")]
-        public async Task<ActionResult<UserStateResponse>> ForgotPassword(UserAuthenticateRequest data)
+        [AllowAnonymous, HttpPost("ForgotPassword")] // forgot-password
+        public async Task<ActionResult<UserStateResponse>> ForgotPassword(UserAuthenticateRequest? data)
         {
+            if (data == null || string.IsNullOrWhiteSpace(data.Email))
+            {
+                return BadRequest();
+            }
+
             var response = await _userProcessor.PasswordResetAsync(data.Email);
             return Ok(response);
+        }
+
+        [AllowAnonymous, HttpPost("reset-password")]
+        public async Task<ActionResult<UserStateResponse>> ResetPassword(UserAuthenticateRequest data)
+        {
+            throw new NotImplementedException();
+        }
+
+        [AllowAnonymous, HttpPost("sign-in-with-token")]
+        public async Task<ActionResult<UserStateResponse>> SignInWithToken(string accessToken)
+        {
+            throw new NotImplementedException();
         }
 
         [HttpGet]

@@ -8,7 +8,8 @@ namespace Transenvios.Shipping.Api.Infraestructure
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseMySql(Configuration.GetConnectionString("ApiDatabase"), ServerVersion.AutoDetect(Configuration.GetConnectionString("ApiDatabase")));
+            var connectionString = Configuration.GetConnectionString("ApiDatabase");
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
