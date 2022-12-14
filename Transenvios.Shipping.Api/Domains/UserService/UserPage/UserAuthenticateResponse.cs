@@ -12,5 +12,8 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         public string? Phone { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Token { get; set; }
+        public string? Name => $"{LastName}, {FirstName}";
+        public string? Avatar { get; set; }
+        public string? Status { get; set; }
     }
 }

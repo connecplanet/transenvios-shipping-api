@@ -58,8 +58,15 @@ namespace Transenvios.Shipping.Api.Adapters.UserService.UserPage
             throw new NotImplementedException();
         }
 
-        [AllowAnonymous, HttpPost("sign-in-with-token")]
-        public async Task<ActionResult<UserStateResponse>> SignInWithToken(string accessToken)
+        [HttpPost("sign-in-with-token")]
+        public async Task<ActionResult<UserSignInResponse>> SignInWithToken(UserTokenRequest data)
+        {
+            var response = await _userProcessor.SignInWithTokenAsync(data);
+            return Ok(response); 
+        }
+
+        [AllowAnonymous, HttpPost("unlock-session")]
+        public async Task<ActionResult<UserStateResponse>> UnlockSession(string accessToken)
         {
             throw new NotImplementedException();
         }

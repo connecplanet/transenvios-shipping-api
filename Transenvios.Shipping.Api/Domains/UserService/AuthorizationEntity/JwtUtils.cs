@@ -32,13 +32,16 @@ namespace Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity
             return tokenHandler.WriteToken(token);
         }
 
-        public Guid? ValidateToken(string token)
+        public Guid? ValidateToken(string? token)
         {
             if (token == null)
+            {
                 return null;
+            }
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Auth.Secret);
+            
             try
             {
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
@@ -53,9 +56,11 @@ namespace Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var currentTime = DateTime.UtcNow;
 
                 // return user id from JWT token if validation successful
-                return userId;
+                return DateTime.Compare(jwtToken.ValidFrom, currentTime) < 0 &&
+                       DateTime.Compare(jwtToken.ValidTo, currentTime) > 0 ? userId : null;
             }
             catch
             {
