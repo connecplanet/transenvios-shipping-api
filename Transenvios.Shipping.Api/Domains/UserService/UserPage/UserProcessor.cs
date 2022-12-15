@@ -125,16 +125,16 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             }
 
             var currentUser = await GetUserAsync(id);
-            var emailUser = await _getUser.GetByEmailAsync(model.Email);
+            var emailUser = await _getUser.GetByEmailAsync(model.email);
 
             if (emailUser != null && currentUser.Id != emailUser.Id)
             {
                 throw new AppException($"Email '{model.Email}' is already taken.");
             }
 
-            if (!string.IsNullOrEmpty(model.Password))
+            if (!string.IsNullOrEmpty(model.password))
             {
-                currentUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
+                currentUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.password);
             }
 
             _mapper.Map(model, currentUser);
