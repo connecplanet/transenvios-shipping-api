@@ -40,7 +40,21 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         {
             try
             {
-                var result = await _getUser.ExistsEmail(model.Email);
+                if (string.IsNullOrWhiteSpace(model.Role))
+                {
+                    model.Role = UserConstants.Requester;
+                }
+                else if (model.Role.ToLower().Equals("admin"))
+                {
+                    model.Role = UserConstants.Administrator;
+                }
+
+                if (string.IsNullOrWhiteSpace(model.CountryCode))
+                {
+                    model.CountryCode = UserConstants.Colombia;
+                }
+
+                var result = model.Email != null && await _getUser.ExistsEmail(model.Email);
 
                 if (result)
                 {
@@ -82,31 +96,45 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         }
         public async Task<UserAuthenticateResponse> AuthenticateAsync(UserAuthenticateRequest model)
         {
+            if (string.IsNullOrWhiteSpace(model.Email))
+            {
+                throw new AppException("Email is required.");
+            }
+
             var user = await _getUser.GetByEmailAsync(model.Email);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
             {
-                throw new AppException("Username or password is incorrect");
+                throw new AppException("Username or password is incorrect.");
             }
 
             var response = _mapper.Map<UserAuthenticateResponse>(user);
+
             response.Token = _jwtUtils.GenerateToken(user);
+            response.Avatar = "assets/images/avatars/transenvios.png";
+            response.Status = "online";
+
             return response;
         }
 
         public async Task<UserStateResponse> UpdateAsync(Guid id, UserUpdateRequest model)
         {
+            if (string.IsNullOrWhiteSpace(model.Email))
+            {
+                throw new AppException("Email is required.");
+            }
+
             var currentUser = await GetUserAsync(id);
-            var emailUser = await _getUser.GetByEmailAsync(model.email);
+            var emailUser = await _getUser.GetByEmailAsync(model.Email);
 
             if (emailUser != null && currentUser.Id != emailUser.Id)
             {
-                throw new AppException($"Email '{model.email}' is already taken");
+                throw new AppException($"Email '{model.Email}' is already taken.");
             }
 
-            if (!string.IsNullOrEmpty(model.password))
+            if (!string.IsNullOrEmpty(model.Password))
             {
-                currentUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.password);
+                currentUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
             }
 
             _mapper.Map(model, currentUser);
@@ -153,15 +181,43 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
 
             var random = new Random();
             var value = random.Next(0, 100);
-            string newPassword = string.Concat(user.FirstName, user.FirstName, value);
+            var newPassword = string.Concat(user.FirstName, user.FirstName, value);
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
-            var update = _updateUser.UpdateAsync(user);
+            var updates = await _updateUser.UpdateAsync(user);
             var emailUser = await _passwordReset.PasswordResetAsync(email, newPassword);
 
             return new UserStateResponse
             {
+                Items = updates,
                 Message = emailUser.Message
             };
+        }
+
+        public async Task<UserSignInResponse> SignInWithTokenAsync(UserTokenRequest data)
+        {
+            if (data == null || string.IsNullOrWhiteSpace(data.AccessToken))
+            {
+                throw new AppException("Token is required.");
+            }
+
+            var userId = _jwtUtils.ValidateToken(data.AccessToken);
+            if (userId == null)
+            {
+                throw new AppException("Token user is not valid.");
+            }
+
+            var user = await GetByIdAsync(userId.Value);
+            var response = new UserSignInResponse
+            {
+                User = user,
+                AccessToken = data.AccessToken
+            };
+            if (response.User == null)
+            {
+                throw new AppException("Token is not valid.");
+            }
+
+            return response;
         }
     }
 }
