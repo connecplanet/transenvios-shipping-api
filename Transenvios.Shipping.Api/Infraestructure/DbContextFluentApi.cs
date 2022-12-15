@@ -88,12 +88,13 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.Property(e => e.FirstName).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.LastName).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(500);
-                entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.CountryCode).HasMaxLength(5);
                 entity.Property(e => e.Phone).HasMaxLength(10);
                 entity.Property(e => e.DocumentId).HasMaxLength(10);
                 entity.Property(e => e.DocumentId).IsUnicode();
                 entity.Property(e => e.DocumentType).HasMaxLength(5);
+                entity.Property(e => e.PickUpCityId).IsRequired().HasMaxLength(5);
+                entity.Property(e => e.PickUpAddress).IsRequired().HasMaxLength(100);
             });
 
         }

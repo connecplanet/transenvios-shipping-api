@@ -11,6 +11,7 @@ namespace Transenvios.Shipping.Api.Domains.DriverService.DriverPage
         public string? Email { get; set; }
         public long? CountryCode { get; set; }
         public string? Phone { get; set; }
-
+        public string PickUpCityId { get; set; }
+        public string PickUpAddress { get; set; }
     }
 }
