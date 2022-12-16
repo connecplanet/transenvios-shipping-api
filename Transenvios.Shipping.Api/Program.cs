@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
+using Transenvios.Shipping.Api.Domains.ClientService.ClientPage;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
 using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 using Transenvios.Shipping.Api.Infraestructure;
+using Transenvios.Shipping.Api.Mediators.ClientService.ClientPage;
 using Transenvios.Shipping.Api.Mediators.CodeConfigurationOrderService.CodeConfigurationOrderPage;
 using Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderPage;
 using Transenvios.Shipping.Api.Mediators.UserService.ForgotPasswordPage;
@@ -48,7 +50,9 @@ var env = builder.Environment;
     services.AddScoped<IGetUser, UserMediator>();
     services.AddScoped<IUpdateUser, UserMediator>();
     services.AddScoped<IRemoveUser, UserMediator>();
-    services.AddScoped<ShipmentOrderProcessor>();
+    services.AddScoped<ClientProcessor>();
+
+    services.AddTransient<IClients, ClientMediator>();
     services.AddScoped<ICalculateShipmentCharges, ShipmentOrderMediator>();
     services.AddScoped<CityProcessor>();
     services.AddScoped<IGetCatalog<City>, CityMediator>();
