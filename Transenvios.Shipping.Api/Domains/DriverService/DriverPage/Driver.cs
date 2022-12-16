@@ -4,6 +4,7 @@ namespace Transenvios.Shipping.Api.Domains.DriverService.DriverPage
 {
     public class Driver : BaseEntity<Guid>
     {
+        public Guid? Id { get; set; }
         public string? DocumentType { get; set; }
         public long? DocumentId { get; set; }
         public string? FirstName { get; set; }
