@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
+using Transenvios.Shipping.Api.Domains.ClientService.ClientPage;
 using Transenvios.Shipping.Api.Domains.DriverService;
 using Transenvios.Shipping.Api.Domains.DriverService.DriverPage;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
