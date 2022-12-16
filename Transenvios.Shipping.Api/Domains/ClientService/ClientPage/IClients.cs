@@ -8,5 +8,13 @@ namespace Transenvios.Shipping.Api.Domains.ClientService.ClientPage
         Task<bool> ExistsEmail(string email);
         Task<Client> GetByEmailAsync(string email);
 
+        Task<int> UpdateAsync(Client client);
+
+        Task<int> RemoveAsync(Client client);
+
+        Task<int> RegisterAsync(Client client);
+
+        Task<Client> GetByIdAsync(Guid id);
+
     }
 }

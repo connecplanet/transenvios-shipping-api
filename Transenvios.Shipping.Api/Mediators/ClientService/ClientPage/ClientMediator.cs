@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Transenvios.Shipping.Api.Domains.ClientService.ClientPage;
+using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 using Transenvios.Shipping.Api.Infraestructure;
 
 namespace Transenvios.Shipping.Api.Mediators.ClientService.ClientPage
@@ -16,9 +17,10 @@ namespace Transenvios.Shipping.Api.Mediators.ClientService.ClientPage
         }
 
 
-        public Task<bool> ExistsEmail(string email)
+        public async Task<bool> ExistsEmail(string email)
         {
-            throw new NotImplementedException();
+
+            return await _context.Clients.AnyAsync(x => x.Email == email);
         }
 
         public async Task<IList<Client>> GetAllAsync()
@@ -26,9 +28,36 @@ namespace Transenvios.Shipping.Api.Mediators.ClientService.ClientPage
             return await _context.Clients.ToListAsync();
         }
 
-        public Task<Client> GetByEmailAsync(string email)
+        public async Task<Client> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _context.Clients.FindAsync(id);
         }
+
+        public async Task<Client> GetByEmailAsync(string email)
+        {
+            return await _context.Clients.SingleOrDefaultAsync(x => x.Email == email);
+
+        }
+
+        public async Task<int> RegisterAsync(Client client)
+        {
+            await _context.Clients.AddAsync(client);
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> RemoveAsync(Client client)
+        {
+            _context.Clients.Remove(client);
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> UpdateAsync(Client client)
+        {
+            _context.Clients.Update(client);
+            return await _context.SaveChangesAsync();
+        }
+
+        
+
     }
 }

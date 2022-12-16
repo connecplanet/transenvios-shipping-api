@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Transenvios.Shipping.Api.Adapters.UserService.UserPage;
 using Transenvios.Shipping.Api.Domains.ClientService.ClientPage;
@@ -23,6 +24,15 @@ namespace Transenvios.Shipping.Api.Adapters.ClientsPage
             _clientProcessor = clientProcessor ?? throw new ArgumentNullException(nameof(clientProcessor));
         }
 
+
+        [AllowAnonymous, HttpPost] // sign-up
+        public async Task<ActionResult<UserStateResponse>> RegisterAsync(ClientUpdateRequest model)
+        {
+            var response = await _clientProcessor.RegisterAsync(model);
+            return Ok(response);
+        }
+
+
         // GET: api/<ClientsController>
         [HttpGet]
         public async Task<ActionResult<IList<Client>>> GetAllAsync()
@@ -31,29 +41,32 @@ namespace Transenvios.Shipping.Api.Adapters.ClientsPage
             return Ok(client);
         }
 
-        // GET api/<ClientsController>/5
+
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<Client>> GetByIdAsync(Guid id)
         {
-            return "value";
+            var client = await _clientProcessor.GetClientAsync(id);
+
+            if (client == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(client);
         }
 
-        // POST api/<ClientsController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<ClientsController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult<ClientStateResponse>> UpdateAsync(Guid id, ClientUpdateRequest model)
         {
+            var response = await _clientProcessor.UpdateAsync(id, model);
+            return Ok(response);
         }
 
-        // DELETE api/<ClientsController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult<ClientStateResponse>> DeleteAsync(Guid id)
         {
+            var response = await _clientProcessor.DeleteAsync(id);
+            return Ok(response);
         }
     }
 }
