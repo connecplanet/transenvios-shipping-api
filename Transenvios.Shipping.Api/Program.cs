@@ -7,6 +7,7 @@ using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
 using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 using Transenvios.Shipping.Api.Infraestructure;
+using Transenvios.Shipping.Api.Mediators.ClientService.ClientPage;
 using Transenvios.Shipping.Api.Mediators.CodeConfigurationOrderService.CodeConfigurationOrderPage;
 using Transenvios.Shipping.Api.Mediators.DriverService.DriverPage;
 using Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderPage;
@@ -55,6 +56,10 @@ var env = builder.Environment;
     services.AddScoped<IDriver, DriverMediator>();
     services.AddScoped<DriverProcessor>();
     services.AddScoped<IGetCatalog<City>, CityMediator>();
+    services.AddScoped<ClientProcessor>();
+
+    services.AddTransient<IClients, ClientMediator>();
+    services.AddScoped<ICalculateShipmentCharges, ShipmentOrderMediator>();
     services.AddScoped<CityProcessor>();
 }
 
