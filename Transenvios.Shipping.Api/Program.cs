@@ -4,6 +4,7 @@ using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
 using Transenvios.Shipping.Api.Domains.ClientService.ClientPage;
 using Transenvios.Shipping.Api.Domains.DriverService;
 using Transenvios.Shipping.Api.Domains.DriverService.DriverPage;
+using Transenvios.Shipping.Api.Domains.RoutesService.RoutesPage;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
 using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
@@ -11,6 +12,7 @@ using Transenvios.Shipping.Api.Infraestructure;
 using Transenvios.Shipping.Api.Mediators.ClientService.ClientPage;
 using Transenvios.Shipping.Api.Mediators.CodeConfigurationOrderService.CodeConfigurationOrderPage;
 using Transenvios.Shipping.Api.Mediators.DriverService.DriverPage;
+using Transenvios.Shipping.Api.Mediators.RoutesService.RoutePage;
 using Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderPage;
 using Transenvios.Shipping.Api.Mediators.UserService.ForgotPasswordPage;
 using Transenvios.Shipping.Api.Mediators.UserService.UserPage;
@@ -58,10 +60,12 @@ var env = builder.Environment;
     services.AddScoped<DriverProcessor>();
     services.AddScoped<IGetCatalog<City>, CityMediator>();
     services.AddScoped<ClientProcessor>();
-
     services.AddTransient<IClients, ClientMediator>();
     services.AddScoped<ICalculateShipmentCharges, ShipmentOrderMediator>();
     services.AddScoped<CityProcessor>();
+    
+    services.AddScoped<RoutesProcessor>();
+    services.AddScoped<IRoutes, RouteMediator>();
 }
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
