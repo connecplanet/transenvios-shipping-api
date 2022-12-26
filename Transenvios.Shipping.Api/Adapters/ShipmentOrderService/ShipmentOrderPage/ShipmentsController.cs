@@ -30,7 +30,7 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService.ShipmentOrderPa
         }
 
         [HttpPost()]
-        public async Task<ActionResult<ShipmentOrderResponse>> SubmitShipmentOrderAsync(ShipmentOrderRequest order)
+        public async Task<ActionResult<ShipmentOrderResponse>> SubmitShipmentOrderAsync(ShipmentOrderRequest? order)
         {
 
             var response = await _processor.SaveShipmentChargesAsync(order);

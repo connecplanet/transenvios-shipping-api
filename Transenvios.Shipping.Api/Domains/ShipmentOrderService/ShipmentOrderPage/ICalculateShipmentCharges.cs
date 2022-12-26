@@ -9,6 +9,6 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPag
         decimal CalculateInitialPayment(ShipmentRoute route, ShipmentOrderItem item);
         decimal CalculateAdditionalCharges(ShipmentRoute route, ShipmentOrderItem item, decimal basePrice);
         ShipmentOrderResponse CalculateShipmentCharges(ShipmentRoute route, ShipmentOrderRequest order);
-        Task<int> SaveShipmentChargesAsync(ShipmentOrderRequest order);
+        Task<ShipmentOrderResponse> SaveShipmentChargesAsync(ShipmentOrderRequest? order);
     }
 }

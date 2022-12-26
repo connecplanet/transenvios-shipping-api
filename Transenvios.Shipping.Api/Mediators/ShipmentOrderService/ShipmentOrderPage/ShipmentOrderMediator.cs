@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
 using Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoutePage;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
 using Transenvios.Shipping.Api.Domains.UserService.UserPage;
@@ -13,13 +10,17 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderP
     public class ShipmentOrderMediator : ICalculateShipmentCharges
     {
         private readonly ShipmentSettings _settings;
-
         private readonly DataContext _context;
+        private readonly IGetUser _getUser;
 
-        public ShipmentOrderMediator(IOptions<AppSettings> appSettings, DataContext context)
+        public ShipmentOrderMediator(
+            IOptions<AppSettings> appSettings, 
+            DataContext context,
+            IGetUser getUser)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _settings = appSettings.Value.Shipment ?? throw new ArgumentNullException(nameof(appSettings));
+            _getUser = getUser ?? throw new ArgumentNullException();
         }
 
         public decimal CalculateChargeByWeight(ShipmentRoute route, decimal weight)
@@ -79,134 +80,127 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderP
             return priceService;
         }
 
-
-        public async Task<int> SaveShipmentChargesAsync(ShipmentOrderRequest order)
+        private async Task<Guid> GetApplicantId(string? email)
         {
+            var applicant = await _getUser?.GetByEmailAsync(email ?? string.Empty);
+            if (applicant == null)
+            {
+                throw new ArgumentException("Applicant Not Found");
+            }
+
+            return applicant.Id;
+        }
+
+
+        public async Task<ShipmentOrderResponse> SaveShipmentChargesAsync(ShipmentOrderRequest? order)
+        {
+            var orderResponse = new ShipmentOrderResponse();
+
             try
             {
-                var priceService = new ShipmentOrderResponse();
-
-                Domains.ClientService.ClientPage.Client data = new Domains.ClientService.ClientPage.Client();
-
-                if (order.Sender.isClient)
+                if (order?.Sender == null || order.Recipient == null)
                 {
-                    data.DocumentId = order.Sender.DocumentId;
-                    data.Phone = order.Sender.Phone;
-                    data.Email = order.Sender.Email;
-                    data.FirstName = order.Sender.FirstName;
-                    data.DocumentType = order.Sender.DocumentType;
-                    data.LastName = order.Sender.LastName;
-                    data.CountryCode = order.Sender.CountryCode;
-                    data.PasswordHash = "prueba Sender";
-                }
-                else
-                if (order.Recipient.isClient)
-                {
-                    data.DocumentId = order.Recipient.DocumentId;
-                    data.Phone = order.Recipient.Phone;
-                    data.Email = order.Recipient.Email;
-                    data.FirstName = order.Recipient.FirstName;
-                    data.DocumentType = order.Recipient.DocumentType;
-                    data.LastName = order.Recipient.LastName;
-                    data.CountryCode = order.Recipient.CountryCode;
-                    data.PasswordHash = "prueba Sender";
-                }
-                data.Role = "C";
-
-                await _context.Clients.AddAsync(data);
-
-                int idShipmenORders = GetByIdShipmentOrdersAsync();
-                ShipmentOrder shipmentOrder = new ShipmentOrder();
-                shipmentOrder.Id = idShipmenORders;
-                shipmentOrder.PickUpCityId = order.Route.PickUp.CityCode;
-                shipmentOrder.PickUpAddress = order.Route.PickUp.Address;
-                shipmentOrder.DropOffCityId = order.Route.DropOff.CityCode;
-                shipmentOrder.DropOffAddress = order.Route.DropOff.Address;
-                shipmentOrder.InitialPrice = order.BasePrice;
-                shipmentOrder.Taxes = order.Taxes;
-                shipmentOrder.TotalPrice = order.Total;
-                shipmentOrder.PaymentState = "NA";
-                shipmentOrder.ShipmentState = "NA";
-                shipmentOrder.TransporterId = "NA";
-
-
-//                shipmentOrder.ApplicantId
-//shipmentOrder.ApplicationDate = DateTime.Now;
-//shipmentOrder.ModifyDate = DateTime.Now;
-//                shipmentOrder.ModifyUserId
-
-shipmentOrder.SenderDocumentType = order.Sender.DocumentType;
-                shipmentOrder.SenderDocumentId = Convert.ToInt32(order.Sender.DocumentId);
-                shipmentOrder.SenderFirstName = order.Sender.FirstName;
-                shipmentOrder.SenderLastName = order.Sender.LastName;
-                shipmentOrder.SenderEmail = order.Sender.Email;
-                shipmentOrder.SenderCountryCode = Convert.ToInt32(order.Sender.CountryCode);
-                shipmentOrder.SenderPhone = order.Sender.Phone;
-
-
-shipmentOrder.RecipientDocumentType = order.Recipient.DocumentType;
-                shipmentOrder.RecipientDocumentId = Convert.ToInt32(order.Recipient.DocumentId);
-                shipmentOrder.RecipientFirstName = order.Recipient.FirstName;
-                shipmentOrder.RecipientLastName = order.Recipient.LastName;
-                shipmentOrder.RecipientEmail = order.Recipient.Email;
-                shipmentOrder.RecipientCountryCode = Convert.ToInt32(order.Recipient.CountryCode);
-                shipmentOrder.RecipientPhone = order.Recipient.Phone;
-
-
-                await _context.ShipmentOrders.AddAsync(shipmentOrder);
-
-                int shipmentOrderItems = GetByShipmentOrderItemsAsync();
-
-                List<ShipmentOrderItem> shipmentOrderItemList = new List<ShipmentOrderItem>();
-                foreach (var item in order.Items)
-                {
-                    ShipmentOrderItem shipmentOrderItem = new ShipmentOrderItem();
-                    shipmentOrderItem.IdOrder = idShipmenORders;
-                    shipmentOrderItem.Width = item.Width;
-                    shipmentOrderItem.Weight = item.Weight;
-                    shipmentOrderItem.Height = item.Height;
-                    shipmentOrderItem.IsUrgent = item.IsUrgent;
-                    shipmentOrderItem.IsFragile = item.IsFragile;
-                    shipmentOrderItem.Length = item.Length;
-                    shipmentOrderItem.InsuredAmount = item.InsuredAmount;
-                    shipmentOrderItemList.Add(shipmentOrderItem);
+                    throw new ArgumentException("Sender or Recipient is null");
                 }
 
-                await _context.ShipmentOrderItems.AddRangeAsync(shipmentOrderItemList);
+                var applicantId = await GetApplicantId(order.Sender.IsClient ? order.Sender.Email : order.Recipient.Email);
 
-                return await _context.SaveChangesAsync();
+                orderResponse.BasePrice = order.BasePrice;
+                orderResponse.Taxes = order.Taxes;
+                orderResponse.Total = order.Total;
+
+                var shipmentOrder = await SaveOrderHeader(order, applicantId);
+
+                await SaveOrderItems(order, shipmentOrder.Id);
+                await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch (Exception error)
             {
-                return 1;
+                orderResponse.ErrorMessage = error.GetBaseException().Message;
             }
+
+            return orderResponse;
         }
 
-        public int GetByIdShipmentOrdersAsync()
+        private async Task SaveOrderItems(ShipmentOrderRequest order, int orderId)
         {
-            var valueMax = _context.ShipmentOrders.Max(e => e.Id);
-            if (valueMax == 0)
-            {
-                valueMax = 1;
-            }
-            else
-            {
-                valueMax = valueMax + 1;
-            }
-            return valueMax;
+            var shipmentOrderItems = await GetByShipmentOrderItemsAsync();
+            var items = order.Items.Select(detail =>
+                    new ShipmentOrderItem
+                    {
+                        IdOrder = orderId,
+                        Width = detail.Width,
+                        Weight = detail.Weight,
+                        Height = detail.Height,
+                        IsUrgent = detail.IsUrgent,
+                        IsFragile = detail.IsFragile,
+                        Length = detail.Length,
+                        InsuredAmount = detail.InsuredAmount
+                    })
+                .ToList();
+
+            await _context.ShipmentOrderItems.AddRangeAsync(items);
         }
-        public int GetByShipmentOrderItemsAsync()
+
+        private async Task<ShipmentOrder> SaveOrderHeader(ShipmentOrderRequest order, Guid applicantId)
         {
-            var valueMax = _context.ShipmentOrderItems.Max(e => e.Id);
-            if (valueMax == 0)
+            var orderId = await GetByIdShipmentOrdersAsync();
+            var shipmentOrder = new ShipmentOrder
             {
-                valueMax = 1;
-            }
-            else
+                Id = orderId,
+                PickUpCityId = order.Route?.PickUp?.CityCode,
+                PickUpAddress = order.Route?.PickUp?.Address,
+                DropOffCityId = order.Route?.DropOff?.CityCode,
+                DropOffAddress = order.Route?.DropOff?.Address,
+                InitialPrice = order.BasePrice,
+                Taxes = order.Taxes,
+                TotalPrice = order.Total,
+                PaymentState = PaymentStates.UnPaid.ToString(),
+                ShipmentState = ShipmentStates.None.ToString(),
+                TransporterId = string.Empty,
+                ApplicantId = applicantId.ToString(),
+                ApplicationDate = DateTime.Now,
+                ModifyDate = DateTime.Now,
+                ModifyUserId = applicantId.ToString(),
+                SenderDocumentType = order.Sender?.DocumentType,
+                SenderDocumentId = order.Sender?.DocumentId,
+                SenderFirstName = order.Sender?.FirstName,
+                SenderLastName = order.Sender?.LastName,
+                SenderEmail = order.Sender?.Email,
+                SenderCountryCode = order.Sender?.CountryCode,
+                SenderPhone = order.Sender?.Phone,
+                RecipientDocumentType = order.Recipient?.DocumentType,
+                RecipientDocumentId = order.Recipient?.DocumentId,
+                RecipientFirstName = order.Recipient?.FirstName,
+                RecipientLastName = order.Recipient?.LastName,
+                RecipientEmail = order.Recipient?.Email,
+                RecipientCountryCode = order.Recipient?.CountryCode,
+                RecipientPhone = order.Recipient?.Phone
+            };
+
+            if (_context.ShipmentOrders == null)
             {
-                valueMax = valueMax++;
+                throw new ArgumentException("Shipment Order context is invalid");
             }
-            return valueMax;
+
+            await _context.ShipmentOrders.AddAsync(shipmentOrder);
+
+            return shipmentOrder;
+        }
+
+        public async Task<int> GetByIdShipmentOrdersAsync()
+        {
+            var valueMax = 0;
+            if (_context.ShipmentOrders != null)
+            {
+                valueMax = await _context.ShipmentOrders.MaxAsync(e => e.Id);
+            }
+            return valueMax == 0 ? 1 : valueMax + 1;
+        }
+        public async Task<int> GetByShipmentOrderItemsAsync()
+        {
+            var valueMax = await _context.ShipmentOrderItems.MaxAsync(e => e.Id);
+            return valueMax == 0 ? 1 : valueMax + 1;
         }
     }
 }

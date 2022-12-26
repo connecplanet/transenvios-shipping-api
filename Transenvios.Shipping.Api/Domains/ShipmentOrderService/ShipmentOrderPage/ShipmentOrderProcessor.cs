@@ -42,31 +42,14 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPag
             return task;
         }
 
-        public async Task<ShipmentOrderResponse> SaveShipmentChargesAsync(ShipmentOrderRequest order)
+        public async Task<ShipmentOrderResponse> SaveShipmentChargesAsync(ShipmentOrderRequest? order)
         {
             if (order == null)
             {
                 return new ShipmentOrderResponse() { ErrorMessage = "Order parameter is null" };
             }
 
-            var items = await _calculateShipmentCharges.SaveShipmentChargesAsync(order);
-
-            if (items == 0)
-            {
-                return new ShipmentOrderResponse
-                {
-                    ErrorMessage = "Error recording"
-                };
-            }
-            else
-            {
-                return new ShipmentOrderResponse
-                {
-                    ErrorMessage = "Registration successful"
-                };
-
-            }
+            return await _calculateShipmentCharges.SaveShipmentChargesAsync(order);
         }
-
     }
 }
