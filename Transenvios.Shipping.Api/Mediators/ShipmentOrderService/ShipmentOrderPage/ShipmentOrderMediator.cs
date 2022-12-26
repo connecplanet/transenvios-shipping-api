@@ -129,6 +129,30 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderP
                 shipmentOrder.ShipmentState = "NA";
                 shipmentOrder.TransporterId = "NA";
 
+
+//                shipmentOrder.ApplicantId
+//shipmentOrder.ApplicationDate = DateTime.Now;
+//shipmentOrder.ModifyDate = DateTime.Now;
+//                shipmentOrder.ModifyUserId
+
+shipmentOrder.SenderDocumentType = order.Sender.DocumentType;
+                shipmentOrder.SenderDocumentId = Convert.ToInt32(order.Sender.DocumentId);
+                shipmentOrder.SenderFirstName = order.Sender.FirstName;
+                shipmentOrder.SenderLastName = order.Sender.LastName;
+                shipmentOrder.SenderEmail = order.Sender.Email;
+                shipmentOrder.SenderCountryCode = Convert.ToInt32(order.Sender.CountryCode);
+                shipmentOrder.SenderPhone = order.Sender.Phone;
+
+
+shipmentOrder.RecipientDocumentType = order.Recipient.DocumentType;
+                shipmentOrder.RecipientDocumentId = Convert.ToInt32(order.Recipient.DocumentId);
+                shipmentOrder.RecipientFirstName = order.Recipient.FirstName;
+                shipmentOrder.RecipientLastName = order.Recipient.LastName;
+                shipmentOrder.RecipientEmail = order.Recipient.Email;
+                shipmentOrder.RecipientCountryCode = Convert.ToInt32(order.Recipient.CountryCode);
+                shipmentOrder.RecipientPhone = order.Recipient.Phone;
+
+
                 await _context.ShipmentOrders.AddAsync(shipmentOrder);
 
                 int shipmentOrderItems = GetByShipmentOrderItemsAsync();
