@@ -15,5 +15,6 @@
         public long Taxes { get; set; }
 
         public long Total { get; set; }
+        public string MailApplicant{ get; set; }
     }
 }
