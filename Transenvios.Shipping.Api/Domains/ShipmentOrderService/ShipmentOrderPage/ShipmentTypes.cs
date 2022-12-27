@@ -2,8 +2,8 @@
 {
     public enum PaymentStates
     {
-        UnPaid,
-        Paid
+        UnPaid=0,
+        Paid=1
     }
 
     public enum ShipmentStates

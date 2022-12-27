@@ -103,7 +103,7 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderP
                     throw new ArgumentException("Sender or Recipient is null");
                 }
 
-                var applicantId = await GetApplicantId(order.Sender.IsClient ? order.Sender.Email : order.Recipient.Email);
+                var applicantId = await GetApplicantId(order.ApplicantEmail);
 
                 orderResponse.BasePrice = order.BasePrice;
                 orderResponse.Taxes = order.Taxes;
@@ -155,8 +155,8 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderP
                 InitialPrice = order.BasePrice,
                 Taxes = order.Taxes,
                 TotalPrice = order.Total,
-                PaymentState = PaymentStates.UnPaid.ToString(),
-                ShipmentState = ShipmentStates.None.ToString(),
+                PaymentState = Convert.ToString((int)PaymentStates.UnPaid),
+                ShipmentState = Convert.ToString((int)ShipmentStates.None),
                 TransporterId = string.Empty,
                 ApplicantId = applicantId.ToString(),
                 ApplicationDate = DateTime.Now,

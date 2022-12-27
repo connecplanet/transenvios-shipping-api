@@ -15,5 +15,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         public string? CountryCode { get; set; }
         public string? Phone { get; set; }
         public string? Role { get; set; }
+        public string? DocumentType{ get; set; }
+        public string? DocumentId { get; set; }
     }
 }

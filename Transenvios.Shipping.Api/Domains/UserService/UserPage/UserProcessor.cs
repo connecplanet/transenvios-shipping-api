@@ -14,6 +14,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
         private readonly IRemoveUser _removeUser;
         private readonly IGetAuthorizeUser _getAuthorizeUser;
         private readonly IPasswordReset _passwordReset;
+        private const string _roleAdmin = "admin";
 
         public UserProcessor(
             IMapper mapper,
@@ -44,7 +45,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
                 {
                     model.Role = UserConstants.Requester;
                 }
-                else if (model.Role.ToLower().Equals("admin"))
+                else if (model.Role.ToLower().Equals(_roleAdmin))
                 {
                     model.Role = UserConstants.Administrator;
                 }
