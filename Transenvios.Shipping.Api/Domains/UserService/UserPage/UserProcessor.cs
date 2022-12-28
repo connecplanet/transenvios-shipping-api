@@ -115,6 +115,9 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             response.Avatar = "assets/images/avatars/transenvios.png";
             response.Status = "online";
 
+
+
+
             return response;
         }
 
