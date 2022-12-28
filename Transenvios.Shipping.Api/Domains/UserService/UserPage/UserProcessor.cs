@@ -181,8 +181,8 @@ namespace Transenvios.Shipping.Api.Domains.UserService.UserPage
             }
 
             var random = new Random();
-            var value = random.Next(0, 100);
-            var newPassword = string.Concat(user.FirstName, user.FirstName, value);
+            var value = random.Next(0, 1000);
+            var newPassword = string.Concat(user.FirstName, user.LastName, value);
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
             var updates = await _updateUser.UpdateAsync(user);
             var emailUser = await _passwordReset.PasswordResetAsync(email, newPassword);
