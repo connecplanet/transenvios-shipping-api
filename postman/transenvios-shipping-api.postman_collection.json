@@ -1,0 +1,408 @@
+{
+	"info": {
+		"_postman_id": "a4cb9ad8-07de-4710-b5c3-376e2a538a14",
+		"name": "transenvios-shipping-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "958999"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "SignUp",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"pm.test(\"The response has all properties\", () => {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.environment.set(\"user_id\", jsonData[\"id\"]);\r",
+									"    pm.expect(jsonData.id).to.have.lessThan(1);\r",
+									"    console.log(jsonData.message);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Edwin\",\r\n    \"lastName\": \"Diaz\",\r\n    \"email\": \"ediaz.connectplanet@gmail.com\",\r\n    \"password\": \"Edwin1234\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"6046050769\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignIn",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"access_token\", jsonData[\"token\"]);\r",
+									"pm.environment.set(\"user_id\", jsonData[\"id\"]);\r",
+									"\r",
+									"pm.test(\"The response has all properties\", () => {\r",
+									"    var access_token = pm.environment.get(\"access_token\");  \r",
+									"    pm.expect(access_token).to.have.lessThan(1);    \r",
+									"    console.log(\"access_token:\", access_token);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"ediaz.connectplanet@gmail.com\",\r\n    \"password\": \"Edwin1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/authenticate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "cities",
+					"item": [
+						{
+							"name": "ListCities",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/Cities",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"Cities"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "users",
+					"item": [
+						{
+							"name": "ListUsers",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateUser",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"ediaz.connectplanet@gmail.com\",\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Doe\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteUser",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetUser",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "features",
+			"item": [
+				{
+					"name": "shipments",
+					"item": [
+						{
+							"name": "CalculateCharges",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"  pm.expect(pm.response.code).to.eql(200);\r",
+											"});\r",
+											"\r",
+											"var jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"The response has all properties\", () => {\r",
+											"    pm.expect(jsonData[\"basePrice\"]).to.have.greaterThan(0);\r",
+											"    pm.expect(jsonData[\"taxes\"]).to.have.greaterThan(0);\r",
+											"    pm.expect(jsonData[\"total\"]).to.have.greaterThan(0);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"route\": {\r\n    \"pickUp\": {\r\n      \"cityCode\": \"MED\",\r\n      \"address\": \"CL 4 # 2 - 4\"\r\n    },\r\n    \"dropOff\": {\r\n      \"cityCode\": \"MON\",\r\n      \"address\": \"CL 44 # 3 - 5\"\r\n    }\r\n  },\r\n  \"items\": [\r\n    {\r\n      \"id\": 0,\r\n      \"idOrder\": 0,\r\n      \"weight\": 20,\r\n      \"height\": 100,\r\n      \"length\": 20,\r\n      \"width\": 20,\r\n      \"insuredAmount\":15000,\r\n      \"isFragile\": true,\r\n      \"isUrgent\": true\r\n    }\r\n  ],\r\n  \"sender\": {\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": 123,\r\n    \"firstName\": \"David Fernando\",\r\n    \"lastName\": \"Ciro\",\r\n    \"email\": \"inforfercho@gmail.com\",\r\n    \"countryCode\": 57,\r\n    \"phone\": \"318466618\",\r\n    \"isClient\": true\r\n  },\r\n  \"recipient\": {\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": 456,\r\n    \"firstName\": \"Juan\",\r\n    \"lastName\": \"Vasquez\",\r\n    \"email\": \"camilooo@gmail.com\",\r\n    \"countryCode\": 57,\r\n    \"phone\": \"6046050769\",\r\n    \"isClient\": false\r\n  },\r\n  \"basePrice\": 74100,\r\n  \"taxes\": 14079,\r\n  \"total\": 88179,\r\n  \"applicantEmail\": \"dciro.connectplanet@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/Shipments/Calculate",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"Shipments",
+										"Calculate"
+									]
+								},
+								"description": "Calcute Values"
+							},
+							"response": []
+						},
+						{
+							"name": "SignInWithToken",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"AccessToken\" : \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6IkpXVCJ9.eyJpZCI6IjA4ZGFkMDllLTFlZmEtNGFjYi04MjQ2LTYyNDI1MTQ2NDc4MiIsIm5iZiI6MTY3MTA0OTU3MywiZXhwIjoxNjcxMTM1OTczLCJpYXQiOjE2NzEwNDk1NzN9.AHRLWVXsxkhaiEtvO6vObsgd3PQ9N6vCh25qtpuAEvU\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/users/sign-in-with-token",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"sign-in-with-token"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
