@@ -1,21 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using Transenvios.Shipping.Api.Domains.CatalogService;
-using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
-using Transenvios.Shipping.Api.Domains.ClientService.ClientPage;
 using Transenvios.Shipping.Api.Domains.DriverService;
-using Transenvios.Shipping.Api.Domains.DriverService.DriverPage;
-using Transenvios.Shipping.Api.Domains.RoutesService.RoutesPage;
-using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
-using Transenvios.Shipping.Api.Domains.UserService.AuthorizationEntity;
-using Transenvios.Shipping.Api.Domains.UserService.UserPage;
 using Transenvios.Shipping.Api.Infraestructure;
-using Transenvios.Shipping.Api.Mediators.ClientService.ClientPage;
-using Transenvios.Shipping.Api.Mediators.CodeConfigurationOrderService.CodeConfigurationOrderPage;
-using Transenvios.Shipping.Api.Mediators.DriverService.DriverPage;
-using Transenvios.Shipping.Api.Mediators.RoutesService.RoutePage;
-using Transenvios.Shipping.Api.Mediators.ShipmentOrderService.ShipmentOrderPage;
-using Transenvios.Shipping.Api.Mediators.UserService.ForgotPasswordPage;
-using Transenvios.Shipping.Api.Mediators.UserService.UserPage;
+using Transenvios.Shipping.Api.Domains.ClientService;
+using Transenvios.Shipping.Api.Domains.RoutesService;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService;
+using Transenvios.Shipping.Api.Domains.UserService;
+using Transenvios.Shipping.Api.Mediators.CatalogService;
+using Transenvios.Shipping.Api.Mediators.ClientService;
+using Transenvios.Shipping.Api.Mediators.DriverService;
+using Transenvios.Shipping.Api.Mediators.RoutesService;
+using Transenvios.Shipping.Api.Mediators.ShipmentOrderService;
+using Transenvios.Shipping.Api.Mediators.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment;
@@ -48,7 +44,7 @@ var env = builder.Environment;
     services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
     // configure DI for application services
     services.AddScoped<IJwtUtils, JwtUtils>();
-    services.AddScoped<IPasswordReset, EmailMediator>();;
+    services.AddScoped<IPasswordReset, PasswordMediator>();;
     services.AddScoped<UserProcessor>();
     services.AddScoped<IRegisterUser, UserMediator>();
     services.AddTransient<IGetAuthorizeUser, UserMediator>();
@@ -56,16 +52,19 @@ var env = builder.Environment;
     services.AddScoped<IUpdateUser, UserMediator>();
     services.AddScoped<IRemoveUser, UserMediator>();
     services.AddScoped<ShipmentOrderProcessor>();
-    services.AddScoped<IDriver, DriverMediator>();
+    services.AddScoped<IDriverStorage, DriverMediator>();
     services.AddScoped<DriverProcessor>();
-    services.AddScoped<IGetCatalog<City>, CityMediator>();
+    services.AddScoped<ICatalogStorage<City>, CityMediator>();
+    services.AddScoped<ICatalogQuery<ShipmentRoute>, ShipmentRouteMediator>();
+    services.AddScoped<ICatalogQuery<IdType>, IdTypeMediator>();
+    services.AddScoped<ICatalogQuery<Country>, CountryMediator>();
     services.AddScoped<ClientProcessor>();
-    services.AddTransient<IClients, ClientMediator>();
+    services.AddTransient<IClientStorage, ClientMediator>();
     services.AddScoped<ICalculateShipmentCharges, ShipmentOrderMediator>();
     services.AddScoped<CityProcessor>();
     
     services.AddScoped<RoutesProcessor>();
-    services.AddScoped<IRoutes, RouteMediator>();
+    services.AddScoped<IRouteStorage, RouteMediator>();
 }
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

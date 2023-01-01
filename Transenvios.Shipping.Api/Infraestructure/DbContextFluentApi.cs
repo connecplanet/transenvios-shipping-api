@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
-using Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoutePage;
-using Transenvios.Shipping.Api.Domains.ClientService.ClientPage;
-using Transenvios.Shipping.Api.Domains.DriverService.DriverPage;
-using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
-using Transenvios.Shipping.Api.Domains.UserService.UserPage;
+using Transenvios.Shipping.Api.Domains.CatalogService;
+using Transenvios.Shipping.Api.Domains.ClientService;
+using Transenvios.Shipping.Api.Domains.DriverService;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService;
+using Transenvios.Shipping.Api.Domains.UserService;
 
 namespace Transenvios.Shipping.Api.Infraestructure
 {
@@ -99,28 +98,32 @@ namespace Transenvios.Shipping.Api.Infraestructure
 
         }
 
-        
-            public static void ShipmentOrderConfiguration(this ModelBuilder builder)
+        public static void ShipmentOrderConfiguration(this ModelBuilder builder)
         {
             builder.Entity<ShipmentOrder>(entity =>
             {
                 entity.ToTable("ShipmentOrders");
+
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.Id).IsUnique();
-                entity.Property(e => e.PickUpCityId).IsRequired().HasMaxLength(5);
-                entity.Property(e => e.PickUpAddress).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.DropOffCityId).IsRequired().HasMaxLength(5);
-                entity.Property(e => e.DropOffAddress).HasMaxLength(100);
-                entity.Property(e => e.InitialPrice).HasMaxLength(10);
-                entity.Property(e => e.Taxes).HasMaxLength(10);
-                entity.Property(e => e.TotalPrice).HasMaxLength(10);
+                entity.Property(e => e.Id).HasColumnType("int").IsRequired();
+                
+                entity.Property(e => e.PickUpCityId).HasColumnType("varchar(5)").IsRequired().HasMaxLength(36);
+                entity.Property(e => e.DropOffCityId).HasColumnType("varchar(5)").IsRequired().HasMaxLength(5);
+
+                entity.Property(e => e.PickUpAddress).HasColumnType("varchar(200)").IsRequired().HasMaxLength(200);
+                entity.Property(e => e.DropOffAddress).HasColumnType("varchar(200)").IsRequired().HasMaxLength(200);
+
+                entity.Property(e => e.InitialPrice).HasColumnType("decimal");
+                entity.Property(e => e.Taxes).HasColumnType("decimal");
+                entity.Property(e => e.TotalPrice).HasColumnType("decimal");
+
                 entity.Property(e => e.PaymentState).HasMaxLength(5);
                 entity.Property(e => e.ShipmentState).HasMaxLength(5);
                 entity.Property(e => e.TransporterId).HasMaxLength(5);
             });
         }
 
-        
         public static void ShipmentOrderItemConfiguration(this ModelBuilder builder)
         {
             builder.Entity<ShipmentOrderItem>(entity =>
@@ -136,6 +139,5 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.Property(e => e.IsFragile).IsRequired();
             });
         }
-
     }
 }
