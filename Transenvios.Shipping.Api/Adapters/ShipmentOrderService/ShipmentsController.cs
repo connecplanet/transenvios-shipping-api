@@ -19,7 +19,7 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         }
 
         [HttpPost("Calculate")]
-        public async Task<ActionResult<ShipmentOrderResponse>> CalculateShipmentPaymentAsync(ShipmentOrderRequest? order)
+        public async Task<ActionResult<ShipmentOrderResponse>> CalculateChargesAsync(ShipmentOrderRequest? order)
         {
             var response = await _orderProcessor.CalculateAsync(order);
 
@@ -33,16 +33,17 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         }
 
         [HttpPost()]
-        public async Task<ActionResult<ShipmentOrderResponse>> SubmitShipmentOrderAsync(ShipmentOrderRequest? order)
+        public async Task<ActionResult<ShipmentOrderResponse>> SubmitOrderAsync(ShipmentOrderRequest? order)
         {
             var response = await _orderProcessor.SubmitOrderAsync(order);
 
-            if (!string.IsNullOrEmpty(response.ErrorMessage))
-            {
-                return new BadRequestObjectResult(response.ErrorMessage);
-            }
-
-            return Ok(response);
+            return !string.IsNullOrEmpty(response.ErrorMessage)
+                ? response.ResultCode switch
+                {
+                    HttpStatusCode.NotFound => NotFound(response.ErrorMessage),
+                    _ => new BadRequestObjectResult(response.ErrorMessage)
+                }
+                : Ok(response);
         }
 
         [HttpGet("Catalogs")]

@@ -40,16 +40,16 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
                 };
             }
 
-            var route = await _routeStorage.GetAsync(
-                order?.Route?.PickUp?.CityCode ?? string.Empty, 
-                order?.Route?.DropOff?.CityCode ?? string.Empty);
+            var fromCityCode = order.Route?.PickUp?.CityCode ?? string.Empty;
+            var toCityCode = order.Route?.DropOff?.CityCode ?? string.Empty;
+            var route = await _routeStorage.GetAsync(fromCityCode, toCityCode);
 
             if (route == null)
             {
                 return new ShipmentOrderResponse
                 {
                     ResultCode = HttpStatusCode.NotFound,
-                    ErrorMessage = $"Route {order?.Route?.PickUp?.CityCode} to {order?.Route?.DropOff?.CityCode} not found"
+                    ErrorMessage = $"Route {fromCityCode} to {toCityCode} not found"
                 };
             }
             
@@ -72,9 +72,11 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
 
         public async Task<ShipmentOrderResponse> SubmitOrderAsync(ShipmentOrderRequest? order)
         {
-            if (order == null)
+            var response = await CalculateAsync(order);
+
+            if (response.ResultCode != HttpStatusCode.OK)
             {
-                return new ShipmentOrderResponse() { ErrorMessage = "Order parameter is null" };
+                return response;
             }
 
             return await _orderStorage.SubmitOrderAsync(order);

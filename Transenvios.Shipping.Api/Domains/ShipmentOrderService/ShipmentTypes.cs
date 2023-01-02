@@ -8,10 +8,11 @@
 
     public enum ShipmentStates
     {
-        None,
+        Created,
         Collecting,
         InWarehouse,
         OnRoute,
-        Delivered
+        Delivered,
+        Cancelled
     }
 }

@@ -10,13 +10,13 @@
         public decimal? InitialPrice { get; set; }
         public decimal Taxes { get; set; }
         public decimal TotalPrice { get; set; }
-        public string? PaymentState { get; set; }
-        public string? ShipmentState { get; set; }
-        public string? TransporterId { get; set; }
-        public string? ApplicantId { get; set; }
+        public PaymentStates PaymentState { get; set; }
+        public ShipmentStates ShipmentState { get; set; }
+        public Guid? TransporterId { get; set; }
+        public Guid ApplicantId { get; set; }
         public DateTime ApplicationDate { get; set; }
         public DateTime ModifyDate { get; set; }
-        public string? ModifyUserId { get; set; }
+        public Guid ModifyUserId { get; set; }
         public string? SenderDocumentType { get; set; }
         public int? SenderDocumentId { get; set; }
         public string? SenderFirstName { get; set; }

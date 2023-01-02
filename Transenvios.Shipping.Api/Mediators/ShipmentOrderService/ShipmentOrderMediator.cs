@@ -114,8 +114,8 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
                 orderResponse.Total = order.Total;
 
                 var shipmentOrder = await SaveOrderHeader(order, applicantId);
-
                 await SaveOrderItems(order, shipmentOrder.Id);
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception error)
@@ -128,22 +128,22 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
 
         private async Task SaveOrderItems(ShipmentOrderRequest order, int orderId)
         {
-            var shipmentOrderItems = await GetByShipmentOrderItemsAsync();
-            var items = order.Items.Select(detail =>
+            var items = order.Items!.Select(detail =>
                     new ShipmentOrderItem
                     {
+                        Id = Guid.NewGuid(),
                         IdOrder = orderId,
                         Width = detail.Width,
-                        Weight = detail.Weight,
                         Height = detail.Height,
-                        IsUrgent = detail.IsUrgent,
-                        IsFragile = detail.IsFragile,
+                        Weight = detail.Weight,
                         Length = detail.Length,
-                        InsuredAmount = detail.InsuredAmount
+                        InsuredAmount = detail.InsuredAmount,
+                        IsUrgent = detail.IsUrgent,
+                        IsFragile = detail.IsFragile
                     })
                 .ToList();
 
-            await _context.ShipmentOrderItems.AddRangeAsync(items);
+            await _context.ShipmentOrderItems!.AddRangeAsync(items);
         }
 
         private async Task<ShipmentOrder> SaveOrderHeader(ShipmentOrderRequest order, Guid applicantId)
@@ -159,13 +159,13 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
                 InitialPrice = order.BasePrice,
                 Taxes = order.Taxes,
                 TotalPrice = order.Total,
-                PaymentState = Convert.ToString((int)PaymentStates.UnPaid),
-                ShipmentState = Convert.ToString((int)ShipmentStates.None),
-                TransporterId = string.Empty,
-                ApplicantId = applicantId.ToString(),
+                PaymentState = PaymentStates.UnPaid,
+                ShipmentState = ShipmentStates.Created,
+                TransporterId = null,
+                ApplicantId = applicantId,
                 ApplicationDate = DateTime.Now,
                 ModifyDate = DateTime.Now,
-                ModifyUserId = applicantId.ToString(),
+                ModifyUserId = applicantId,
                 SenderDocumentType = order.Sender?.DocumentType,
                 SenderDocumentId = order.Sender?.DocumentId,
                 SenderFirstName = order.Sender?.FirstName,
@@ -200,10 +200,6 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
                 valueMax = await _context.ShipmentOrders.MaxAsync(e => e.Id);
             }
             return valueMax == 0 ? 1 : valueMax + 1;
-        }
-        public async Task<Guid> GetByShipmentOrderItemsAsync()
-        {
-            return Guid.NewGuid();
         }
     }
 }
