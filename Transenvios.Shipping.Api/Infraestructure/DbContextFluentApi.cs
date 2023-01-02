@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
-using Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoutePage;
-using Transenvios.Shipping.Api.Domains.ClientService.ClientPage;
-using Transenvios.Shipping.Api.Domains.DriverService.DriverPage;
-using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
-using Transenvios.Shipping.Api.Domains.UserService.UserPage;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Transenvios.Shipping.Api.Domains;
+using Transenvios.Shipping.Api.Domains.CatalogService;
+using Transenvios.Shipping.Api.Domains.ClientService;
+using Transenvios.Shipping.Api.Domains.DriverService;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService;
+using Transenvios.Shipping.Api.Domains.UserService;
 
 namespace Transenvios.Shipping.Api.Infraestructure
 {
@@ -15,16 +16,19 @@ namespace Transenvios.Shipping.Api.Infraestructure
             builder.Entity<User>(entity =>
             {
                 entity.ToTable("Users");
-                entity.HasKey(e => e.Id);
-                entity.HasIndex(e => e.Id).IsUnique();
-                entity.Property(e => e.FirstName).IsRequired().HasMaxLength(200);
-                entity.Property(e => e.LastName).IsRequired().HasMaxLength(200);
-                entity.Property(e => e.Email).IsRequired().HasMaxLength(500);
+                HasGuidKey<User>(entity);
+
+                entity.Property(e => e.FirstName).HasColumnType("varchar(200)").IsRequired();
+                entity.Property(e => e.LastName).HasColumnType("varchar(200)").IsRequired();
+
+                entity.Property(e => e.Email).HasColumnType("varchar(500)").IsRequired();
                 entity.HasIndex(e => e.Email).IsUnique();
-                entity.Property(e => e.PasswordHash).IsRequired().HasMaxLength(2000);
-                entity.Property(e => e.CountryCode).HasMaxLength(5);
-                entity.Property(e => e.Phone).HasMaxLength(10);
-                entity.Property(e => e.Role).HasMaxLength(2);
+                
+                entity.Property(e => e.PasswordHash).HasColumnType("varchar(2000)").IsRequired();
+                entity.Property(e => e.CountryCode).HasColumnType("varchar(5)");
+
+                entity.Property(e => e.Phone).HasColumnType("varchar(10)");
+                entity.Property(e => e.Role).HasColumnType("char(2)");
             });
 
         }
@@ -33,12 +37,13 @@ namespace Transenvios.Shipping.Api.Infraestructure
             builder.Entity<City>(entity =>
             {
                 entity.ToTable("Cities");
-                entity.HasKey(e => e.Id);
-                entity.HasIndex(e => e.Id).IsUnique();
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Code).IsRequired().HasMaxLength(5);
+                HasGuidKey<City>(entity);
+                
+                entity.Property(e => e.Name).HasColumnType("varchar(100)").IsRequired();
+                entity.Property(e => e.Code).HasColumnType("varchar(5)").IsRequired().HasMaxLength(5);
                 entity.HasIndex(e => e.Code).IsUnique();
-                entity.Property(e => e.Active).IsRequired();
+
+                entity.Property(e => e.Active).HasColumnType("bit").IsRequired();
             });
         }
 
@@ -47,15 +52,17 @@ namespace Transenvios.Shipping.Api.Infraestructure
             builder.Entity<ShipmentRoute>(entity =>
             {
                 entity.ToTable("Routes");
-                entity.HasKey(e => e.Id);
-                entity.HasIndex(e => e.Id).IsUnique();
-                entity.Property(e => e.FromCityCode).IsRequired().HasMaxLength(5);
-                entity.Property(e => e.ToCityCode).IsRequired().HasMaxLength(5);
+                HasGuidKey<ShipmentRoute>(entity);
+
+                entity.Property(e => e.FromCityCode).HasColumnType("varchar(5)").IsRequired();
+                entity.Property(e => e.ToCityCode).HasColumnType("varchar(5)").IsRequired();
                 entity.HasIndex(e => new { e.FromCityCode, e.ToCityCode }).IsUnique();
-                entity.Property(e => e.InitialKiloPrice);
-                entity.Property(e => e.AdditionalKiloPrice);
-                entity.Property(e => e.PriceCm3);
-                entity.Property(e => e.Active).IsRequired();
+
+                entity.Property(e => e.InitialKiloPrice).HasColumnType("decimal");
+                entity.Property(e => e.AdditionalKiloPrice).HasColumnType("decimal");
+                entity.Property(e => e.PriceCm3).HasColumnType("decimal");
+
+                entity.Property(e => e.Active).HasColumnType("bit").IsRequired();
             });
         }
 
@@ -64,18 +71,19 @@ namespace Transenvios.Shipping.Api.Infraestructure
             builder.Entity<Client>(entity =>
             {
                 entity.ToTable("Clients");
-                entity.HasKey(e => e.Id);
-                entity.HasIndex(e => e.Id).IsUnique();
-                entity.Property(e => e.FirstName).IsRequired().HasMaxLength(200);
-                entity.Property(e => e.LastName).IsRequired().HasMaxLength(200);
-                entity.Property(e => e.Email).IsRequired().HasMaxLength(500);
-                entity.Property(e => e.CountryCode).HasMaxLength(5);
-                entity.Property(e => e.Phone).HasMaxLength(10);
-                entity.Property(e => e.DocumentId).HasMaxLength(10);
-                entity.Property(e => e.DocumentId).IsUnicode();
-                entity.Property(e => e.DocumentType).HasMaxLength(5);
-                entity.Property(e => e.PasswordHash).IsRequired().HasMaxLength(2000);
-                entity.Property(e => e.Role).HasMaxLength(2);
+                HasGuidKey<Client>(entity);
+
+                entity.Property(e => e.DocumentType).HasColumnType("varchar(5)").HasMaxLength(5);
+                entity.Property(e => e.DocumentId).HasColumnType("varchar(20)").IsUnicode();
+
+                entity.Property(e => e.FirstName).HasColumnType("varchar(200)").IsRequired();
+                entity.Property(e => e.LastName).HasColumnType("varchar(200)").IsRequired();
+                entity.Property(e => e.Email).HasColumnType("varchar(500)").IsRequired();
+                entity.Property(e => e.CountryCode).HasColumnType("tinyint");
+                entity.Property(e => e.Phone).HasColumnType("varchar(10)");
+
+                entity.Property(e => e.PasswordHash).HasColumnType("varchar(2000)").IsRequired();
+                entity.Property(e => e.Role).HasColumnType("char(2)").HasMaxLength(2);
             });
         }
         public static void DriverConfiguration(this ModelBuilder builder)
@@ -83,44 +91,71 @@ namespace Transenvios.Shipping.Api.Infraestructure
             builder.Entity<Driver>(entity =>
             {
                 entity.ToTable("Drivers");
-                entity.HasKey(e => e.Id);
-                entity.HasIndex(e => e.Id).IsUnique();
-                entity.Property(e => e.FirstName).IsRequired().HasMaxLength(200);
-                entity.Property(e => e.LastName).IsRequired().HasMaxLength(200);
-                entity.Property(e => e.Email).IsRequired().HasMaxLength(500);
-                entity.Property(e => e.CountryCode).HasMaxLength(5);
-                entity.Property(e => e.Phone).HasMaxLength(10);
-                entity.Property(e => e.DocumentId).HasMaxLength(10);
-                entity.Property(e => e.DocumentId).IsUnicode();
-                entity.Property(e => e.DocumentType).HasMaxLength(5);
-                entity.Property(e => e.PickUpCityId).IsRequired().HasMaxLength(36);
-                entity.Property(e => e.PickUpAddress).IsRequired().HasMaxLength(100);
+                HasGuidKey<Driver>(entity);
+
+                entity.Property(e => e.DocumentType).HasColumnType("varchar(5)").HasMaxLength(5);
+                entity.Property(e => e.DocumentId).HasColumnType("varchar(20)").IsUnicode();
+
+                entity.Property(e => e.FirstName).HasColumnType("varchar(200)").IsRequired();
+                entity.Property(e => e.LastName).HasColumnType("varchar(200)").IsRequired();
+                entity.Property(e => e.Email).HasColumnType("varchar(500)").IsRequired();
+                entity.Property(e => e.CountryCode).HasColumnType("tinyint");
+                entity.Property(e => e.Phone).HasColumnType("varchar(10)");
+                
+                entity.Property(e => e.PickUpCityId).HasColumnType("char(36)").IsRequired();
+                entity.Property(e => e.PickUpAddress).HasColumnType("varchar(200)").IsRequired();
             });
 
         }
 
-        
-            public static void ShipmentOrderConfiguration(this ModelBuilder builder)
+        public static void ShipmentOrderConfiguration(this ModelBuilder builder)
         {
             builder.Entity<ShipmentOrder>(entity =>
             {
                 entity.ToTable("ShipmentOrders");
+
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.Id).IsUnique();
-                entity.Property(e => e.PickUpCityId).IsRequired().HasMaxLength(5);
-                entity.Property(e => e.PickUpAddress).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.DropOffCityId).IsRequired().HasMaxLength(5);
-                entity.Property(e => e.DropOffAddress).HasMaxLength(100);
-                entity.Property(e => e.InitialPrice).HasMaxLength(10);
-                entity.Property(e => e.Taxes).HasMaxLength(10);
-                entity.Property(e => e.TotalPrice).HasMaxLength(10);
-                entity.Property(e => e.PaymentState).HasMaxLength(5);
-                entity.Property(e => e.ShipmentState).HasMaxLength(5);
-                entity.Property(e => e.TransporterId).HasMaxLength(5);
+                entity.Property(e => e.Id).HasColumnType("int").IsRequired();
+                
+                entity.Property(e => e.PickUpCityId).HasColumnType("varchar(5)").IsRequired().HasMaxLength(36);
+                entity.Property(e => e.DropOffCityId).HasColumnType("varchar(5)").IsRequired().HasMaxLength(5);
+
+                entity.Property(e => e.PickUpAddress).HasColumnType("varchar(200)").IsRequired().HasMaxLength(200);
+                entity.Property(e => e.DropOffAddress).HasColumnType("varchar(200)").IsRequired().HasMaxLength(200);
+
+                entity.Property(e => e.InitialPrice).HasColumnType("decimal");
+                entity.Property(e => e.Taxes).HasColumnType("decimal");
+                entity.Property(e => e.TotalPrice).HasColumnType("decimal");
+
+                entity.Property(e => e.PaymentState).HasColumnType("tinyint");
+                entity.Property(e => e.ShipmentState).HasColumnType("tinyint");
+
+                entity.Property(e => e.TransporterId).HasColumnType("char(36)");
+                entity.Property(e => e.ApplicantId).HasColumnType("char(36)");
+                entity.Property(e => e.ModifyUserId).HasColumnType("char(36)");
+
+                entity.Property(e => e.ApplicationDate).HasColumnType("datetime");
+                entity.Property(e => e.ModifyDate).HasColumnType("datetime");
+
+                entity.Property(e => e.SenderDocumentType).HasColumnType("varchar(5)");
+                entity.Property(e => e.SenderDocumentId).HasColumnType("varchar(20)");
+                entity.Property(e => e.SenderFirstName).HasColumnType("varchar(200)");
+                entity.Property(e => e.SenderLastName).HasColumnType("varchar(200)");
+                entity.Property(e => e.SenderEmail).HasColumnType("varchar(500)");
+                entity.Property(e => e.SenderCountryCode).HasColumnType("tinyint");
+                entity.Property(e => e.SenderPhone).HasColumnType("varchar(10)");
+
+                entity.Property(e => e.RecipientDocumentType).HasColumnType("varchar(5)");
+                entity.Property(e => e.RecipientDocumentId).HasColumnType("varchar(20)");
+                entity.Property(e => e.RecipientFirstName).HasColumnType("varchar(200)");
+                entity.Property(e => e.RecipientLastName).HasColumnType("varchar(200)");
+                entity.Property(e => e.RecipientEmail).HasColumnType("varchar(500)");
+                entity.Property(e => e.RecipientCountryCode).HasColumnType("tinyint");
+                entity.Property(e => e.RecipientPhone).HasColumnType("varchar(10)");
             });
         }
 
-        
         public static void ShipmentOrderItemConfiguration(this ModelBuilder builder)
         {
             builder.Entity<ShipmentOrderItem>(entity =>
@@ -128,14 +163,25 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.ToTable("ShipmentOrderItems");
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.Id).IsUnique();
-                entity.Property(e => e.Weight).IsRequired().HasMaxLength(5);
-                entity.Property(e => e.Height).IsRequired().HasMaxLength(5);
-                entity.Property(e => e.Length).IsRequired().HasMaxLength(5);
-                entity.Property(e => e.Width).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.InsuredAmount).IsRequired();
-                entity.Property(e => e.IsFragile).IsRequired();
+                entity.Property(e => e.Id).HasColumnType("char(36)");
+                entity.Property(e => e.IdOrder).HasColumnType("int").IsRequired();
+
+                entity.Property(e => e.Weight).HasColumnType("decimal").IsRequired();
+                entity.Property(e => e.Height).HasColumnType("decimal").IsRequired();
+                entity.Property(e => e.Length).HasColumnType("decimal").IsRequired();
+                entity.Property(e => e.Width).HasColumnType("decimal").IsRequired();
+                entity.Property(e => e.InsuredAmount).HasColumnType("decimal");
+
+                entity.Property(e => e.IsFragile).HasColumnType("bit").IsRequired();
+                entity.Property(e => e.IsUrgent).HasColumnType("bit").IsRequired();
             });
         }
 
+        private static void HasGuidKey<T>(EntityTypeBuilder<T> entity) where T : BaseEntity<Guid>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Id).IsUnique();
+            entity.Property(e => e.Id).HasColumnType("char(36)");
+        }
     }
 }

@@ -15,13 +15,13 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Weight = table.Column<decimal>(type: "decimal(65,30)", maxLength: 5, nullable: false),
-                    Height = table.Column<decimal>(type: "decimal(65,30)", maxLength: 5, nullable: false),
-                    Length = table.Column<decimal>(type: "decimal(65,30)", maxLength: 5, nullable: false),
-                    Width = table.Column<decimal>(type: "decimal(65,30)", maxLength: 100, nullable: false),
-                    InsuredAmount = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    IsFragile = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    IsUrgent = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Weight = table.Column<decimal>(type: "decimal(20,2)", maxLength: 5, nullable: false),
+                    Height = table.Column<decimal>(type: "decimal(20,2)", maxLength: 5, nullable: false),
+                    Length = table.Column<decimal>(type: "decimal(20,2)", maxLength: 5, nullable: false),
+                    Width = table.Column<decimal>(type: "decimal(20,2)", maxLength: 100, nullable: false),
+                    InsuredAmount = table.Column<decimal>(type: "decimal(20,2)", nullable: false),
+                    IsFragile = table.Column<bool>(type: "tinyint", nullable: false),
+                    IsUrgent = table.Column<bool>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {

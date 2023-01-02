@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Transenvios.Shipping.Api.Adapters.RoutesService.OrderPage;
-using Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoutePage;
-using Transenvios.Shipping.Api.Domains.ClientService.ClientPage;
-using Transenvios.Shipping.Api.Domains.UserService.UserPage;
+using Transenvios.Shipping.Api.Adapters.RouteService;
+using Transenvios.Shipping.Api.Domains.CatalogService;
+using Transenvios.Shipping.Api.Domains.ClientService;
+using Transenvios.Shipping.Api.Domains.UserService;
 
 namespace Transenvios.Shipping.Api.Infraestructure
 {

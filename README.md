@@ -20,6 +20,7 @@ RESTful de integración de Transporte para Transenvios
 * [EF cli](https://docs.microsoft.com/en-us/ef/core/cli/dotnet)
 * [EF cli tutorial](https://www.entityframeworktutorial.net/efcore/cli-commands-for-ef-core-migration.aspx)
 * [The Fluent API IsRequired Method](https://www.learnentityframeworkcore.com/configuration/fluent-api/isrequired-method)
+* [Use Entity Framework Core 5.0 In .NET Core 3.1 With MySQL Database By Code-First Migration](https://www.c-sharpcorner.com/article/tutorial-use-entity-framework-core-5-0-in-net-core-3-1-with-mysql-database-by2/)
 
 ### EF
 

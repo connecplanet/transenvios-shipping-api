@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Transenvios.Shipping.Api.Domains.CatalogService;
 
 namespace Transenvios.Shipping.Api.Adapters.CountryService
 {
@@ -7,10 +7,18 @@ namespace Transenvios.Shipping.Api.Adapters.CountryService
     [ApiController]
     public class CountriesController : ControllerBase
     {
-        [HttpGet]
-        public async Task<ActionResult<IList<KeyValuePair<string, string>>>> GetAllAsync()
+        private readonly ICatalogQuery<Country> _query;
+
+        public CountriesController(ICatalogQuery<Country> query)
         {
-            throw new NotImplementedException();
+            _query = query ?? throw new ArgumentNullException(nameof(query));
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IList<Country>>> GetAllAsync()
+        {
+            var items = await _query.GetAllAsync();
+            return Ok(items);
         }
     }
 }
