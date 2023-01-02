@@ -21,7 +21,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Code = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Active = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Active = table.Column<bool>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -38,10 +38,10 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ToCityCode = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    InitialKiloPrice = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
-                    AdditionalKiloPrice = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
-                    PriceCm3 = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
-                    Active = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    InitialKiloPrice = table.Column<decimal>(type: "decimal(20,2)", nullable: true),
+                    AdditionalKiloPrice = table.Column<decimal>(type: "decimal(20,2)", nullable: true),
+                    PriceCm3 = table.Column<decimal>(type: "decimal(20,2)", nullable: true),
+                    Active = table.Column<bool>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {

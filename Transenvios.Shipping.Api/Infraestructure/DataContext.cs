@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Transenvios.Shipping.Api.Domains.CatalogService.CityPage;
-using Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoutePage;
-using Transenvios.Shipping.Api.Domains.ClientService.ClientPage;
-using Transenvios.Shipping.Api.Domains.DriverService.DriverPage;
-using Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage;
-using Transenvios.Shipping.Api.Domains.UserService.UserPage;
+using Transenvios.Shipping.Api.Domains.CatalogService;
+using Transenvios.Shipping.Api.Domains.ClientService;
+using Transenvios.Shipping.Api.Domains.DriverService;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService;
+using Transenvios.Shipping.Api.Domains.UserService;
 
 namespace Transenvios.Shipping.Api.Infraestructure
 {

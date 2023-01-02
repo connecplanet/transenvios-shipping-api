@@ -29,7 +29,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<bool?>("Active")
                         .IsRequired()
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("tinyint");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -60,10 +60,10 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<bool?>("Active")
                         .IsRequired()
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("tinyint");
 
                     b.Property<decimal?>("AdditionalKiloPrice")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<string>("FromCityCode")
                         .IsRequired()
@@ -71,10 +71,10 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .HasColumnType("varchar(5)");
 
                     b.Property<decimal?>("InitialKiloPrice")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<decimal?>("PriceCm3")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<string>("ToCityCode")
                         .IsRequired()
