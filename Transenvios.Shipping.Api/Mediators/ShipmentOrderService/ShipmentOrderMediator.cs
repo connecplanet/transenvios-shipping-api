@@ -7,7 +7,7 @@ using Transenvios.Shipping.Api.Infraestructure;
 
 namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
 {
-    public class ShipmentOrderMediator : ICalculateShipmentCharges
+    public class ShipmentOrderMediator : IOrderChargesCalculator, IOrderStorage
     {
         private readonly ShipmentSettings _settings;
         private readonly DataContext _context;
@@ -32,12 +32,12 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
 
         public decimal CalculateChargeByVolume(ShipmentRoute route, decimal height, decimal length, decimal width)
         {
-            decimal volume = height * length * width;
-            decimal price = volume * (route.PriceCm3 ?? 0);
+            var volume = height * length * width;
+            var price = volume * (route.PriceCm3 ?? 0);
             return price;
         }
 
-        public decimal CalculateInitialPayment(ShipmentRoute route, ShipmentOrderItem item)
+        public decimal CalculateInitialPayment(ShipmentRoute route, ShipmentOrderItemRequest item)
         {
             var chargesByWeight = CalculateChargeByWeight(route, item.Weight ?? 0);
             var chargesByVolume = CalculateChargeByVolume(
@@ -45,7 +45,7 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return chargesByWeight > chargesByVolume ? chargesByWeight : chargesByVolume;
         }
 
-        public decimal CalculateAdditionalCharges(ShipmentRoute route, ShipmentOrderItem item, decimal initialCharge)
+        public decimal CalculateAdditionalCharges(ShipmentRoute route, ShipmentOrderItemRequest item, decimal initialCharge)
         {
             var insuredAmount = item.InsuredAmount > 0 ? item.InsuredAmount * (_settings.InsuredAmountRatio / 100M) : 0;
             var urgentAmount = item.IsUrgent ? initialCharge * (_settings.UrgentAmountRatio / 100M) : 0;
@@ -53,9 +53,9 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return (insuredAmount ?? 0) + urgentAmount + fragileAmount;
         }
 
-        public ShipmentOrderResponse CalculateShipmentCharges(ShipmentRoute route, ShipmentOrderRequest order)
+        public ShipmentOrderResponse CalculateCharges(ShipmentRoute route, ShipmentOrderRequest? order)
         {
-            var priceService = new ShipmentOrderResponse
+            var charges = new ShipmentOrderResponse
             {
                 BasePrice = 0M,
                 Taxes = 0M,
@@ -64,20 +64,24 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
 
             if (order.Items == null)
             {
-                return priceService;
+                return charges;
             }
 
             foreach (var orderItem in order.Items)
             {
                 var basePrice = CalculateInitialPayment(route, orderItem);
                 var additionalCharges = CalculateAdditionalCharges(route, orderItem, basePrice);
-                priceService.BasePrice += basePrice + additionalCharges;
+                charges.BasePrice += basePrice + additionalCharges;
             }
 
-            priceService.Taxes = priceService.BasePrice * (_settings.TaxAmountRatio / 100M);
-            priceService.Total = priceService.BasePrice + priceService.Taxes;
+            charges.Taxes = charges.BasePrice * (_settings.TaxAmountRatio / 100M);
+            charges.Total = charges.BasePrice + charges.Taxes;
 
-            return priceService;
+            charges.BasePrice = Math.Round(charges.BasePrice, 0);
+            charges.Taxes = Math.Round(charges.Taxes, 0);
+            charges.Total = Math.Round(charges.Total, 0);
+
+            return charges;
         }
 
         private async Task<Guid> GetApplicantId(string? email)
@@ -92,7 +96,7 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
         }
 
 
-        public async Task<ShipmentOrderResponse> SaveShipmentChargesAsync(ShipmentOrderRequest? order)
+        public async Task<ShipmentOrderResponse> SubmitOrderAsync(ShipmentOrderRequest? order)
         {
             var orderResponse = new ShipmentOrderResponse();
 

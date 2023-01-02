@@ -41,7 +41,7 @@ namespace Transenvios.Shipping.Api.Domains.RoutesService
                     throw new AppException($"Rout '{model.FromCityCode}' and '{model.ToCityCode}' is already registered");
                 }
                 var route = _mapper.Map<ShipmentRoute>(model);
-                var items = await _routes.RegisterAsync(route);
+                var items = await _routes.AddAsync(route);
 
                 return new RouteStateResponse
                 {

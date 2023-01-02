@@ -1,52 +1,63 @@
-﻿using Transenvios.Shipping.Api.Domains.CatalogService;
+﻿using System.Net;
+using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.RoutesService;
 
 namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
 {
     public class ShipmentOrderProcessor
     {
-        private readonly ICalculateShipmentCharges _calculateShipmentCharges;
+        private readonly IOrderChargesCalculator _chargesCalculator;
         private readonly IRouteStorage _routeStorage;
         private readonly ICatalogStorage<City> _cityStorage;
         private readonly ICatalogQuery<Country> _countryStorage;
         private readonly ICatalogQuery<IdType> _idTypeStorage;
+        private readonly IOrderStorage _orderStorage;
 
         public ShipmentOrderProcessor(
-            ICalculateShipmentCharges calculateShipmentCharges,
+            IOrderChargesCalculator calculateShipmentCharges,
             IRouteStorage routeStorage,
             ICatalogStorage<City> cityStorage,
             ICatalogQuery<Country> countryStorage,
-            ICatalogQuery<IdType> idTypeStorage)
+            ICatalogQuery<IdType> idTypeStorage,
+            IOrderStorage orderStorage)
         {
-            _calculateShipmentCharges = calculateShipmentCharges ?? throw new ArgumentNullException(nameof(calculateShipmentCharges));
+            _chargesCalculator = calculateShipmentCharges ?? throw new ArgumentNullException(nameof(calculateShipmentCharges));
             _routeStorage = routeStorage ?? throw new ArgumentNullException(nameof(routeStorage));
             _cityStorage = cityStorage ?? throw new ArgumentNullException(nameof(cityStorage));
             _countryStorage = countryStorage ?? throw new ArgumentNullException(nameof(countryStorage));
             _idTypeStorage = idTypeStorage ?? throw new ArgumentNullException(nameof(idTypeStorage));
+            _orderStorage = orderStorage ?? throw new ArgumentNullException(nameof(orderStorage));
         }
 
-        public async Task<ShipmentOrderResponse> CalculateShipmentChargesAsync(ShipmentOrderRequest order)
+        public async Task<ShipmentOrderResponse> CalculateAsync(ShipmentOrderRequest? order)
         {
             if (order == null)
             {
-                return new ShipmentOrderResponse() { ErrorMessage = "Order parameter is null" };
+                return new ShipmentOrderResponse
+                {
+                    ResultCode = HttpStatusCode.BadRequest,
+                    ErrorMessage = "Order parameter is null"
+                };
             }
 
-            // TODO Call RouteProcessor
-            var route = new ShipmentRoute
-            {
-                FromCityCode = order?.Route?.PickUp?.CityCode,
-                ToCityCode = order?.Route?.DropOff?.CityCode,
-                InitialKiloPrice = 15000,
-                AdditionalKiloPrice = 1500,
-                PriceCm3 = 0.3M
-            };
+            var route = await _routeStorage.GetAsync(
+                order?.Route?.PickUp?.CityCode ?? string.Empty, 
+                order?.Route?.DropOff?.CityCode ?? string.Empty);
 
-            var calculation = _calculateShipmentCharges.CalculateShipmentCharges(route, order);
+            if (route == null)
+            {
+                return new ShipmentOrderResponse
+                {
+                    ResultCode = HttpStatusCode.NotFound,
+                    ErrorMessage = $"Route {order?.Route?.PickUp?.CityCode} to {order?.Route?.DropOff?.CityCode} not found"
+                };
+            }
+            
+            var calculation = _chargesCalculator.CalculateCharges(route, order);
             return calculation;
         }
 
-        public async Task<CatalogResponse> GetShipmentCatalogAsync()
+        public async Task<CatalogResponse> GetCatalogAsync()
         {
             var catalog = new CatalogResponse
             {
@@ -59,14 +70,14 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             return catalog;
         }
 
-        public async Task<ShipmentOrderResponse> SaveShipmentChargesAsync(ShipmentOrderRequest? order)
+        public async Task<ShipmentOrderResponse> SubmitOrderAsync(ShipmentOrderRequest? order)
         {
             if (order == null)
             {
                 return new ShipmentOrderResponse() { ErrorMessage = "Order parameter is null" };
             }
 
-            return await _calculateShipmentCharges.SaveShipmentChargesAsync(order);
+            return await _orderStorage.SubmitOrderAsync(order);
         }
     }
 }

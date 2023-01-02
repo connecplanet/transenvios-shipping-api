@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Transenvios.Shipping.Api.Adapters.UserService;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService;
 
@@ -18,22 +19,23 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         }
 
         [HttpPost("Calculate")]
-        public async Task<ActionResult<ShipmentOrderResponse>> CalculateShipmentPaymentAsync(ShipmentOrderRequest order)
+        public async Task<ActionResult<ShipmentOrderResponse>> CalculateShipmentPaymentAsync(ShipmentOrderRequest? order)
         {
-            var response = await _orderProcessor.CalculateShipmentChargesAsync(order);
+            var response = await _orderProcessor.CalculateAsync(order);
 
-            if (!string.IsNullOrEmpty(response.ErrorMessage))
-            {
-                return new BadRequestObjectResult(response.ErrorMessage);
-            }
-
-            return Ok(response);
+            return !string.IsNullOrEmpty(response.ErrorMessage)
+                ? response.ResultCode switch
+                {
+                    HttpStatusCode.NotFound => NotFound(response.ErrorMessage),
+                    _ => new BadRequestObjectResult(response.ErrorMessage)
+                }
+                : Ok(response);
         }
 
         [HttpPost()]
         public async Task<ActionResult<ShipmentOrderResponse>> SubmitShipmentOrderAsync(ShipmentOrderRequest? order)
         {
-            var response = await _orderProcessor.SaveShipmentChargesAsync(order);
+            var response = await _orderProcessor.SubmitOrderAsync(order);
 
             if (!string.IsNullOrEmpty(response.ErrorMessage))
             {
@@ -46,7 +48,7 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         [HttpGet("Catalogs")]
         public async Task<ActionResult<CatalogResponse>> GetCatalogAsync()
         {
-            var catalog = await _orderProcessor.GetShipmentCatalogAsync();
+            var catalog = await _orderProcessor.GetCatalogAsync();
             return Ok(catalog);
         }
     }

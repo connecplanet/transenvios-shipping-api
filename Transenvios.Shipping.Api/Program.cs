@@ -60,7 +60,8 @@ var env = builder.Environment;
     services.AddScoped<ICatalogQuery<Country>, CountryMediator>();
     services.AddScoped<ClientProcessor>();
     services.AddTransient<IClientStorage, ClientMediator>();
-    services.AddScoped<ICalculateShipmentCharges, ShipmentOrderMediator>();
+    services.AddScoped<IOrderChargesCalculator, ShipmentOrderMediator>();
+    services.AddScoped<IOrderStorage, ShipmentOrderMediator>();
     services.AddScoped<CityProcessor>();
     
     services.AddScoped<RoutesProcessor>();

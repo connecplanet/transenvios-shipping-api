@@ -34,7 +34,7 @@ public class ShipmentOrderTest
         var order = MockShipmentOrderItem(PACKAGE_WEIGHT, PACKAGE_HEIGHT, PACKAGE_LENGTH, PACKAGE_WIDTH);
         
         const decimal expected = 43500M;
-        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock(), context, _getUserMock.Object);
+        IOrderChargesCalculator mediator = new ShipmentOrderMediator(AppSettingsMock(), context, _getUserMock.Object);
 
         // Act
         var actual = mediator.CalculateChargeByWeight(route, order.Weight??0);
@@ -49,7 +49,7 @@ public class ShipmentOrderTest
         var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
         var order = MockShipmentOrderItem(PACKAGE_WEIGHT, PACKAGE_HEIGHT, PACKAGE_LENGTH, PACKAGE_WIDTH);
         const decimal expected = 12000M;
-        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock(), context, _getUserMock.Object);
+        IOrderChargesCalculator mediator = new ShipmentOrderMediator(AppSettingsMock(), context, _getUserMock.Object);
 
         var actual = mediator.CalculateChargeByVolume(
             route, order.Height??0, order.Length??0, order.Width??0);
@@ -65,7 +65,7 @@ public class ShipmentOrderTest
     {
         var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
         var order = MockShipmentOrderItem(weight, height, length, width);
-        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock(), context, _getUserMock.Object);
+        IOrderChargesCalculator mediator = new ShipmentOrderMediator(AppSettingsMock(), context, _getUserMock.Object);
 
         var actual = mediator.CalculateInitialPayment(route, order);
 
@@ -87,7 +87,7 @@ public class ShipmentOrderTest
     {
         var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
         var order = MockShipmentOrder(PACKAGE_WEIGHT, PACKAGE_HEIGHT, PACKAGE_LENGTH, PACKAGE_WIDTH);
-        ICalculateShipmentCharges mediator = new ShipmentOrderMediator(AppSettingsMock(), context, _getUserMock.Object);
+        IOrderChargesCalculator mediator = new ShipmentOrderMediator(AppSettingsMock(), context, _getUserMock.Object);
 
         if (order.Items != null)
         {
@@ -96,7 +96,7 @@ public class ShipmentOrderTest
             order.Items[0].IsFragile = IsFragile;
         }
         
-        var actual = mediator.CalculateShipmentCharges(route, order);
+        var actual = mediator.CalculateCharges(route, order);
 
         Assert.True(actual.BasePrice == expectedPrice, $"T{testId} Price Exp/Act: {expectedPrice} / {actual.BasePrice}");
         Assert.True(actual.Taxes == expectedTaxes, $"T{testId} Taxes Exp/Act: {expectedTaxes} / {actual.Taxes}");
@@ -128,7 +128,7 @@ public class ShipmentOrderTest
         };
     }
 
-    private static ShipmentOrderRequest MockShipmentOrder(
+    private static ShipmentOrderRequest? MockShipmentOrder(
         decimal? weight = null, decimal? height = null, decimal? length = null, decimal? width = null)
     {
         return new ShipmentOrderRequest
