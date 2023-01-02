@@ -195,7 +195,7 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
         public async Task<int> GetByIdShipmentOrdersAsync()
         {
             var valueMax = 0;
-            if (_context.ShipmentOrders != null)
+            if (_context.ShipmentOrders != null && _context.ShipmentOrders.Any())
             {
                 valueMax = await _context.ShipmentOrders.MaxAsync(e => e.Id);
             }

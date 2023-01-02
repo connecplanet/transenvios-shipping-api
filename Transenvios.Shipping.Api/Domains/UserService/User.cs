@@ -12,7 +12,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
         public string? Role { get; set; }
         [JsonIgnore]
         public string? PasswordHash { get; set; }
-        public int? DocumentId { get; set; }
         public string? DocumentType { get; set; }
+        public int? DocumentId { get; set; }
     }
 }

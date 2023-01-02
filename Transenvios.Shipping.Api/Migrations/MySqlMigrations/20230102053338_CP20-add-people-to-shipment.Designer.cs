@@ -11,8 +11,8 @@ using Transenvios.Shipping.Api.Infraestructure;
 namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 {
     [DbContext(typeof(MySqlDataContext))]
-    [Migration("20220905035231_US10-create-ShipmentOrderItem-add-ShipmentOrderItem")]
-    partial class US10createShipmentOrderItemaddShipmentOrderItem
+    [Migration("20230102053338_CP20-add-people-to-shipment")]
+    partial class CP20addpeopletoshipment
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                 .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.CatalogService.CityPage.City", b =>
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.CatalogService.City", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -29,7 +29,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<bool?>("Active")
                         .IsRequired()
-                        .HasColumnType("tinyint");
+                        .HasColumnType("bit");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -38,7 +38,6 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
@@ -52,7 +51,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.ToTable("Cities", (string)null);
                 });
 
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoutePage.ShipmentRoute", b =>
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.CatalogService.ShipmentRoute", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -60,14 +59,13 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<bool?>("Active")
                         .IsRequired()
-                        .HasColumnType("tinyint");
+                        .HasColumnType("bit");
 
                     b.Property<decimal?>("AdditionalKiloPrice")
                         .HasColumnType("decimal(20,2)");
 
                     b.Property<string>("FromCityCode")
                         .IsRequired()
-                        .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
                     b.Property<decimal?>("InitialKiloPrice")
@@ -78,7 +76,6 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<string>("ToCityCode")
                         .IsRequired()
-                        .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
                     b.HasKey("Id");
@@ -92,20 +89,18 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.ToTable("Routes", (string)null);
                 });
 
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ClientService.ClientPage.Client", b =>
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ClientService.Client", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<long?>("CountryCode")
-                        .HasMaxLength(5)
-                        .HasColumnType("bigint");
+                    b.Property<sbyte?>("CountryCode")
+                        .HasColumnType("tinyint");
 
-                    b.Property<long?>("DocumentId")
-                        .HasMaxLength(10)
+                    b.Property<string>("DocumentId")
                         .IsUnicode(true)
-                        .HasColumnType("bigint");
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("DocumentType")
                         .HasMaxLength(5)
@@ -113,36 +108,28 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(2000)
                         .HasColumnType("varchar(2000)");
 
                     b.Property<string>("Phone")
-                        .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
 
                     b.Property<string>("Role")
                         .HasMaxLength(2)
-                        .HasColumnType("varchar(2)");
+                        .HasColumnType("char(2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
 
                     b.HasIndex("Id")
                         .IsUnique();
@@ -150,20 +137,18 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.ToTable("Clients", (string)null);
                 });
 
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.DriverService.DriverPage.Driver", b =>
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.DriverService.Driver", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<long?>("CountryCode")
-                        .HasMaxLength(5)
-                        .HasColumnType("bigint");
+                    b.Property<sbyte?>("CountryCode")
+                        .HasColumnType("tinyint");
 
-                    b.Property<long?>("DocumentId")
-                        .HasMaxLength(10)
+                    b.Property<string>("DocumentId")
                         .IsUnicode(true)
-                        .HasColumnType("bigint");
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("DocumentType")
                         .HasMaxLength(5)
@@ -171,27 +156,28 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("Phone")
-                        .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
 
-                    b.HasKey("Id");
+                    b.Property<string>("PickUpAddress")
+                        .IsRequired()
+                        .HasColumnType("varchar(200)");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
+                    b.Property<Guid?>("PickUpCityId")
+                        .IsRequired()
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("Id")
                         .IsUnique();
@@ -199,58 +185,103 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.ToTable("Drivers", (string)null);
                 });
 
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage.ShipmentOrder", b =>
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrder", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<Guid>("ApplicantId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("ApplicationDate")
+                        .HasColumnType("datetime");
+
                     b.Property<string>("DropOffAddress")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
 
                     b.Property<string>("DropOffCityId")
                         .IsRequired()
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
-                    b.Property<decimal>("InitialPrice")
-                        .HasMaxLength(10)
+                    b.Property<decimal?>("InitialPrice")
                         .HasColumnType("decimal(20,2)");
 
-                    b.Property<string>("PaymentState")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("varchar(5)");
+                    b.Property<DateTime>("ModifyDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid>("ModifyUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<sbyte>("PaymentState")
+                        .HasColumnType("tinyint");
 
                     b.Property<string>("PickUpAddress")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
 
                     b.Property<string>("PickUpCityId")
                         .IsRequired()
-                        .HasMaxLength(5)
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36)");
+
+                    b.Property<sbyte?>("RecipientCountryCode")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("RecipientDocumentId")
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("RecipientDocumentType")
                         .HasColumnType("varchar(5)");
 
-                    b.Property<string>("ShipmentState")
-                        .IsRequired()
-                        .HasMaxLength(5)
+                    b.Property<string>("RecipientEmail")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("RecipientFirstName")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("RecipientLastName")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("RecipientPhone")
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<sbyte?>("SenderCountryCode")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("SenderDocumentId")
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("SenderDocumentType")
                         .HasColumnType("varchar(5)");
+
+                    b.Property<string>("SenderEmail")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("SenderFirstName")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("SenderLastName")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("SenderPhone")
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<sbyte>("ShipmentState")
+                        .HasColumnType("tinyint");
 
                     b.Property<decimal>("Taxes")
-                        .HasMaxLength(10)
                         .HasColumnType("decimal(20,2)");
 
                     b.Property<decimal>("TotalPrice")
-                        .HasMaxLength(10)
                         .HasColumnType("decimal(20,2)");
 
-                    b.Property<string>("TransporterId")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("varchar(5)");
+                    b.Property<Guid?>("TransporterId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -260,40 +291,38 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.ToTable("ShipmentOrders", (string)null);
                 });
 
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderPage.ShipmentOrderItem", b =>
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.ShipmentOrderItem", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
                     b.Property<decimal?>("Height")
                         .IsRequired()
-                        .HasMaxLength(5)
                         .HasColumnType("decimal(20,2)");
 
+                    b.Property<int>("IdOrder")
+                        .HasColumnType("int");
+
                     b.Property<decimal?>("InsuredAmount")
-                        .IsRequired()
                         .HasColumnType("decimal(20,2)");
 
                     b.Property<bool>("IsFragile")
-                        .HasColumnType("tinyint");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsUrgent")
-                        .HasColumnType("tinyint");
+                        .HasColumnType("bit");
 
                     b.Property<decimal?>("Length")
                         .IsRequired()
-                        .HasMaxLength(5)
                         .HasColumnType("decimal(20,2)");
 
                     b.Property<decimal?>("Weight")
                         .IsRequired()
-                        .HasMaxLength(5)
                         .HasColumnType("decimal(20,2)");
 
                     b.Property<decimal?>("Width")
                         .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("decimal(20,2)");
 
                     b.HasKey("Id");
@@ -304,43 +333,42 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.ToTable("ShipmentOrderItems", (string)null);
                 });
 
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.UserPage.User", b =>
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
                     b.Property<string>("CountryCode")
-                        .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
+
+                    b.Property<int?>("DocumentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DocumentType")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(2000)
                         .HasColumnType("varchar(2000)");
 
                     b.Property<string>("Phone")
-                        .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
 
                     b.Property<string>("Role")
-                        .HasMaxLength(2)
-                        .HasColumnType("varchar(2)");
+                        .HasColumnType("char(2)");
 
                     b.HasKey("Id");
 

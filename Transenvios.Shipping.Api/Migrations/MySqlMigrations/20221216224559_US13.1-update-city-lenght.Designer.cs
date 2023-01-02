@@ -29,7 +29,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<bool?>("Active")
                         .IsRequired()
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("tinyint");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -60,10 +60,10 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<bool?>("Active")
                         .IsRequired()
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("tinyint");
 
                     b.Property<decimal?>("AdditionalKiloPrice")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<string>("FromCityCode")
                         .IsRequired()
@@ -71,10 +71,10 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .HasColumnType("varchar(5)");
 
                     b.Property<decimal?>("InitialKiloPrice")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<decimal?>("PriceCm3")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<string>("ToCityCode")
                         .IsRequired()
@@ -221,7 +221,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<decimal>("InitialPrice")
                         .HasMaxLength(10)
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<string>("PaymentState")
                         .IsRequired()
@@ -245,11 +245,11 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<decimal>("Taxes")
                         .HasMaxLength(10)
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<decimal>("TotalPrice")
                         .HasMaxLength(10)
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<string>("TransporterId")
                         .IsRequired()
@@ -273,35 +273,35 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.Property<decimal?>("Height")
                         .IsRequired()
                         .HasMaxLength(5)
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<int>("IdOrder")
                         .HasColumnType("int");
 
                     b.Property<decimal?>("InsuredAmount")
                         .IsRequired()
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<bool>("IsFragile")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("tinyint");
 
                     b.Property<bool>("IsUrgent")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("tinyint");
 
                     b.Property<decimal?>("Length")
                         .IsRequired()
                         .HasMaxLength(5)
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<decimal?>("Weight")
                         .IsRequired()
                         .HasMaxLength(5)
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.Property<decimal?>("Width")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(20,2)");
 
                     b.HasKey("Id");
 

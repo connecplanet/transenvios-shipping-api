@@ -23,9 +23,9 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DropOffAddress = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    InitialPrice = table.Column<decimal>(type: "decimal(65,30)", maxLength: 10, nullable: false),
-                    Taxes = table.Column<decimal>(type: "decimal(65,30)", maxLength: 10, nullable: false),
-                    TotalPrice = table.Column<decimal>(type: "decimal(65,30)", maxLength: 10, nullable: false),
+                    InitialPrice = table.Column<decimal>(type: "decimal(20,2)", maxLength: 10, nullable: false),
+                    Taxes = table.Column<decimal>(type: "decimal(20,2)", maxLength: 10, nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "decimal(20,2)", maxLength: 10, nullable: false),
                     PaymentState = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ShipmentState = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: false)

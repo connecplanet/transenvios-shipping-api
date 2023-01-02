@@ -46,7 +46,7 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
             try
             {
                 if (string.IsNullOrWhiteSpace(model.DocumentType) || string.IsNullOrWhiteSpace(model.Email) ||
-                    string.IsNullOrWhiteSpace(model.Phone) || string.IsNullOrWhiteSpace(model.PickUpCityId) ||
+                    string.IsNullOrWhiteSpace(model.Phone) || Guid.Empty == model.PickUpCityId ||
                     string.IsNullOrWhiteSpace(model.PickUpAddress) || string.IsNullOrWhiteSpace(model.FirstName))
                 {
                     throw new AppException("Some required fields are missing");
