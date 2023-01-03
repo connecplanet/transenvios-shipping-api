@@ -4,22 +4,21 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
 {
     public class DriverProcessor
     {
-        private readonly IDriverStorage _iDriver;
+        private readonly IDriverStorage _storage;
 
         public DriverProcessor(IDriverStorage getDriver)
         {
-            _iDriver = getDriver
-                ?? throw new ArgumentNullException(nameof(getDriver));
+            _storage = getDriver ?? throw new ArgumentNullException(nameof(getDriver));
         }
 
-        public async Task<IList<Driver>> GetDriversAsync()
+        public async Task<IList<Driver>> GetAsync()
         {
-            return await _iDriver.GetAllAsync();
+            return await _storage.GetAllAsync();
         }
 
-        private async Task<Driver> GetDriverAsync(Guid id)
+        private async Task<Driver> GetAsync(Guid id)
         {
-            var user = await _iDriver.GetAsync(id);
+            var user = await _storage.GetAsync(id);
             if (user == null)
             {
                 throw new KeyNotFoundException("Driver not found");
@@ -29,9 +28,9 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
 
         public async Task<DriverStateResponse> UpdateAsync(Guid id, Driver model)
         {
-            var currentDriver = await GetDriverAsync(id);
+            var currentDriver = await GetAsync(id);
 
-            var items = await _iDriver.UpdateAsync(model);
+            var items = await _storage.UpdateAsync(model);
 
             return new DriverStateResponse
             {
@@ -41,7 +40,7 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
             };
         }
 
-        public async Task<DriverStateResponse> RegisterAsync(Driver model)
+        public async Task<DriverStateResponse> AddAsync(Driver model)
         {
             try
             {
@@ -52,21 +51,21 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
                     throw new AppException("Some required fields are missing");
                 }
 
-                var invalidEmail = model.Email != null && await _iDriver.Exists(model.Email);
+                var invalidEmail = model.Email != null && await _storage.Exists(model.Email);
 
                 if (invalidEmail)
                 {
                     throw new AppException($"Email '{model.Email}' is already registered");
                 }
 
-                var invalidDocument = model.DocumentId != null && await _iDriver.Exists(model.DocumentId);
+                var invalidDocument = model.DocumentId != null && await _storage.Exists(model.DocumentId);
 
                 if (invalidDocument)
                 {
                     throw new AppException($"Document ID '{model.DocumentId}' is already registered");
                 }
                 model.Id = Guid.NewGuid();
-                var items = await _iDriver.AddAsync(model);
+                var items = await _storage.AddAsync(model);
 
                 return new DriverStateResponse
                 {
@@ -86,8 +85,8 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
 
         public async Task<DriverStateResponse> DeleteAsync(Guid id)
         {
-            var user = await GetDriverAsync(id);
-            var items = await _iDriver.DeleteAsync(user);
+            var user = await GetAsync(id);
+            var items = await _storage.DeleteAsync(user);
 
             return new DriverStateResponse
             {

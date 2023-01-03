@@ -9,7 +9,7 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Email { get; set; }
-        public long? CountryCode { get; set; }
+        public int? CountryCode { get; set; }
         public string? Phone { get; set; }
         public Guid? PickUpCityId { get; set; }
         public string? PickUpAddress { get; set; }

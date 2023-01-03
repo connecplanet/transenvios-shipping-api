@@ -6,9 +6,9 @@ namespace Transenvios.Shipping.Api.Mediators.DriverService
 {
     public class DriverMediator : IDriverStorage
     {
-        private readonly DataContext _context;
+        private readonly IDbContext _context;
 
-        public DriverMediator(DataContext context)
+        public DriverMediator(IDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
@@ -17,11 +17,7 @@ namespace Transenvios.Shipping.Api.Mediators.DriverService
         {
             return await _context.Drivers.ToListAsync();
         }
-        public async Task<IList<Driver>> GetAllAsync(Guid id)
-        {
-            return await _context.Drivers.ToListAsync();
-        }
-
+        
         public async Task<int> UpdateAsync(Driver driver)
         {
             _context.Drivers.Update(driver);

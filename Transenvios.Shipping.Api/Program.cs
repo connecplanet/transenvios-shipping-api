@@ -23,7 +23,7 @@ var env = builder.Environment;
     // Update ASPNETCORE_ENVIRONMENT={Development} to use MySQL
     if (env.IsEnvironment("NonProd"))
     {
-        services.AddDbContext<DataContext, SqliteDataContext>(ServiceLifetime.Transient); // SqlLite
+        services.AddDbContext<IDbContext, SqliteDataContext>(ServiceLifetime.Transient); // SqlLite
     }
     else if (env.IsStaging())
     {
@@ -31,7 +31,7 @@ var env = builder.Environment;
     }
     else
     {
-        services.AddDbContext<DataContext, MySqlDataContext>(ServiceLifetime.Transient); // MySQL
+        services.AddDbContext<IDbContext, MySqlDataContext>(ServiceLifetime.Transient); // MySQL
     }
 
     services.AddCors();
@@ -77,9 +77,8 @@ var app = builder.Build();
 // migrate any database changes on startup (includes initial db creation)
 using (var scope = app.Services.CreateScope())
 {
-    var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
-    dataContext.Database.Migrate();
-    DbInitializer.Initialize(dataContext, builder.Environment);
+    var dataContext = scope.ServiceProvider.GetRequiredService<IDbContext>();
+    dataContext.Migrate(builder.Environment);
 }
 
 // Configure the HTTP request pipeline.

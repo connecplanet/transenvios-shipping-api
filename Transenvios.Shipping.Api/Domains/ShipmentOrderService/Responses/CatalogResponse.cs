@@ -1,6 +1,6 @@
 ﻿using Transenvios.Shipping.Api.Domains.CatalogService;
 
-namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
+namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.Responses
 {
     public class CatalogResponse
     {

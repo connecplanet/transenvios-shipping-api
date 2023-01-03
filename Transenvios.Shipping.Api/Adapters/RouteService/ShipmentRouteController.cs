@@ -25,9 +25,9 @@ namespace Transenvios.Shipping.Api.Adapters.RouteService
         }
 
         [HttpPost]
-        public async Task<ActionResult<RouteStateResponse>> RegisterAsync(RouteCreateUpdateRequest model)
+        public async Task<ActionResult<RouteStateResponse>> AddAsync(RouteCreateUpdateRequest model)
         {
-            var response = await _processor.RegisterAsync(model);
+            var response = await _processor.AddAsync(model);
             return Ok(response);
         }
 

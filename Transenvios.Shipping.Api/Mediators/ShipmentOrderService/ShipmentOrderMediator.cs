@@ -2,6 +2,9 @@
 using Microsoft.Extensions.Options;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Responses;
 using Transenvios.Shipping.Api.Domains.UserService;
 using Transenvios.Shipping.Api.Infraestructure;
 
@@ -10,17 +13,20 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
     public class ShipmentOrderMediator : IOrderChargesCalculator, IOrderStorage
     {
         private readonly ShipmentSettings _settings;
-        private readonly DataContext _context;
+        private readonly IDbContext _context;
         private readonly IGetUser _getUser;
+        private readonly ICatalogStorage<City> _getCity;
 
         public ShipmentOrderMediator(
             IOptions<AppSettings> appSettings,
-            DataContext context,
-            IGetUser getUser)
+            IDbContext context,
+            IGetUser getUser,
+            ICatalogStorage<City> getCity)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _settings = appSettings.Value.Shipment ?? throw new ArgumentNullException(nameof(appSettings));
-            _getUser = getUser ?? throw new ArgumentNullException();
+            _getUser = getUser ?? throw new ArgumentNullException(nameof(getUser));
+            _getCity = getCity ?? throw new ArgumentNullException(nameof(getCity));
         }
 
         public decimal CalculateChargeByWeight(ShipmentRoute route, decimal weight)
@@ -53,9 +59,9 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return (insuredAmount ?? 0) + urgentAmount + fragileAmount;
         }
 
-        public ShipmentOrderResponse CalculateCharges(ShipmentRoute route, ShipmentOrderRequest? order)
+        public ShipmentOrderSubmitResponse CalculateCharges(ShipmentRoute route, ShipmentOrderRequest? order)
         {
-            var charges = new ShipmentOrderResponse
+            var charges = new ShipmentOrderSubmitResponse
             {
                 BasePrice = 0M,
                 Taxes = 0M,
@@ -77,16 +83,16 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             charges.Taxes = charges.BasePrice * (_settings.TaxAmountRatio / 100M);
             charges.Total = charges.BasePrice + charges.Taxes;
 
-            charges.BasePrice = Math.Round(charges.BasePrice, 0);
-            charges.Taxes = Math.Round(charges.Taxes, 0);
-            charges.Total = Math.Round(charges.Total, 0);
+            charges.BasePrice = Math.Round(charges.BasePrice, 2);
+            charges.Taxes = Math.Round(charges.Taxes, 2);
+            charges.Total = Math.Round(charges.Total, 2);
 
             return charges;
         }
 
         private async Task<Guid> GetApplicantId(string? email)
         {
-            var applicant = await _getUser?.GetByEmailAsync(email ?? string.Empty);
+            var applicant = await _getUser?.GetAsync(email ?? string.Empty);
             if (applicant == null)
             {
                 throw new ArgumentException("Applicant Not Found");
@@ -95,10 +101,9 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return applicant.Id;
         }
 
-
-        public async Task<ShipmentOrderResponse> SubmitOrderAsync(ShipmentOrderRequest? order)
+        public async Task<ShipmentOrderSubmitResponse> SubmitOrderAsync(ShipmentOrderRequest? order)
         {
-            var orderResponse = new ShipmentOrderResponse();
+            var orderResponse = new ShipmentOrderSubmitResponse();
 
             try
             {
@@ -126,41 +131,97 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return orderResponse;
         }
 
-        private async Task SaveOrderItems(ShipmentOrderRequest order, int orderId)
+        public async Task<ShipmentOrderListResponse> GetShipmentListAsync(int offset, int limit)
         {
-            var items = order.Items!.Select(detail =>
-                    new ShipmentOrderItem
-                    {
-                        Id = Guid.NewGuid(),
-                        IdOrder = orderId,
-                        Width = detail.Width,
-                        Height = detail.Height,
-                        Weight = detail.Weight,
-                        Length = detail.Length,
-                        InsuredAmount = detail.InsuredAmount,
-                        IsUrgent = detail.IsUrgent,
-                        IsFragile = detail.IsFragile
-                    })
-                .ToList();
+            // await _context.ShipmentOrders.Include(x => x.)
 
-            await _context.ShipmentOrderItems!.AddRangeAsync(items);
+            //var totalRows = await _context.ShipmentOrders!.CountAsync();
+            //var records = await _context.ShipmentOrders.FromSqlRaw<ShipmentOrderListResponse>(
+            //    @"SELECT " +
+            //    "   so.id AS OrderId, " +
+            //    "   CONCAT(u.LastName, ', ', u.FirstName) AS ApplicantName, " +
+            //    "   CONCAT('+', u.CountryCode, ' ', u.Phone) AS Phone, " +
+            //    "   pc.Name AS FromCity, " +
+            //    "   dc.Name AS ToCity, " +
+            //    "   CASE so.PaymentState " +
+            //    "   WHEN 1 THEN 'Pagado' " +
+            //    "   ELSE 'Sin Pagar' " +
+            //    "   END AS PaymentState, " +
+            //    "   CONCAT(d.LastName, ', ', d.FirstName) AS TransporterName, " +
+            //    "   so.TransporterId, " +
+            //    "   CASE so.ShipmentState " +
+            //    "   WHEN 1 THEN 'Recogiendo' " +
+            //    "   WHEN 2 THEN 'En bodega' " +
+            //    "   WHEN 3 THEN 'En ruta' " +
+            //    "   WHEN 4 THEN 'Entregado' " +
+            //    "   WHEN 5 THEN 'Cancelado' " +
+            //    "   ELSE 'Ordenado' " +
+            //    "   END AS ShipmentState, " +
+            //    "   ROUND(so.TotalPrice, 2) AS ShippingCost " +
+            //    " FROM ShipmentOrders so " +
+            //    "   LEFT OUTER JOIN Users u ON so.ApplicantId = u.Id " +
+            //    "   LEFT OUTER JOIN Cities pc ON so.PickUpCityId = pc.Code " +
+            //    "   LEFT OUTER JOIN Cities dc ON so.DropOffCityId = dc.Code " +
+            //    "   LEFT OUTER JOIN Drivers d ON so.TransporterId = d.Id;")
+            //    .Skip(offset).Take(limit).ToArrayAsync();
+            //var count = records.Length;
+            //var response = new ShipmentOrderListResponse
+            //{
+            //    Pagination = new ShipmentOrderListPaginationResponse
+            //    {
+            //        Total = totalRows,
+            //        Count = count,
+            //        Offset = offset,
+            //        Limit = limit
+            //    },
+            //    Items = records.Select(r => new ShipmentOrderListItemResponse
+            //    {
+            //        OrderId = r.Id
+            //    }).ToList()
+            //};
+
+            //return response;
+            throw new NotImplementedException();
+        }
+
+        public async Task<int> GetNextOrderIdAsync()
+        {
+            var valueMax = 0;
+            if (_context.ShipmentOrders != null && _context.ShipmentOrders.Any())
+            {
+                valueMax = await _context.ShipmentOrders.MaxAsync(e => e.Id);
+            }
+            return valueMax == 0 ? 1 : valueMax + 1;
         }
 
         private async Task<ShipmentOrder> SaveOrderHeader(ShipmentOrderRequest order, Guid applicantId)
         {
-            var orderId = await GetByIdShipmentOrdersAsync();
+            var orderId = await GetNextOrderIdAsync();
+            var fromCityId = await _getCity.GetAsync(order.Route?.PickUp?.CityCode ?? string.Empty);
+            var toCityId = await _getCity.GetAsync(order.Route?.DropOff?.CityCode ?? string.Empty);
+
+            if (fromCityId == null)
+            {
+                throw new ArgumentException($"From city '{order.Route?.PickUp?.CityCode}' was not found");
+            }
+
+            if (toCityId == null)
+            {
+                throw new ArgumentException($"To city '{order.Route?.DropOff?.CityCode}' was not found");
+            }
+
             var shipmentOrder = new ShipmentOrder
             {
                 Id = orderId,
-                PickUpCityId = order.Route?.PickUp?.CityCode,
+                PickUpCityId = fromCityId.Id,
                 PickUpAddress = order.Route?.PickUp?.Address,
-                DropOffCityId = order.Route?.DropOff?.CityCode,
+                DropOffCityId = toCityId.Id,
                 DropOffAddress = order.Route?.DropOff?.Address,
                 InitialPrice = order.BasePrice,
                 Taxes = order.Taxes,
                 TotalPrice = order.Total,
                 PaymentState = PaymentStates.UnPaid,
-                ShipmentState = ShipmentStates.Created,
+                ShipmentState = ShipmentStates.Ordered,
                 TransporterId = null,
                 ApplicantId = applicantId,
                 ApplicationDate = DateTime.Now,
@@ -192,14 +253,24 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return shipmentOrder;
         }
 
-        public async Task<int> GetByIdShipmentOrdersAsync()
+        private async Task SaveOrderItems(ShipmentOrderRequest order, int orderId)
         {
-            var valueMax = 0;
-            if (_context.ShipmentOrders != null && _context.ShipmentOrders.Any())
-            {
-                valueMax = await _context.ShipmentOrders.MaxAsync(e => e.Id);
-            }
-            return valueMax == 0 ? 1 : valueMax + 1;
+            var items = order.Items!.Select(detail =>
+                    new ShipmentOrderItem
+                    {
+                        Id = Guid.NewGuid(),
+                        IdOrder = orderId,
+                        Width = detail.Width,
+                        Height = detail.Height,
+                        Weight = detail.Weight,
+                        Length = detail.Length,
+                        InsuredAmount = detail.InsuredAmount,
+                        IsUrgent = detail.IsUrgent,
+                        IsFragile = detail.IsFragile
+                    })
+                .ToList();
+
+            await _context.ShipmentOrderItems!.AddRangeAsync(items);
         }
     }
 }

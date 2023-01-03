@@ -6,16 +6,15 @@ namespace Transenvios.Shipping.Api.Mediators.ClientService
 {
     public class ClientMediator : IClientStorage
     {
-        private readonly DataContext _context;
+        private readonly IDbContext _context;
 
-        public ClientMediator(DataContext context)
+        public ClientMediator(IDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<bool> Exists(string email)
         {
-
             return await _context.Clients.AnyAsync(x => x.Email == email);
         }
 

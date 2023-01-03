@@ -6,9 +6,9 @@ namespace Transenvios.Shipping.Api.Mediators.CatalogService
 {
     public class CityMediator : ICatalogStorage<City>
     {
-        private readonly DataContext _context;
+        private readonly IDbContext _context;
 
-        public CityMediator(DataContext context)
+        public CityMediator(IDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }

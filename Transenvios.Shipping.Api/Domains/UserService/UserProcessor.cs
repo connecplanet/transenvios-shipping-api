@@ -36,7 +36,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             _passwordReset = passwordReset ?? throw new ArgumentNullException(nameof(passwordReset));
         }
 
-        public async Task<UserStateResponse> RegisterAsync(UserRegisterRequest model)
+        public async Task<UserStateResponse> SignUpAsync(UserRegisterRequest model)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
                     model.CountryCode = UserConstants.Colombia;
                 }
 
-                var result = model.Email != null && await _getUser.ExistsEmail(model.Email);
+                var result = model.Email != null && await _getUser.Exists(model.Email);
 
                 if (result)
                 {
@@ -63,7 +63,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
 
                 var user = _mapper.Map<User>(model);
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
-                var items = await _registerUser.RegisterAsync(user);
+                var items = await _registerUser.SignUpAsync(user);
 
                 return new UserStateResponse
                 {
@@ -88,20 +88,20 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             return users;
         }
 
-        public async Task<UserAuthenticateResponse> GetByIdAsync(Guid id)
+        public async Task<UserAuthenticateResponse> GetAsync(Guid id)
         {
             var user = await GetUserAsync(id);
             var response = _mapper.Map<UserAuthenticateResponse>(user);
             return response;
         }
-        public async Task<UserAuthenticateResponse> AuthenticateAsync(UserAuthenticateRequest model)
+        public async Task<UserAuthenticateResponse> SignInAsync(UserAuthenticateRequest model)
         {
             if (string.IsNullOrWhiteSpace(model.Email))
             {
                 throw new AppException("Email is required.");
             }
 
-            var user = await _getUser.GetByEmailAsync(model.Email);
+            var user = await _getUser.GetAsync(model.Email);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
             {
@@ -113,10 +113,6 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             response.Token = _jwtUtils.GenerateToken(user);
             response.Avatar = "assets/images/avatars/transenvios.png";
             response.Status = "online";
-
-
-
-
             return response;
         }
 
@@ -128,7 +124,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             }
 
             var currentUser = await GetUserAsync(id);
-            var emailUser = await _getUser.GetByEmailAsync(model.Email);
+            var emailUser = await _getUser.GetAsync(model.Email);
 
             if (emailUser != null && currentUser.Id != emailUser.Id)
             {
@@ -154,7 +150,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
         public async Task<UserStateResponse> DeleteAsync(Guid id)
         {
             var user = await GetUserAsync(id);
-            var items = await _removeUser.RemoveAsync(user);
+            var items = await _removeUser.DeleteAsync(user);
 
             return new UserStateResponse
             {
@@ -166,7 +162,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
 
         private async Task<User> GetUserAsync(Guid id)
         {
-            var user = await _getAuthorizeUser.GetByIdAsync(id);
+            var user = await _getAuthorizeUser.GetAsync(id);
             if (user == null)
             {
                 throw new KeyNotFoundException("User not found");
@@ -175,7 +171,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
         }
         public async Task<UserStateResponse> PasswordResetAsync(string email)
         {
-            var user = await _getUser.GetByEmailAsync(email);
+            var user = await _getUser.GetAsync(email);
 
             if (user == null)
             {
@@ -209,7 +205,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
                 throw new AppException("Token user is not valid.");
             }
 
-            var user = await GetByIdAsync(userId.Value);
+            var user = await GetAsync(userId.Value);
             var response = new UserSignInResponse
             {
                 User = user,

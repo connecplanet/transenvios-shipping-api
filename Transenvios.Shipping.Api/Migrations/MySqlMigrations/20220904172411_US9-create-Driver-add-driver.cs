@@ -12,7 +12,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
             migrationBuilder.AlterColumn<long>(
                 name: "DocumentId",
                 table: "Clients",
-                type: "bigint",
+                type: "int",
                 maxLength: 10,
                 nullable: true,
                 oldClrType: typeof(int),
@@ -22,7 +22,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
             migrationBuilder.AlterColumn<long>(
                 name: "CountryCode",
                 table: "Clients",
-                type: "bigint",
+                type: "int",
                 maxLength: 5,
                 nullable: true,
                 oldClrType: typeof(string),
@@ -38,14 +38,14 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     DocumentType = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DocumentId = table.Column<long>(type: "bigint", maxLength: 10, nullable: true),
+                    DocumentId = table.Column<int>(type: "int", maxLength: 10, nullable: true),
                     FirstName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     LastName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Email = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CountryCode = table.Column<long>(type: "bigint", maxLength: 5, nullable: true),
+                    CountryCode = table.Column<int>(type: "int", maxLength: 5, nullable: true),
                     Phone = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },

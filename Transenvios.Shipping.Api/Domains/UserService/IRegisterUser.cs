@@ -2,6 +2,6 @@
 {
     public interface IRegisterUser
     {
-        Task<int> RegisterAsync(User data);
+        Task<int> SignUpAsync(User data);
     }
 }

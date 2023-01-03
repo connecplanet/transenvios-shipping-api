@@ -1,4 +1,4 @@
-﻿namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
+﻿namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities
 {
     public enum PaymentStates
     {
@@ -8,7 +8,7 @@
 
     public enum ShipmentStates
     {
-        Created,
+        Ordered,
         Collecting,
         InWarehouse,
         OnRoute,

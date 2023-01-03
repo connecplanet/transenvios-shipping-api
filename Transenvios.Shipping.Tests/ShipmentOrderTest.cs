@@ -2,6 +2,8 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
 using Transenvios.Shipping.Api.Domains.UserService;
 using Transenvios.Shipping.Api.Infraestructure;
 using Transenvios.Shipping.Api.Mediators.ShipmentOrderService;
@@ -18,12 +20,15 @@ public class ShipmentOrderTest
     const decimal PACKAGE_HEIGHT = 100.0M;
     const decimal PACKAGE_LENGTH = 20.0M;
     const decimal PACKAGE_WIDTH = 20.0M;
-    DataContext context;
+    Mock<IDbContext> _dataContext;
     Mock<IGetUser> _getUserMock;
+    private Mock<ICatalogStorage<City>> _getCity;
 
     public ShipmentOrderTest()
     {
         _getUserMock = new Mock<IGetUser>();
+        _getCity = new Mock<ICatalogStorage<City>>();
+        _dataContext = new Mock<IDbContext>();
     }
 
     [Fact]
@@ -34,7 +39,8 @@ public class ShipmentOrderTest
         var order = MockShipmentOrderItem(PACKAGE_WEIGHT, PACKAGE_HEIGHT, PACKAGE_LENGTH, PACKAGE_WIDTH);
         
         const decimal expected = 43500M;
-        IOrderChargesCalculator mediator = new ShipmentOrderMediator(AppSettingsMock(), context, _getUserMock.Object);
+        IOrderChargesCalculator mediator = new ShipmentOrderMediator(
+            AppSettingsMock(), _dataContext.Object, _getUserMock.Object, _getCity.Object);
 
         // Act
         var actual = mediator.CalculateChargeByWeight(route, order.Weight??0);
@@ -49,7 +55,8 @@ public class ShipmentOrderTest
         var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
         var order = MockShipmentOrderItem(PACKAGE_WEIGHT, PACKAGE_HEIGHT, PACKAGE_LENGTH, PACKAGE_WIDTH);
         const decimal expected = 12000M;
-        IOrderChargesCalculator mediator = new ShipmentOrderMediator(AppSettingsMock(), context, _getUserMock.Object);
+        IOrderChargesCalculator mediator = new ShipmentOrderMediator(
+            AppSettingsMock(), _dataContext.Object, _getUserMock.Object, _getCity.Object);
 
         var actual = mediator.CalculateChargeByVolume(
             route, order.Height??0, order.Length??0, order.Width??0);
@@ -65,7 +72,8 @@ public class ShipmentOrderTest
     {
         var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
         var order = MockShipmentOrderItem(weight, height, length, width);
-        IOrderChargesCalculator mediator = new ShipmentOrderMediator(AppSettingsMock(), context, _getUserMock.Object);
+        IOrderChargesCalculator mediator = new ShipmentOrderMediator(
+            AppSettingsMock(), _dataContext.Object, _getUserMock.Object, _getCity.Object);
 
         var actual = mediator.CalculateInitialPayment(route, order);
 
@@ -87,7 +95,8 @@ public class ShipmentOrderTest
     {
         var route = MockShipmentRoute(ROUTE_INITIAL_KILO_PRICE, ROUTE_ADDITIONAL_KILO_PRICE, ROUTE_PRICE_CM3);
         var order = MockShipmentOrder(PACKAGE_WEIGHT, PACKAGE_HEIGHT, PACKAGE_LENGTH, PACKAGE_WIDTH);
-        IOrderChargesCalculator mediator = new ShipmentOrderMediator(AppSettingsMock(), context, _getUserMock.Object);
+        IOrderChargesCalculator mediator = new ShipmentOrderMediator(
+            AppSettingsMock(), _dataContext.Object, _getUserMock.Object, _getCity.Object);
 
         if (order.Items != null)
         {

@@ -1,6 +1,6 @@
-﻿namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
+﻿namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests
 {
-    public class ShipmentOrderPerson
+    public class ShipmentOrderPersonRequest
     {
         public string? DocumentType { get; set; }
         public int? DocumentId { get; set; }

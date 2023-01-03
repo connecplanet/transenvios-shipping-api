@@ -26,16 +26,16 @@ namespace Transenvios.Shipping.Api.Adapters.UserService
         }
 
         [AllowAnonymous, HttpPost("Authenticate")] // sign-in
-        public async Task<IActionResult> AuthenticateAsync(UserAuthenticateRequest model)
+        public async Task<IActionResult> SignInAsync(UserAuthenticateRequest model)
         {
-            var response = await _userProcessor.AuthenticateAsync(model);
+            var response = await _userProcessor.SignInAsync(model);
             return Ok(response);
         }
 
-        [AllowAnonymous, HttpPost] // sign-up
-        public async Task<ActionResult<UserStateResponse>> RegisterAsync(UserRegisterRequest model)
+        [AllowAnonymous, HttpPost]
+        public async Task<ActionResult<UserStateResponse>> SignUpAsync(UserRegisterRequest model)
         {
-            var response = await _userProcessor.RegisterAsync(model);
+            var response = await _userProcessor.SignUpAsync(model);
             return Ok(response);
         }
 
@@ -78,9 +78,9 @@ namespace Transenvios.Shipping.Api.Adapters.UserService
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserAuthenticateResponse>> GetByIdAsync(Guid id)
+        public async Task<ActionResult<UserAuthenticateResponse>> GetAsync(Guid id)
         {
-            var user = await _userProcessor.GetByIdAsync(id);
+            var user = await _userProcessor.GetAsync(id);
 
             if (user == null)
             {

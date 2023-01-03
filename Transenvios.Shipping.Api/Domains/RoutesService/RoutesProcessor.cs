@@ -22,7 +22,7 @@ namespace Transenvios.Shipping.Api.Domains.RoutesService
             var response = await _routes.GetAllAsync();
             return response;
         }
-        public async Task<ShipmentRoute> GetRoutAsync(Guid id)
+        public async Task<ShipmentRoute> GetAsync(Guid id)
         {
             var route = await _routes.GetAsync(id);
             if (route == null)
@@ -31,7 +31,7 @@ namespace Transenvios.Shipping.Api.Domains.RoutesService
             }
             return route;
         }
-        public async Task<RouteStateResponse> RegisterAsync(RouteCreateUpdateRequest model)
+        public async Task<RouteStateResponse> AddAsync(RouteCreateUpdateRequest model)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace Transenvios.Shipping.Api.Domains.RoutesService
         {
             try
             {
-                var currentClient = await GetRoutAsync(id);
+                var currentClient = await GetAsync(id);
                 _mapper.Map(model, currentClient);
                 var items = await _routes.UpdateAsync(currentClient);
 
@@ -82,7 +82,7 @@ namespace Transenvios.Shipping.Api.Domains.RoutesService
 
         public async Task<RouteStateResponse> DeleteAsync(Guid id)
         {
-            var user = await GetRoutAsync(id);
+            var user = await GetAsync(id);
             var items = await _routes.DeleteAsync(user);
 
             return new RouteStateResponse

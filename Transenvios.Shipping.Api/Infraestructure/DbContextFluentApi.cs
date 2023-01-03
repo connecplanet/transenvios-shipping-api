@@ -4,7 +4,7 @@ using Transenvios.Shipping.Api.Domains;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.ClientService;
 using Transenvios.Shipping.Api.Domains.DriverService;
-using Transenvios.Shipping.Api.Domains.ShipmentOrderService;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities;
 using Transenvios.Shipping.Api.Domains.UserService;
 
 namespace Transenvios.Shipping.Api.Infraestructure
@@ -102,7 +102,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.Property(e => e.CountryCode).HasColumnType("tinyint");
                 entity.Property(e => e.Phone).HasColumnType("varchar(10)");
                 
-                entity.Property(e => e.PickUpCityId).HasColumnType("char(36)").IsRequired();
+                entity.Property(e => e.PickUpCityId).HasColumnType("char(36)").IsRequired().HasMaxLength(36);
                 entity.Property(e => e.PickUpAddress).HasColumnType("varchar(200)").IsRequired();
             });
 
@@ -118,8 +118,8 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.HasIndex(e => e.Id).IsUnique();
                 entity.Property(e => e.Id).HasColumnType("int").IsRequired();
                 
-                entity.Property(e => e.PickUpCityId).HasColumnType("varchar(5)").IsRequired().HasMaxLength(36);
-                entity.Property(e => e.DropOffCityId).HasColumnType("varchar(5)").IsRequired().HasMaxLength(5);
+                entity.Property(e => e.PickUpCityId).HasColumnType("char(36)").IsRequired().HasMaxLength(36);
+                entity.Property(e => e.DropOffCityId).HasColumnType("char(36)").IsRequired().HasMaxLength(36);
 
                 entity.Property(e => e.PickUpAddress).HasColumnType("varchar(200)").IsRequired().HasMaxLength(200);
                 entity.Property(e => e.DropOffAddress).HasColumnType("varchar(200)").IsRequired().HasMaxLength(200);

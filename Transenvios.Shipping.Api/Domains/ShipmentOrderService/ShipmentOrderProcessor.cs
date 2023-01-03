@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.RoutesService;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Responses;
 
 namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
 {
@@ -29,11 +31,11 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             _orderStorage = orderStorage ?? throw new ArgumentNullException(nameof(orderStorage));
         }
 
-        public async Task<ShipmentOrderResponse> CalculateAsync(ShipmentOrderRequest? order)
+        public async Task<ShipmentOrderSubmitResponse> CalculateAsync(ShipmentOrderRequest? order)
         {
             if (order == null)
             {
-                return new ShipmentOrderResponse
+                return new ShipmentOrderSubmitResponse
                 {
                     ResultCode = HttpStatusCode.BadRequest,
                     ErrorMessage = "Order parameter is null"
@@ -46,7 +48,7 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
 
             if (route == null)
             {
-                return new ShipmentOrderResponse
+                return new ShipmentOrderSubmitResponse
                 {
                     ResultCode = HttpStatusCode.NotFound,
                     ErrorMessage = $"Route {fromCityCode} to {toCityCode} not found"
@@ -70,7 +72,7 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             return catalog;
         }
 
-        public async Task<ShipmentOrderResponse> SubmitOrderAsync(ShipmentOrderRequest? order)
+        public async Task<ShipmentOrderSubmitResponse> SubmitOrderAsync(ShipmentOrderRequest? order)
         {
             var response = await CalculateAsync(order);
 
@@ -80,6 +82,19 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             }
 
             return await _orderStorage.SubmitOrderAsync(order);
+        }
+
+        public async Task<ShipmentOrderListResponse> GetShipmentOrders(int page, int limit)
+        {
+            if (page == 0)
+                page = 1;
+
+            if (limit == 0)
+                limit = int.MaxValue;
+
+            var skip = (page - 1) * limit;
+
+            return await _orderStorage.GetShipmentListAsync(skip, limit);
         }
     }
 }
