@@ -80,16 +80,10 @@ dotnet ef database update --context MySqlDataContext
 Bash
 ```
 $ dotnet ef migrations add US5-add-cities-and-routes --context MySqlDataContext --output-dir Migrations/MySqlMigrations
-$ dotnet ef database update --context MySqlDataContext
-$ dotnet ef migrations add US6-add-clients-add-clients --context MySqlDataContext --output-dir Migrations/MySqlMigrations
-$ dotnet ef database update --context MySqlDataContext
-$ dotnet ef migrations add US7-update-clients-add-clients --context MySqlDataContext --output-dir Migrations/MySqlMigrations
-$ dotnet ef database update --context MySqlDataContext
-$ dotnet ef migrations add US8-create-ShipmentOrder-add-ShipmentOrder --context MySqlDataContext --output-dir Migrations/MySqlMigrations
-$ dotnet ef database update --context MySqlDataContext
-$ dotnet ef migrations add US9-update-Cliente-update-change campos--context MySqlDataContext --output-dir Migrations/MySqlMigrations
-$ dotnet ef database update --context MySqlDataContext
-$ dotnet ef migrations add US10-create-Driver MySqlDataContext --output-dir Migrations/MySqlMigrations
+
+An operation was scaffolded that may result in the loss of data. Please review the migration for accuracy.
+Done. To undo this action, use 'ef migrations remove'
+
 $ dotnet ef database update --context MySqlDataContext
 ```
 
@@ -98,3 +92,9 @@ $ dotnet ef database update --context MySqlDataContext
 [free mysql hosting](https://www.freemysqlhosting.net/)
 
 [Angular 14 - JWT Authentication Example & Tutorial](https://jasonwatmore.com/post/2022/11/15/angular-14-jwt-authentication-example-tutorial)
+
+### VS Tools
+
+[Install the Class Designer component](https://learn.microsoft.com/en-us/visualstudio/ide/class-designer/how-to-add-class-diagrams-to-projects?view=vs-2022)
+[Configure One-to-Many Relationships using Fluent API in Entity Framework Core](https://www.entityframeworktutorial.net/efcore/configure-one-to-many-relationship-using-fluent-api-in-ef-core.aspx)
+[Creating a Database with Code First in EF Core](https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core-example.html)

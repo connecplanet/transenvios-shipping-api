@@ -159,7 +159,7 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             //    "   END AS ShipmentState, " +
             //    "   ROUND(so.TotalPrice, 2) AS ShippingCost " +
             //    " FROM ShipmentOrders so " +
-            //    "   LEFT OUTER JOIN Users u ON so.ApplicantId = u.Id " +
+            //    "   LEFT OUTER JOIN Users u ON so.CustomerId = u.Id " +
             //    "   LEFT OUTER JOIN Cities pc ON so.PickUpCityId = pc.Code " +
             //    "   LEFT OUTER JOIN Cities dc ON so.DropOffCityId = dc.Code " +
             //    "   LEFT OUTER JOIN Drivers d ON so.TransporterId = d.Id;")
@@ -184,9 +184,9 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             throw new NotImplementedException();
         }
 
-        public async Task<int> GetNextOrderIdAsync()
+        public async Task<long> GetNextOrderIdAsync()
         {
-            var valueMax = 0;
+            var valueMax = 0L;
             if (_context.ShipmentOrders != null && _context.ShipmentOrders.Any())
             {
                 valueMax = await _context.ShipmentOrders.MaxAsync(e => e.Id);
@@ -223,23 +223,23 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
                 PaymentState = PaymentStates.UnPaid,
                 ShipmentState = ShipmentStates.Ordered,
                 TransporterId = null,
-                ApplicantId = applicantId,
+                CustomerId = applicantId,
                 ApplicationDate = DateTime.Now,
                 ModifyDate = DateTime.Now,
                 ModifyUserId = applicantId,
                 SenderDocumentType = order.Sender?.DocumentType,
-                SenderDocumentId = order.Sender?.DocumentId,
+                SenderDocumentId = order.Sender?.DocumentId.ToString(),
                 SenderFirstName = order.Sender?.FirstName,
                 SenderLastName = order.Sender?.LastName,
                 SenderEmail = order.Sender?.Email,
-                SenderCountryCode = order.Sender?.CountryCode,
+                SenderCountryCode = order.Sender?.CountryCode.ToString(),
                 SenderPhone = order.Sender?.Phone,
                 RecipientDocumentType = order.Recipient?.DocumentType,
-                RecipientDocumentId = order.Recipient?.DocumentId,
+                RecipientDocumentId = order.Recipient?.DocumentId.ToString(),
                 RecipientFirstName = order.Recipient?.FirstName,
                 RecipientLastName = order.Recipient?.LastName,
                 RecipientEmail = order.Recipient?.Email,
-                RecipientCountryCode = order.Recipient?.CountryCode,
+                RecipientCountryCode = order.Recipient?.CountryCode.ToString(),
                 RecipientPhone = order.Recipient?.Phone
             };
 
@@ -253,13 +253,13 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return shipmentOrder;
         }
 
-        private async Task SaveOrderItems(ShipmentOrderRequest order, int orderId)
+        private async Task SaveOrderItems(ShipmentOrderRequest order, long orderId)
         {
             var items = order.Items!.Select(detail =>
                     new ShipmentOrderItem
                     {
                         Id = Guid.NewGuid(),
-                        IdOrder = orderId,
+                        OrderId = orderId,
                         Width = detail.Width,
                         Height = detail.Height,
                         Weight = detail.Weight,

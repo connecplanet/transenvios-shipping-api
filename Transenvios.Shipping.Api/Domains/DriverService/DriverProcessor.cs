@@ -1,24 +1,28 @@
-﻿using Transenvios.Shipping.Api.Infraestructure;
+﻿using Transenvios.Shipping.Api.Domains.CatalogService;
+using Transenvios.Shipping.Api.Domains.UserService;
+using Transenvios.Shipping.Api.Infraestructure;
 
 namespace Transenvios.Shipping.Api.Domains.DriverService
 {
     public class DriverProcessor
     {
-        private readonly IDriverStorage _storage;
+        private readonly IDriverStorage _driverMediator;
+        private readonly ICatalogStorage<City> _cityMediator;
 
-        public DriverProcessor(IDriverStorage getDriver)
+        public DriverProcessor(IDriverStorage driverMediator, ICatalogStorage<City> cityMediator)
         {
-            _storage = getDriver ?? throw new ArgumentNullException(nameof(getDriver));
+            _driverMediator = driverMediator ?? throw new ArgumentNullException(nameof(driverMediator));
+            _cityMediator = cityMediator ?? throw new ArgumentNullException(nameof(cityMediator));
         }
 
         public async Task<IList<Driver>> GetAsync()
         {
-            return await _storage.GetAllAsync();
+            return await _driverMediator.GetAllAsync();
         }
 
         private async Task<Driver> GetAsync(Guid id)
         {
-            var user = await _storage.GetAsync(id);
+            var user = await _driverMediator.GetAsync(id);
             if (user == null)
             {
                 throw new KeyNotFoundException("Driver not found");
@@ -30,7 +34,7 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
         {
             var currentDriver = await GetAsync(id);
 
-            var items = await _storage.UpdateAsync(model);
+            var items = await _driverMediator.UpdateAsync(model);
 
             return new DriverStateResponse
             {
@@ -40,37 +44,73 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
             };
         }
 
-        public async Task<DriverStateResponse> AddAsync(Driver model)
+        public async Task<DriverStateResponse> AddAsync(DriverRequest modelDto)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(model.DocumentType) || string.IsNullOrWhiteSpace(model.Email) ||
-                    string.IsNullOrWhiteSpace(model.Phone) || Guid.Empty == model.PickUpCityId ||
-                    string.IsNullOrWhiteSpace(model.PickUpAddress) || string.IsNullOrWhiteSpace(model.FirstName))
+                if (string.IsNullOrWhiteSpace(modelDto.DocumentType) || string.IsNullOrWhiteSpace(modelDto.Email) ||
+                    string.IsNullOrWhiteSpace(modelDto.Phone) || string.IsNullOrEmpty(modelDto.PickUpCityId) ||
+                    string.IsNullOrWhiteSpace(modelDto.PickUpAddress) || string.IsNullOrWhiteSpace(modelDto.FirstName))
                 {
                     throw new AppException("Some required fields are missing");
                 }
 
-                var invalidEmail = model.Email != null && await _storage.Exists(model.Email);
-
+                var invalidEmail = modelDto.Email != null && await _driverMediator.Exists(modelDto.Email);
                 if (invalidEmail)
                 {
-                    throw new AppException($"Email '{model.Email}' is already registered");
+                    throw new AppException($"Email '{modelDto.Email}' is already registered");
                 }
 
-                var invalidDocument = model.DocumentId != null && await _storage.Exists(model.DocumentId);
-
+                var invalidDocument = modelDto.DocumentId != null && await _driverMediator.Exists(modelDto.DocumentId);
                 if (invalidDocument)
                 {
-                    throw new AppException($"Document ID '{model.DocumentId}' is already registered");
+                    throw new AppException($"Document ID '{modelDto.DocumentId}' is already registered");
                 }
-                model.Id = Guid.NewGuid();
-                var items = await _storage.AddAsync(model);
+
+                if (!Guid.TryParse(modelDto.PickUpCityId, out var pickUpCityId))
+                {
+                    var pickUpCity = await _cityMediator.GetAsync(modelDto.PickUpCityId);
+                    if (pickUpCity == null)
+                    {
+                        throw new AppException($"City '{modelDto.PickUpCityId}' is not registered");
+                    }
+                    pickUpCityId = pickUpCity.Id;
+                }
+
+                var countryNumber = (modelDto.CountryCode == UserConstants.ColombiaCode
+                    ? UserConstants.ColombiaNumber
+                    : modelDto.CountryCode)?.Replace(UserConstants.DialPrefix, string.Empty);
+                
+                if(!int.TryParse(countryNumber, out var countryId))
+                {
+                    countryId = int.Parse(UserConstants.ColombiaNumber);
+                }
+
+                if (!int.TryParse(modelDto.DocumentId, out var documentId))
+                {
+                    documentId = 0;
+                }
+
+                var model = new Driver
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = modelDto.FirstName,
+                    LastName = modelDto.LastName,
+                    Email = modelDto.Email,
+                    CountryCode = countryId.ToString(),
+                    DocumentType = modelDto.DocumentType,
+                    DocumentId = documentId.ToString(),
+                    Phone = modelDto.Phone,
+                    PickUpAddress = modelDto.PickUpAddress,
+                    PickUpCityId = pickUpCityId
+                };
+
+                var itemsAffected = await _driverMediator.AddAsync(model);
 
                 return new DriverStateResponse
                 {
                     Id = model.Id,
-                    Items = items,
+                    Items = itemsAffected,
                     Message = "Registration successful"
                 };
             }
@@ -86,7 +126,7 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
         public async Task<DriverStateResponse> DeleteAsync(Guid id)
         {
             var user = await GetAsync(id);
-            var items = await _storage.DeleteAsync(user);
+            var items = await _driverMediator.DeleteAsync(user);
 
             return new DriverStateResponse
             {

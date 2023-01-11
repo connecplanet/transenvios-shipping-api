@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities;
 
 namespace Transenvios.Shipping.Api.Domains.UserService
 {
@@ -10,9 +11,13 @@ namespace Transenvios.Shipping.Api.Domains.UserService
         public string? CountryCode { get; set; }
         public string? Phone { get; set; }
         public string? Role { get; set; }
+        public string? DocumentType { get; set; }
+        public string? DocumentId { get; set; }
         [JsonIgnore]
         public string? PasswordHash { get; set; }
-        public string? DocumentType { get; set; }
-        public int? DocumentId { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<ShipmentOrder>? CustomerOrders { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<ShipmentOrder>? UserOrders { get; set; }
     }
 }

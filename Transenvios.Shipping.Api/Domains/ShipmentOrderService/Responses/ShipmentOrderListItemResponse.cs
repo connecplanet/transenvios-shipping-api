@@ -2,7 +2,7 @@
 {
     public class ShipmentOrderListItemResponse
     {
-        public int OrderId { get; set; }
+        public long OrderId { get; set; }
         public string ApplicantName { get; set; }
         public string Phone { get; set; }
         public string FromCity { get; set; }

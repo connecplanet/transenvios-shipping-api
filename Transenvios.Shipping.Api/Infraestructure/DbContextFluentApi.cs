@@ -16,7 +16,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
             builder.Entity<User>(entity =>
             {
                 entity.ToTable("Users");
-                HasGuidKey<User>(entity);
+                HasGuidKey(entity);
 
                 entity.Property(e => e.FirstName).HasColumnType("varchar(200)").IsRequired();
                 entity.Property(e => e.LastName).HasColumnType("varchar(200)").IsRequired();
@@ -29,6 +29,9 @@ namespace Transenvios.Shipping.Api.Infraestructure
 
                 entity.Property(e => e.Phone).HasColumnType("varchar(10)");
                 entity.Property(e => e.Role).HasColumnType("char(2)");
+
+                entity.Property(e => e.DocumentType).HasColumnType("varchar(5)").HasMaxLength(5);
+                entity.Property(e => e.DocumentId).HasColumnType("varchar(20)").IsUnicode();
             });
 
         }
@@ -37,7 +40,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
             builder.Entity<City>(entity =>
             {
                 entity.ToTable("Cities");
-                HasGuidKey<City>(entity);
+                HasGuidKey(entity);
                 
                 entity.Property(e => e.Name).HasColumnType("varchar(100)").IsRequired();
                 entity.Property(e => e.Code).HasColumnType("varchar(5)").IsRequired().HasMaxLength(5);
@@ -52,7 +55,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
             builder.Entity<ShipmentRoute>(entity =>
             {
                 entity.ToTable("Routes");
-                HasGuidKey<ShipmentRoute>(entity);
+                HasGuidKey(entity);
 
                 entity.Property(e => e.FromCityCode).HasColumnType("varchar(5)").IsRequired();
                 entity.Property(e => e.ToCityCode).HasColumnType("varchar(5)").IsRequired();
@@ -71,7 +74,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
             builder.Entity<Client>(entity =>
             {
                 entity.ToTable("Clients");
-                HasGuidKey<Client>(entity);
+                HasGuidKey(entity);
 
                 entity.Property(e => e.DocumentType).HasColumnType("varchar(5)").HasMaxLength(5);
                 entity.Property(e => e.DocumentId).HasColumnType("varchar(20)").IsUnicode();
@@ -91,7 +94,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
             builder.Entity<Driver>(entity =>
             {
                 entity.ToTable("Drivers");
-                HasGuidKey<Driver>(entity);
+                HasGuidKey(entity);
 
                 entity.Property(e => e.DocumentType).HasColumnType("varchar(5)").HasMaxLength(5);
                 entity.Property(e => e.DocumentId).HasColumnType("varchar(20)").IsUnicode();
@@ -99,7 +102,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.Property(e => e.FirstName).HasColumnType("varchar(200)").IsRequired();
                 entity.Property(e => e.LastName).HasColumnType("varchar(200)").IsRequired();
                 entity.Property(e => e.Email).HasColumnType("varchar(500)").IsRequired();
-                entity.Property(e => e.CountryCode).HasColumnType("tinyint");
+                entity.Property(e => e.CountryCode).HasColumnType("varchar(5)");
                 entity.Property(e => e.Phone).HasColumnType("varchar(10)");
                 
                 entity.Property(e => e.PickUpCityId).HasColumnType("char(36)").IsRequired().HasMaxLength(36);
@@ -116,7 +119,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
 
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.Id).IsUnique();
-                entity.Property(e => e.Id).HasColumnType("int").IsRequired();
+                entity.Property(e => e.Id).HasColumnType("bigint").IsRequired();
                 
                 entity.Property(e => e.PickUpCityId).HasColumnType("char(36)").IsRequired().HasMaxLength(36);
                 entity.Property(e => e.DropOffCityId).HasColumnType("char(36)").IsRequired().HasMaxLength(36);
@@ -132,7 +135,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.Property(e => e.ShipmentState).HasColumnType("tinyint");
 
                 entity.Property(e => e.TransporterId).HasColumnType("char(36)");
-                entity.Property(e => e.ApplicantId).HasColumnType("char(36)");
+                entity.Property(e => e.CustomerId).HasColumnType("char(36)");
                 entity.Property(e => e.ModifyUserId).HasColumnType("char(36)");
 
                 entity.Property(e => e.ApplicationDate).HasColumnType("datetime");
@@ -143,7 +146,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.Property(e => e.SenderFirstName).HasColumnType("varchar(200)");
                 entity.Property(e => e.SenderLastName).HasColumnType("varchar(200)");
                 entity.Property(e => e.SenderEmail).HasColumnType("varchar(500)");
-                entity.Property(e => e.SenderCountryCode).HasColumnType("tinyint");
+                entity.Property(e => e.SenderCountryCode).HasColumnType("varchar(5)");
                 entity.Property(e => e.SenderPhone).HasColumnType("varchar(10)");
 
                 entity.Property(e => e.RecipientDocumentType).HasColumnType("varchar(5)");
@@ -151,8 +154,38 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.Property(e => e.RecipientFirstName).HasColumnType("varchar(200)");
                 entity.Property(e => e.RecipientLastName).HasColumnType("varchar(200)");
                 entity.Property(e => e.RecipientEmail).HasColumnType("varchar(500)");
-                entity.Property(e => e.RecipientCountryCode).HasColumnType("tinyint");
+                entity.Property(e => e.RecipientCountryCode).HasColumnType("varchar(5)");
                 entity.Property(e => e.RecipientPhone).HasColumnType("varchar(10)");
+
+                entity
+                    .HasOne(order => order.PickUpCity)
+                    .WithMany(city => city.ShipmentOrderPickUpCity)
+                    .HasForeignKey(order => order.PickUpCityId)
+                    .HasConstraintName("ShipmentOrders_PickupCityId_FK");
+
+                entity
+                    .HasOne(order => order.DropOffCity)
+                    .WithMany(city => city.ShipmentOrderDropOffCity)
+                    .HasForeignKey(order => order.DropOffCityId)
+                    .HasConstraintName("ShipmentOrders_DropOffCityId_FK");
+
+                entity
+                    .HasOne(order => order.Customer)
+                    .WithMany(user => user.CustomerOrders)
+                    .HasForeignKey(order => order.CustomerId)
+                    .HasConstraintName("ShipmentOrders_CustomerId_FK");
+
+                entity
+                    .HasOne(order => order.User)
+                    .WithMany(user => user.UserOrders)
+                    .HasForeignKey(order => order.CustomerId)
+                    .HasConstraintName("ShipmentOrders_ModifyUserId_FK");
+
+                entity
+                    .HasOne(order => order.Transporter)
+                    .WithMany(driver => driver.ShipmentOrders)
+                    .HasForeignKey(order => order.TransporterId)
+                    .HasConstraintName("ShipmentOrders_TransporterId_FK");
             });
         }
 
@@ -164,7 +197,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.Id).IsUnique();
                 entity.Property(e => e.Id).HasColumnType("char(36)");
-                entity.Property(e => e.IdOrder).HasColumnType("int").IsRequired();
+                entity.Property(e => e.OrderId).HasColumnType("bigint").IsRequired();
 
                 entity.Property(e => e.Weight).HasColumnType("decimal").IsRequired();
                 entity.Property(e => e.Height).HasColumnType("decimal").IsRequired();
@@ -174,6 +207,12 @@ namespace Transenvios.Shipping.Api.Infraestructure
 
                 entity.Property(e => e.IsFragile).HasColumnType("bit").IsRequired();
                 entity.Property(e => e.IsUrgent).HasColumnType("bit").IsRequired();
+
+                entity
+                    .HasOne(order => order.Order)
+                    .WithMany(item => item.Packages)
+                    .HasForeignKey(order => order.OrderId)
+                    .HasConstraintName("ShipmentOrderItems_ShipmentOrder_FK");
             });
         }
 

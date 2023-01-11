@@ -36,7 +36,8 @@ namespace Transenvios.Shipping.Api.Mediators.DriverService
 
         public async Task<bool> Exists(long? document)
         {
-            return await _context.Drivers.AnyAsync(x => x.DocumentId == document);
+            var documentId = document.ToString();
+            return await _context.Drivers.AnyAsync(x => x.DocumentId == documentId);
         }
 
         public async Task<int> AddAsync(Driver driver)

@@ -89,7 +89,7 @@ using (var scope = app.Services.CreateScope())
         .AllowAnyMethod()
         .AllowAnyHeader());
 
-    if (app.Environment.IsDevelopment() || env.IsEnvironment("NonProd") || env.IsEnvironment("Debug"))
+    if (app.Environment.IsDevelopment() || env.IsEnvironment("NonProd") || env.IsEnvironment("QA"))
     {
         app.UseSwagger();
         app.UseSwaggerUI();

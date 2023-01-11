@@ -30,10 +30,10 @@ namespace Transenvios.Shipping.Api.Adapters.DriverService
             return Ok(response);
         }
 
-        [AllowAnonymous, HttpPost]
-        public async Task<ActionResult<DriverStateResponse>> AddAsync(Driver model)
+        [HttpPost]
+        public async Task<ActionResult<DriverStateResponse>> AddAsync(DriverRequest modelDto)
         {
-            var response = await _processor.AddAsync(model);
+            var response = await _processor.AddAsync(modelDto);
             return Ok(response);
         }
 

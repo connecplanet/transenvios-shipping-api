@@ -51,7 +51,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
 
                 if (string.IsNullOrWhiteSpace(model.CountryCode))
                 {
-                    model.CountryCode = UserConstants.Colombia;
+                    model.CountryCode = UserConstants.ColombiaId;
                 }
 
                 var result = model.Email != null && await _getUser.Exists(model.Email);
