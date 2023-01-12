@@ -7,10 +7,10 @@ namespace Transenvios.Shipping.Api.Domains.CatalogService
     public class City : CatalogEntity
     {
         [JsonIgnore]
-        public virtual ICollection<Driver>? Drivers { get; set; }
+        public List<Driver>? Drivers { get; set; }
         [JsonIgnore]
-        public virtual ICollection<ShipmentOrder>? PickUpOrderCities { get; set; }
+        public List<ShipmentOrder>? PickUpCities { get; set; }
         [JsonIgnore]
-        public virtual ICollection<ShipmentOrder>? DropOffOrderCities { get; set; }
+        public List<ShipmentOrder>? DropOffCities { get; set; }
     }
 }

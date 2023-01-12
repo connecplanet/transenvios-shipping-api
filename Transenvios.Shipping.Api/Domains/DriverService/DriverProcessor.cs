@@ -102,7 +102,8 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
                     DocumentId = documentId.ToString(),
                     Phone = modelDto.Phone,
                     PickUpAddress = modelDto.PickUpAddress,
-                    PickUpCityId = pickUpCityId
+                    PickUpCityId = pickUpCityId,
+                    Active = true
                 };
 
                 var itemsAffected = await _driverMediator.AddAsync(model);

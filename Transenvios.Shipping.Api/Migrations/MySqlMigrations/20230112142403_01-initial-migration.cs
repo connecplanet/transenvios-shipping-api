@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 {
-    public partial class CP01initialcreate : Migration
+    public partial class _01initialmigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -68,9 +68,9 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ToCityCode = table.Column<string>(type: "varchar(5)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    InitialKiloPrice = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
-                    AdditionalKiloPrice = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
-                    PriceCm3 = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    InitialKiloPrice = table.Column<decimal>(type: "decimal(16,2)", nullable: true),
+                    AdditionalKiloPrice = table.Column<decimal>(type: "decimal(16,2)", nullable: true),
+                    PriceCm3 = table.Column<decimal>(type: "decimal(16,2)", nullable: true),
                     Active = table.Column<ulong>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -94,13 +94,13 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Phone = table.Column<string>(type: "varchar(10)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Role = table.Column<string>(type: "char(2)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PasswordHash = table.Column<string>(type: "varchar(2000)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Role = table.Column<sbyte>(type: "tinyint", nullable: true),
                     DocumentType = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DocumentId = table.Column<string>(type: "varchar(20)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Active = table.Column<ulong>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "varchar(2000)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -130,13 +130,14 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PickUpAddress = table.Column<string>(type: "varchar(200)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PickUpCityId = table.Column<Guid>(type: "char(36)", maxLength: 36, nullable: false, collation: "ascii_general_ci")
+                    PickUpCityId = table.Column<Guid>(type: "char(36)", maxLength: 36, nullable: false, collation: "ascii_general_ci"),
+                    Active = table.Column<ulong>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Drivers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Drivers_Cities_PickUpCityId",
+                        name: "Drivers_PickUpCityId_FK",
                         column: x => x.PickUpCityId,
                         principalTable: "Cities",
                         principalColumn: "Id",
@@ -145,7 +146,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Orders",
+                name: "ShipmentOrders",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -154,9 +155,9 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DropOffAddress = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    InitialPrice = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
-                    Taxes = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    TotalPrice = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    InitialPrice = table.Column<decimal>(type: "decimal(16,2)", nullable: true),
+                    Taxes = table.Column<decimal>(type: "decimal(16,2)", nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "decimal(16,2)", nullable: false),
                     PaymentState = table.Column<sbyte>(type: "tinyint", nullable: false),
                     ShipmentState = table.Column<sbyte>(type: "tinyint", nullable: false),
                     ApplicationDate = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -199,6 +200,12 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                 {
                     table.PrimaryKey("PK_ShipmentOrders", x => x.Id);
                     table.ForeignKey(
+                        name: "ShipmentOrders_CustomerId_FK",
+                        column: x => x.CustomerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "ShipmentOrders_DropOffCityId_FK",
                         column: x => x.DropOffCityId,
                         principalTable: "Cities",
@@ -206,10 +213,9 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "ShipmentOrders_ModifyUserId_FK",
-                        column: x => x.CustomerId,
+                        column: x => x.ModifyUserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "ShipmentOrders_PickupCityId_FK",
                         column: x => x.PickUpCityId,
@@ -230,11 +236,11 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     OrderId = table.Column<long>(type: "bigint", nullable: false),
-                    Weight = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    Height = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    Length = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    Width = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    InsuredAmount = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    Weight = table.Column<decimal>(type: "decimal(16,2)", nullable: false),
+                    Height = table.Column<decimal>(type: "decimal(16,2)", nullable: false),
+                    Length = table.Column<decimal>(type: "decimal(16,2)", nullable: false),
+                    Width = table.Column<decimal>(type: "decimal(16,2)", nullable: false),
+                    InsuredAmount = table.Column<decimal>(type: "decimal(16,2)", nullable: true),
                     IsFragile = table.Column<ulong>(type: "bit", nullable: false),
                     IsUrgent = table.Column<ulong>(type: "bit", nullable: false)
                 },
@@ -244,7 +250,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     table.ForeignKey(
                         name: "ShipmentOrderItems_ShipmentOrder_FK",
                         column: x => x.OrderId,
-                        principalTable: "Orders",
+                        principalTable: "ShipmentOrders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -304,28 +310,33 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentOrders_CustomerId",
-                table: "Orders",
+                table: "ShipmentOrders",
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentOrders_DropOffCityId",
-                table: "Orders",
+                table: "ShipmentOrders",
                 column: "DropOffCityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentOrders_Id",
-                table: "Orders",
+                table: "ShipmentOrders",
                 column: "Id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ShipmentOrders_ModifyUserId",
+                table: "ShipmentOrders",
+                column: "ModifyUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ShipmentOrders_PickUpCityId",
-                table: "Orders",
+                table: "ShipmentOrders",
                 column: "PickUpCityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentOrders_TransporterId",
-                table: "Orders",
+                table: "ShipmentOrders",
                 column: "TransporterId");
 
             migrationBuilder.CreateIndex(
@@ -353,7 +364,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                 name: "ShipmentOrderItems");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "ShipmentOrders");
 
             migrationBuilder.DropTable(
                 name: "Users");

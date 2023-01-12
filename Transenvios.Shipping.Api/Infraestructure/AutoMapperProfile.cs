@@ -10,13 +10,13 @@ namespace Transenvios.Shipping.Api.Infraestructure
     {
         public AutoMapperProfile()
         {
-            // ModifyUser -> AuthenticateResponse
+            // User -> AuthenticateResponse
             CreateMap<User, UserAuthenticateResponse>();
 
-            // RegisterRequest -> ModifyUser
+            // RegisterRequest -> User
             CreateMap<UserRegisterRequest, User>();
 
-            // UpdateRequest -> ModifyUser
+            // UpdateRequest -> User
             CreateMap<UserUpdateRequest, User>()
                 .ForAllMembers(x => x.Condition(
                     (src, dest, prop) =>
@@ -29,7 +29,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
                     }
                 ));
 
-            // RegisterRequest -> ModifyUser
+            // RegisterRequest -> User
             CreateMap<ClientUpdateRequest, User>();
 
 

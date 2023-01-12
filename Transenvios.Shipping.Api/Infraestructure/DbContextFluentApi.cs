@@ -124,7 +124,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
         {
             builder.Entity<ShipmentOrder>(entity =>
             {
-                entity.ToTable("Orders");
+                entity.ToTable("ShipmentOrders");
 
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.Id).IsUnique();
@@ -170,31 +170,31 @@ namespace Transenvios.Shipping.Api.Infraestructure
 
                 entity
                     .HasOne(d => d.PickUpCity)
-                    .WithMany(p => p.PickUpOrderCities)
+                    .WithMany(p => p.PickUpCities)
                     .HasForeignKey(d => d.PickUpCityId)
                     .HasConstraintName("ShipmentOrders_PickupCityId_FK");
 
                 entity
                     .HasOne(d => d.DropOffCity)
-                    .WithMany(p => p.DropOffOrderCities)
+                    .WithMany(p => p.DropOffCities)
                     .HasForeignKey(d => d.DropOffCityId)
                     .HasConstraintName("ShipmentOrders_DropOffCityId_FK");
 
                 entity
                     .HasOne(d => d.Customer)
-                    .WithMany(p => p.CustomerOrders)
+                    .WithMany(p => p.Shipments)
                     .HasForeignKey(d => d.CustomerId)
                     .HasConstraintName("ShipmentOrders_CustomerId_FK");
 
                 entity
                     .HasOne(d => d.ModifyUser)
-                    .WithMany(p => p.UserOrders)
+                    .WithMany(p => p.AdminOrders)
                     .HasForeignKey(d => d.ModifyUserId)
                     .HasConstraintName("ShipmentOrders_ModifyUserId_FK");
 
                 entity
                     .HasOne(d => d.Transporter)
-                    .WithMany(p => p.Orders)
+                    .WithMany(p => p.Shipments)
                     .HasForeignKey(d => d.TransporterId)
                     .HasConstraintName("ShipmentOrders_TransporterId_FK");
             });

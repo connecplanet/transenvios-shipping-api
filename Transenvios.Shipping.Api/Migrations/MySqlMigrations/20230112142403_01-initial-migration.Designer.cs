@@ -11,8 +11,8 @@ using Transenvios.Shipping.Api.Infraestructure;
 namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 {
     [DbContext(typeof(MySqlDataContext))]
-    [Migration("20230110202525_CP01-initial-create")]
-    partial class CP01initialcreate
+    [Migration("20230112142403_01-initial-migration")]
+    partial class _01initialmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -60,17 +60,17 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .HasColumnType("bit");
 
                     b.Property<decimal?>("AdditionalKiloPrice")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<string>("FromCityCode")
                         .IsRequired()
                         .HasColumnType("varchar(5)");
 
                     b.Property<decimal?>("InitialKiloPrice")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<decimal?>("PriceCm3")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<string>("ToCityCode")
                         .IsRequired()
@@ -141,6 +141,9 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<ulong>("Active")
+                        .HasColumnType("bit");
+
                     b.Property<string>("CountryCode")
                         .HasColumnType("varchar(5)");
 
@@ -208,7 +211,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .HasColumnType("char(36)");
 
                     b.Property<decimal?>("InitialPrice")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<DateTime?>("ModifyDate")
                         .HasColumnType("datetime");
@@ -275,10 +278,10 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .HasColumnType("tinyint");
 
                     b.Property<decimal>("Taxes")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<Guid?>("TransporterId")
                         .HasColumnType("char(36)");
@@ -286,17 +289,19 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-                    
+
                     b.HasIndex("DropOffCityId");
 
                     b.HasIndex("Id")
                         .IsUnique();
 
+                    b.HasIndex("ModifyUserId");
+
                     b.HasIndex("PickUpCityId");
 
                     b.HasIndex("TransporterId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("ShipmentOrders", (string)null);
                 });
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities.ShipmentOrderItem", b =>
@@ -307,10 +312,10 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<decimal?>("Height")
                         .IsRequired()
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<decimal?>("InsuredAmount")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<ulong>("IsFragile")
                         .HasColumnType("bit");
@@ -320,18 +325,18 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Property<decimal?>("Length")
                         .IsRequired()
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint");
 
                     b.Property<decimal?>("Weight")
                         .IsRequired()
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<decimal?>("Width")
                         .IsRequired()
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(16,2)");
 
                     b.HasKey("Id");
 
@@ -343,11 +348,14 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.ToTable("ShipmentOrderItems", (string)null);
                 });
 
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.ModifyUser", b =>
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<ulong>("Active")
+                        .HasColumnType("bit");
 
                     b.Property<string>("CountryCode")
                         .HasColumnType("varchar(5)");
@@ -379,8 +387,8 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.Property<string>("Phone")
                         .HasColumnType("varchar(10)");
 
-                    b.Property<string>("Role")
-                        .HasColumnType("char(2)");
+                    b.Property<sbyte?>("Role")
+                        .HasColumnType("tinyint");
 
                     b.HasKey("Id");
 
@@ -399,36 +407,42 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .WithMany("Drivers")
                         .HasForeignKey("PickUpCityId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("Drivers_PickUpCityId_FK");
 
                     b.Navigation("PickUpCity");
                 });
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities.ShipmentOrder", b =>
                 {
-                    b.HasOne("Transenvios.Shipping.Api.Domains.UserService.ModifyUser", "ModifyUser")
-                        .WithMany("UserOrders")
+                    b.HasOne("Transenvios.Shipping.Api.Domains.UserService.User", "Customer")
+                        .WithMany("Shipments")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("ShipmentOrders_ModifyUserId_FK");
+                        .HasConstraintName("ShipmentOrders_CustomerId_FK");
 
                     b.HasOne("Transenvios.Shipping.Api.Domains.CatalogService.City", "DropOffCity")
-                        .WithMany("DropOffOrderCities")
+                        .WithMany("DropOffCities")
                         .HasForeignKey("DropOffCityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("ShipmentOrders_DropOffCityId_FK");
 
+                    b.HasOne("Transenvios.Shipping.Api.Domains.UserService.User", "ModifyUser")
+                        .WithMany("AdminOrders")
+                        .HasForeignKey("ModifyUserId")
+                        .HasConstraintName("ShipmentOrders_ModifyUserId_FK");
+
                     b.HasOne("Transenvios.Shipping.Api.Domains.CatalogService.City", "PickUpCity")
-                        .WithMany("PickUpOrderCities")
+                        .WithMany("PickUpCities")
                         .HasForeignKey("PickUpCityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("ShipmentOrders_PickupCityId_FK");
 
                     b.HasOne("Transenvios.Shipping.Api.Domains.DriverService.Driver", "Transporter")
-                        .WithMany("Orders")
+                        .WithMany("Shipments")
                         .HasForeignKey("TransporterId")
                         .HasConstraintName("ShipmentOrders_TransporterId_FK");
 
@@ -436,11 +450,11 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Navigation("DropOffCity");
 
+                    b.Navigation("ModifyUser");
+
                     b.Navigation("PickUpCity");
 
                     b.Navigation("Transporter");
-
-                    b.Navigation("ModifyUser");
                 });
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities.ShipmentOrderItem", b =>
@@ -459,14 +473,14 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                 {
                     b.Navigation("Drivers");
 
-                    b.Navigation("DropOffOrderCities");
+                    b.Navigation("DropOffCities");
 
-                    b.Navigation("PickUpOrderCities");
+                    b.Navigation("PickUpCities");
                 });
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.DriverService.Driver", b =>
                 {
-                    b.Navigation("Orders");
+                    b.Navigation("Shipments");
                 });
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities.ShipmentOrder", b =>
@@ -474,11 +488,11 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.Navigation("Packages");
                 });
 
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.ModifyUser", b =>
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.User", b =>
                 {
-                    b.Navigation("CustomerOrders");
+                    b.Navigation("AdminOrders");
 
-                    b.Navigation("UserOrders");
+                    b.Navigation("Shipments");
                 });
 #pragma warning restore 612, 618
         }

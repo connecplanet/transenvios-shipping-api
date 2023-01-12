@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.DriverService;
 using Transenvios.Shipping.Api.Domains.UserService;
@@ -8,6 +7,7 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities
 {
     public class ShipmentOrder
     {
+        #region Properties
         public long Id { get; set; }
         public string? PickUpAddress { get; set; }
         public string? DropOffAddress { get; set; }
@@ -32,23 +32,32 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities
         public string? RecipientEmail { get; set; }
         public string? RecipientCountryCode { get; set; }
         public string? RecipientPhone { get; set; }
+        #endregion Properties
 
+        #region Detail to parent relationship
         public Guid? PickUpCityId { get; set; }
-        public virtual City? PickUpCity { get; set; }
+        [JsonIgnore]
+        public City? PickUpCity { get; set; }
 
         public Guid? DropOffCityId { get; set; }
-        public virtual City? DropOffCity { get; set; }
+        [JsonIgnore]
+        public City? DropOffCity { get; set; }
 
         public Guid? TransporterId { get; set; }
-        public virtual Driver? Transporter { get; set; }
+        [JsonIgnore]
+        public Driver? Transporter { get; set; }
 
         public Guid CustomerId { get; set; }
-        public virtual User? Customer { get; set; }
+        [JsonIgnore]
+        public User? Customer { get; set; }
 
         public Guid? ModifyUserId { get; set; }
         [JsonIgnore]
-        public virtual User? ModifyUser { get; set; }
-        
-        public virtual ICollection<ShipmentOrderItem>? Packages { get; set; }
+        public User? ModifyUser { get; set; }
+        #endregion Detail to parent relationship
+
+        #region Parent to Detail relationship
+        public List<ShipmentOrderItem>? Packages { get; set; }
+        #endregion Parent to Detail relationship
     }
 }

@@ -9,12 +9,16 @@
   <ItemGroup>
     <Compile Remove="Domains\CodeConfigurationOrderService\**" />
     <Compile Remove="Domains\MailService\**" />
+    <Compile Remove="Migrations\SqliteMigrations\**" />
     <Content Remove="Domains\CodeConfigurationOrderService\**" />
     <Content Remove="Domains\MailService\**" />
+    <Content Remove="Migrations\SqliteMigrations\**" />
     <EmbeddedResource Remove="Domains\CodeConfigurationOrderService\**" />
     <EmbeddedResource Remove="Domains\MailService\**" />
+    <EmbeddedResource Remove="Migrations\SqliteMigrations\**" />
     <None Remove="Domains\CodeConfigurationOrderService\**" />
     <None Remove="Domains\MailService\**" />
+    <None Remove="Migrations\SqliteMigrations\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,8 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\MySqlMigrations\" />
-    <Folder Include="Migrations\SqliteMigrations\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

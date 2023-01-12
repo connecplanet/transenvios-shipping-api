@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.ClientService;
 using Transenvios.Shipping.Api.Domains.UserService;

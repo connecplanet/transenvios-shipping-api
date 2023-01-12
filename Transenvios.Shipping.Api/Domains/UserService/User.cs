@@ -17,8 +17,8 @@ namespace Transenvios.Shipping.Api.Domains.UserService
         [JsonIgnore]
         public string? PasswordHash { get; set; }
         [JsonIgnore]
-        public virtual ICollection<ShipmentOrder>? CustomerOrders { get; set; }
+        public List<ShipmentOrder>? Shipments { get; set; }
         [JsonIgnore]
-        public virtual ICollection<ShipmentOrder>? UserOrders { get; set; }
+        public List<ShipmentOrder>? AdminOrders { get; set; }
     }
 }

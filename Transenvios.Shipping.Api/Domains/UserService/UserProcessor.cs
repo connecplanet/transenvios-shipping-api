@@ -57,6 +57,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
 
                 var user = _mapper.Map<User>(model);
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
+                user.Active = true;
                 var items = await _registerUser.SignUpAsync(user);
 
                 return new UserStateResponse
@@ -137,7 +138,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             {
                 Id = currentUser.Id,
                 Items = items,
-                Message = "ModifyUser updated successfully"
+                Message = "User updated successfully"
             };
         }
 
@@ -150,7 +151,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             {
                 Id = user.Id,
                 Items = items,
-                Message = "ModifyUser deleted successfully"
+                Message = "User deleted successfully"
             };
         }
 
@@ -159,7 +160,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             var user = await _getAuthorizeUser.GetAsync(id);
             if (user == null)
             {
-                throw new KeyNotFoundException("ModifyUser not found");
+                throw new KeyNotFoundException("User not found");
             }
             return user;
         }

@@ -9,6 +9,6 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities
         
         public long OrderId { get; set; }
         [JsonIgnore]
-        public virtual ShipmentOrder? Order { get; set; }
+        public ShipmentOrder? Order { get; set; }
     }
 }

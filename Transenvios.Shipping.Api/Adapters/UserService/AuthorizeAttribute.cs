@@ -16,7 +16,7 @@ namespace Transenvios.Shipping.Api.Adapters.UserService
             }
 
             // authorization
-            var response = context.HttpContext.Items["ModifyUser"];
+            var response = context.HttpContext.Items["User"];
             var user = response?.ToString();
             if (user == null)
             {
