@@ -98,3 +98,4 @@ $ dotnet ef database update --context MySqlDataContext
 [Install the Class Designer component](https://learn.microsoft.com/en-us/visualstudio/ide/class-designer/how-to-add-class-diagrams-to-projects?view=vs-2022)
 [Configure One-to-Many Relationships using Fluent API in Entity Framework Core](https://www.entityframeworktutorial.net/efcore/configure-one-to-many-relationship-using-fluent-api-in-ef-core.aspx)
 [Creating a Database with Code First in EF Core](https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core-example.html)
+[Configuring One To One Relationships EF](https://www.learnentityframeworkcore.com/configuration/one-to-one-relationship-configuration)

@@ -2,8 +2,8 @@
 {
     public enum PaymentStates
     {
-        UnPaid = 0,
-        Paid = 1
+        UnPaid,
+        Paid
     }
 
     public enum ShipmentStates
@@ -14,5 +14,10 @@
         OnRoute,
         Delivered,
         Cancelled
+    }
+    public enum UserRoles
+    {
+        Customer,
+        Administrator
     }
 }

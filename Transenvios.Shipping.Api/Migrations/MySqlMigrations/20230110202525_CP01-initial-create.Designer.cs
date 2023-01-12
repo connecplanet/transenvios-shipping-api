@@ -296,7 +296,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.HasIndex("TransporterId");
 
-                    b.ToTable("ShipmentOrders", (string)null);
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities.ShipmentOrderItem", b =>
@@ -343,7 +343,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.ToTable("ShipmentOrderItems", (string)null);
                 });
 
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.User", b =>
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.ModifyUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -406,7 +406,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities.ShipmentOrder", b =>
                 {
-                    b.HasOne("Transenvios.Shipping.Api.Domains.UserService.User", "User")
+                    b.HasOne("Transenvios.Shipping.Api.Domains.UserService.ModifyUser", "ModifyUser")
                         .WithMany("UserOrders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -414,21 +414,21 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .HasConstraintName("ShipmentOrders_ModifyUserId_FK");
 
                     b.HasOne("Transenvios.Shipping.Api.Domains.CatalogService.City", "DropOffCity")
-                        .WithMany("ShipmentOrderDropOffCity")
+                        .WithMany("DropOffOrderCities")
                         .HasForeignKey("DropOffCityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("ShipmentOrders_DropOffCityId_FK");
 
                     b.HasOne("Transenvios.Shipping.Api.Domains.CatalogService.City", "PickUpCity")
-                        .WithMany("ShipmentOrderPickUpCity")
+                        .WithMany("PickUpOrderCities")
                         .HasForeignKey("PickUpCityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("ShipmentOrders_PickupCityId_FK");
 
                     b.HasOne("Transenvios.Shipping.Api.Domains.DriverService.Driver", "Transporter")
-                        .WithMany("ShipmentOrders")
+                        .WithMany("Orders")
                         .HasForeignKey("TransporterId")
                         .HasConstraintName("ShipmentOrders_TransporterId_FK");
 
@@ -440,7 +440,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
                     b.Navigation("Transporter");
 
-                    b.Navigation("User");
+                    b.Navigation("ModifyUser");
                 });
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities.ShipmentOrderItem", b =>
@@ -459,14 +459,14 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                 {
                     b.Navigation("Drivers");
 
-                    b.Navigation("ShipmentOrderDropOffCity");
+                    b.Navigation("DropOffOrderCities");
 
-                    b.Navigation("ShipmentOrderPickUpCity");
+                    b.Navigation("PickUpOrderCities");
                 });
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.DriverService.Driver", b =>
                 {
-                    b.Navigation("ShipmentOrders");
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities.ShipmentOrder", b =>
@@ -474,7 +474,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.Navigation("Packages");
                 });
 
-            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.User", b =>
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.ModifyUser", b =>
                 {
                     b.Navigation("CustomerOrders");
 

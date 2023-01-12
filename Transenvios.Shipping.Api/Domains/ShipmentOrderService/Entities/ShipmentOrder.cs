@@ -1,4 +1,6 @@
-﻿using Transenvios.Shipping.Api.Domains.CatalogService;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.DriverService;
 using Transenvios.Shipping.Api.Domains.UserService;
 
@@ -31,21 +33,22 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities
         public string? RecipientCountryCode { get; set; }
         public string? RecipientPhone { get; set; }
 
-        public ICollection<ShipmentOrderItem>? Packages { get; set; }
-
         public Guid? PickUpCityId { get; set; }
-        public City? PickUpCity { get; set; }
+        public virtual City? PickUpCity { get; set; }
 
         public Guid? DropOffCityId { get; set; }
-        public City? DropOffCity { get; set; }
+        public virtual City? DropOffCity { get; set; }
 
         public Guid? TransporterId { get; set; }
-        public Driver? Transporter { get; set; }
+        public virtual Driver? Transporter { get; set; }
 
         public Guid CustomerId { get; set; }
-        public User? Customer { get; set; }
+        public virtual User? Customer { get; set; }
 
         public Guid? ModifyUserId { get; set; }
-        public User? User { get; set; }
+        [JsonIgnore]
+        public virtual User? ModifyUser { get; set; }
+        
+        public virtual ICollection<ShipmentOrderItem>? Packages { get; set; }
     }
 }

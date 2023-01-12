@@ -17,21 +17,21 @@ namespace Transenvios.Shipping.Api.Adapters.CityService
         [HttpGet]
         public async Task<ActionResult<IList<City>>> GetAllAsync()
         {
-            var city = await _processor.GetAllAsync();
-            return Ok(city);
+            var response = await _processor.GetAllAsync();
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<City>> GetAsync(Guid id)
         {
-            var city = await _processor.GetAsync(id);
+            var response = await _processor.GetAsync(id);
 
-            if (city == null)
+            if (response == null)
             {
                 return NotFound();
             }
 
-            return Ok(city);
+            return Ok(response);
         }
 
         [HttpPost]

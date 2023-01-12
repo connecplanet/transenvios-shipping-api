@@ -17,8 +17,8 @@ namespace Transenvios.Shipping.Api.Adapters.IdTypeService
         [HttpGet]
         public async Task<ActionResult<IList<Country>>> GetAllAsync()
         {
-            var items = await _query.GetAllAsync();
-            return Ok(items);
+            var response = await _query.GetAllAsync();
+            return Ok(response);
         }
     }
 }

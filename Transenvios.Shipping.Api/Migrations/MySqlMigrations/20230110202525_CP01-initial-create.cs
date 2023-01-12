@@ -145,7 +145,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "ShipmentOrders",
+                name: "Orders",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -244,7 +244,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     table.ForeignKey(
                         name: "ShipmentOrderItems_ShipmentOrder_FK",
                         column: x => x.OrderId,
-                        principalTable: "ShipmentOrders",
+                        principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -304,28 +304,28 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentOrders_CustomerId",
-                table: "ShipmentOrders",
+                table: "Orders",
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentOrders_DropOffCityId",
-                table: "ShipmentOrders",
+                table: "Orders",
                 column: "DropOffCityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentOrders_Id",
-                table: "ShipmentOrders",
+                table: "Orders",
                 column: "Id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentOrders_PickUpCityId",
-                table: "ShipmentOrders",
+                table: "Orders",
                 column: "PickUpCityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentOrders_TransporterId",
-                table: "ShipmentOrders",
+                table: "Orders",
                 column: "TransporterId");
 
             migrationBuilder.CreateIndex(
@@ -353,7 +353,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                 name: "ShipmentOrderItems");
 
             migrationBuilder.DropTable(
-                name: "ShipmentOrders");
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Users");

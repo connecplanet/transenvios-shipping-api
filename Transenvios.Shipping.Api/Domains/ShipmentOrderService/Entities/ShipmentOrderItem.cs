@@ -1,4 +1,5 @@
-﻿using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
+﻿using System.Text.Json.Serialization;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
 
 namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities
 {
@@ -7,6 +8,7 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities
         public Guid Id { get; set; }
         
         public long OrderId { get; set; }
-        public ShipmentOrder? Order { get; set; }
+        [JsonIgnore]
+        public virtual ShipmentOrder? Order { get; set; }
     }
 }

@@ -19,8 +19,21 @@ namespace Transenvios.Shipping.Api.Adapters.DriverService
         [HttpGet]
         public async Task<ActionResult<IList<Driver>>> GetAllAsync()
         {
-            var drivers = await _processor.GetAsync();
-            return Ok(drivers);
+            var response = await _processor.GetAsync();
+            return Ok(response);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Driver>> GetAsync(Guid id)
+        {
+            var response = await _processor.GetAsync(id);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(response);
         }
 
         [HttpPut("{id}")]

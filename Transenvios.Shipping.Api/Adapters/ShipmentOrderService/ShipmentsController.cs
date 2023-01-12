@@ -51,8 +51,8 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         [HttpGet("Catalogs")]
         public async Task<ActionResult<CatalogResponse>> GetCatalogAsync()
         {
-            var catalog = await _orderProcessor.GetCatalogAsync();
-            return Ok(catalog);
+            var response = await _orderProcessor.GetCatalogAsync();
+            return Ok(response);
         }
 
         [HttpGet()]

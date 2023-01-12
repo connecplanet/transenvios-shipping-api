@@ -25,7 +25,7 @@ namespace Transenvios.Shipping.Api.Adapters.UserService
             _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
-        [AllowAnonymous, HttpPost("Authenticate")] // sign-in
+        [AllowAnonymous, HttpPost("Authenticate")]
         public async Task<IActionResult> SignInAsync(UserAuthenticateRequest model)
         {
             var response = await _userProcessor.SignInAsync(model);
@@ -39,7 +39,7 @@ namespace Transenvios.Shipping.Api.Adapters.UserService
             return Ok(response);
         }
 
-        [AllowAnonymous, HttpPost("ForgotPassword")] // forgot-password
+        [AllowAnonymous, HttpPost("ForgotPassword")]
         public async Task<ActionResult<UserStateResponse>> ForgotPassword(UserAuthenticateRequest? data)
         {
             if (data == null || string.IsNullOrWhiteSpace(data.Email))
@@ -80,14 +80,14 @@ namespace Transenvios.Shipping.Api.Adapters.UserService
         [HttpGet("{id}")]
         public async Task<ActionResult<UserAuthenticateResponse>> GetAsync(Guid id)
         {
-            var user = await _userProcessor.GetAsync(id);
+            var response = await _userProcessor.GetAsync(id);
 
-            if (user == null)
+            if (response == null)
             {
                 return NotFound();
             }
 
-            return Ok(user);
+            return Ok(response);
         }
 
         [HttpPut("{id}")]

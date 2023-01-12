@@ -20,7 +20,7 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
             return await _driverMediator.GetAllAsync();
         }
 
-        private async Task<Driver> GetAsync(Guid id)
+        public async Task<Driver> GetAsync(Guid id)
         {
             var user = await _driverMediator.GetAsync(id);
             if (user == null)

@@ -15,9 +15,10 @@ namespace Transenvios.Shipping.Api.Domains.DriverService
         public string? Phone { get; set; }
         public string? PickUpAddress { get; set; }
         public Guid PickUpCityId { get; set; }
+        public bool? Active { get; set; }
         [JsonIgnore]
-        public City? PickUpCity { get; set; }
+        public virtual City? PickUpCity { get; set; }
         [JsonIgnore]
-        public ICollection<ShipmentOrder>? ShipmentOrders { get; set; }
+        public virtual ICollection<ShipmentOrder>? Orders { get; set; }
     }
 }

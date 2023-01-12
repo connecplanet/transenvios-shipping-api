@@ -16,7 +16,7 @@
             if (userId != null)
             {
                 // attach user to context on successful jwt validation
-                context.Items["User"] = userService.GetAsync(userId.Value);
+                context.Items["ModifyUser"] = userService.GetAsync(userId.Value);
             }
 
             await _next(context);

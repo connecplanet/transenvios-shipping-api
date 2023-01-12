@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities;
 using Transenvios.Shipping.Api.Infraestructure;
 
 namespace Transenvios.Shipping.Api.Domains.UserService
@@ -40,14 +41,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(model.Role))
-                {
-                    model.Role = UserConstants.Requester;
-                }
-                else if (model.Role.ToLower().Equals(_roleAdmin))
-                {
-                    model.Role = UserConstants.Administrator;
-                }
+                model.Role ??= UserRoles.Customer;
 
                 if (string.IsNullOrWhiteSpace(model.CountryCode))
                 {
@@ -143,7 +137,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             {
                 Id = currentUser.Id,
                 Items = items,
-                Message = "User updated successfully"
+                Message = "ModifyUser updated successfully"
             };
         }
 
@@ -156,7 +150,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             {
                 Id = user.Id,
                 Items = items,
-                Message = "User deleted successfully"
+                Message = "ModifyUser deleted successfully"
             };
         }
 
@@ -165,7 +159,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             var user = await _getAuthorizeUser.GetAsync(id);
             if (user == null)
             {
-                throw new KeyNotFoundException("User not found");
+                throw new KeyNotFoundException("ModifyUser not found");
             }
             return user;
         }

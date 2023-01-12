@@ -133,10 +133,10 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
 
         public async Task<ShipmentOrderListResponse> GetShipmentListAsync(int offset, int limit)
         {
-            // await _context.ShipmentOrders.Include(x => x.)
+            // await _context.Orders.Include(x => x.)
 
-            //var totalRows = await _context.ShipmentOrders!.CountAsync();
-            //var records = await _context.ShipmentOrders.FromSqlRaw<ShipmentOrderListResponse>(
+            //var totalRows = await _context.Orders!.CountAsync();
+            //var records = await _context.Orders.FromSqlRaw<ShipmentOrderListResponse>(
             //    @"SELECT " +
             //    "   so.id AS OrderId, " +
             //    "   CONCAT(u.LastName, ', ', u.FirstName) AS ApplicantName, " +
@@ -158,7 +158,7 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             //    "   ELSE 'Ordenado' " +
             //    "   END AS ShipmentState, " +
             //    "   ROUND(so.TotalPrice, 2) AS ShippingCost " +
-            //    " FROM ShipmentOrders so " +
+            //    " FROM Orders so " +
             //    "   LEFT OUTER JOIN Users u ON so.CustomerId = u.Id " +
             //    "   LEFT OUTER JOIN Cities pc ON so.PickUpCityId = pc.Code " +
             //    "   LEFT OUTER JOIN Cities dc ON so.DropOffCityId = dc.Code " +
