@@ -11,6 +11,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
 {
     public static class DbContextFluentApi
     {
+        #region Cities
         public static void CitiesConfiguration(this ModelBuilder builder)
         {
             builder.Entity<City>(entity =>
@@ -25,7 +26,9 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.Property(e => e.Active).HasColumnType("bit").IsRequired();
             });
         }
+        #endregion Cities
 
+        #region Drivers
         public static void DriverConfiguration(this ModelBuilder builder)
         {
             builder.Entity<Driver>(entity =>
@@ -53,33 +56,9 @@ namespace Transenvios.Shipping.Api.Infraestructure
                     .HasConstraintName("Drivers_PickUpCityId_FK"); ;
             });
         }
+        #endregion Drivers
 
-        public static void UserConfiguration(this ModelBuilder builder)
-        {
-            builder.Entity<User>(entity =>
-            {
-                entity.ToTable("Users");
-                HasGuidKey(entity);
-
-                entity.Property(e => e.FirstName).HasColumnType("varchar(200)").IsRequired();
-                entity.Property(e => e.LastName).HasColumnType("varchar(200)").IsRequired();
-
-                entity.Property(e => e.Email).HasColumnType("varchar(500)").IsRequired();
-                entity.HasIndex(e => e.Email).IsUnique();
-                
-                entity.Property(e => e.PasswordHash).HasColumnType("varchar(2000)").IsRequired();
-                entity.Property(e => e.CountryCode).HasColumnType("varchar(5)");
-
-                entity.Property(e => e.Phone).HasColumnType("varchar(10)");
-                entity.Property(e => e.Role).HasColumnType("tinyint");
-
-                entity.Property(e => e.DocumentType).HasColumnType("varchar(5)").HasMaxLength(5);
-                entity.Property(e => e.DocumentId).HasColumnType("varchar(20)").IsUnicode();
-
-                entity.Property(e => e.Active).HasColumnType("bit").IsRequired();
-            });
-        }
-
+        #region Routes
         public static void RouteConfiguration(this ModelBuilder builder)
         {
             builder.Entity<ShipmentRoute>(entity =>
@@ -98,7 +77,32 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.Property(e => e.Active).HasColumnType("bit").IsRequired();
             });
         }
+        #endregion Routes
 
+        #region Users/Employees
+        public static void UserConfiguration(this ModelBuilder builder)
+        {
+            builder.Entity<User>(entity =>
+            {
+                entity.ToTable("Users");
+                HasGuidKey(entity);
+
+                entity.Property(e => e.DocumentType).HasColumnType("varchar(5)").HasMaxLength(5);
+                entity.Property(e => e.DocumentId).HasColumnType("varchar(20)").IsUnicode();
+                entity.Property(e => e.FirstName).HasColumnType("varchar(200)").IsRequired();
+                entity.Property(e => e.LastName).HasColumnType("varchar(200)").IsRequired();
+                entity.Property(e => e.Email).HasColumnType("varchar(500)").IsRequired();
+                entity.HasIndex(e => e.Email).IsUnique();
+                entity.Property(e => e.PasswordHash).HasColumnType("varchar(2000)").IsRequired();
+                entity.Property(e => e.CountryCode).HasColumnType("varchar(5)");
+                entity.Property(e => e.Phone).HasColumnType("varchar(10)");
+                entity.Property(e => e.Role).HasColumnType("tinyint");
+                entity.Property(e => e.Active).HasColumnType("bit").IsRequired();
+            });
+        }
+        #endregion Users/Employees
+
+        #region Clients/Customers
         public static void ClientConfiguration(this ModelBuilder builder)
         {
             builder.Entity<Client>(entity =>
@@ -108,18 +112,20 @@ namespace Transenvios.Shipping.Api.Infraestructure
 
                 entity.Property(e => e.DocumentType).HasColumnType("varchar(5)").HasMaxLength(5);
                 entity.Property(e => e.DocumentId).HasColumnType("varchar(20)").IsUnicode();
-
                 entity.Property(e => e.FirstName).HasColumnType("varchar(200)").IsRequired();
                 entity.Property(e => e.LastName).HasColumnType("varchar(200)").IsRequired();
                 entity.Property(e => e.Email).HasColumnType("varchar(500)").IsRequired();
-                entity.Property(e => e.CountryCode).HasColumnType("tinyint");
-                entity.Property(e => e.Phone).HasColumnType("varchar(10)");
-
+                entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.PasswordHash).HasColumnType("varchar(2000)").IsRequired();
-                entity.Property(e => e.Role).HasColumnType("char(2)").HasMaxLength(2);
+                entity.Property(e => e.CountryCode).HasColumnType("varchar(5)");
+                entity.Property(e => e.Phone).HasColumnType("varchar(10)");
+                entity.Property(e => e.Role).HasColumnType("tinyint").HasMaxLength(2);
+                entity.Property(e => e.Active).HasColumnType("bit").IsRequired();
             });
         }
+        #endregion Clients/Customers
 
+        #region Shipment Header
         public static void ShipmentOrderConfiguration(this ModelBuilder builder)
         {
             builder.Entity<ShipmentOrder>(entity =>
@@ -199,7 +205,9 @@ namespace Transenvios.Shipping.Api.Infraestructure
                     .HasConstraintName("ShipmentOrders_TransporterId_FK");
             });
         }
+        #endregion Shipment Header
 
+        #region Shipment Packages
         public static void ShipmentOrderItemConfiguration(this ModelBuilder builder)
         {
             builder.Entity<ShipmentOrderItem>(entity =>
@@ -226,12 +234,15 @@ namespace Transenvios.Shipping.Api.Infraestructure
                     .HasConstraintName("ShipmentOrderItems_ShipmentOrder_FK");
             });
         }
+        #endregion Shipment Packages
 
+        #region General settings
         private static void HasGuidKey<T>(EntityTypeBuilder<T> entity) where T : BaseEntity<Guid>
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.Id).IsUnique();
             entity.Property(e => e.Id).HasColumnType("char(36)");
         }
+        #endregion General settings
     }
 }

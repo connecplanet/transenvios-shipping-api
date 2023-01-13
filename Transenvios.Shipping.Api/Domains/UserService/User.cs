@@ -3,6 +3,9 @@ using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities;
 
 namespace Transenvios.Shipping.Api.Domains.UserService
 {
+    /// <summary>
+    /// Administrator Users
+    /// </summary>
     public class User : BaseEntity<Guid>
     {
         public string? FirstName { get; set; }
