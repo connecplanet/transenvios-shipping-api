@@ -53,7 +53,8 @@ namespace Transenvios.Shipping.Api.Infraestructure
                 entity.HasOne(d => d.PickUpCity)
                     .WithMany(p => p.Drivers)
                     .HasForeignKey(d => d.PickUpCityId)
-                    .HasConstraintName("Drivers_PickUpCityId_FK"); ;
+                    .HasConstraintName("Drivers_PickUpCityId_FK")
+                    .OnDelete(DeleteBehavior.Restrict);
             });
         }
         #endregion Drivers
@@ -85,7 +86,10 @@ namespace Transenvios.Shipping.Api.Infraestructure
             builder.Entity<User>(entity =>
             {
                 entity.ToTable("Users");
-                HasGuidKey(entity);
+
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.Id).IsUnique();
+                entity.Property(e => e.Id).HasColumnType("char(36)");
 
                 entity.Property(e => e.DocumentType).HasColumnType("varchar(5)").HasMaxLength(5);
                 entity.Property(e => e.DocumentId).HasColumnType("varchar(20)").IsUnicode();
@@ -108,7 +112,10 @@ namespace Transenvios.Shipping.Api.Infraestructure
             builder.Entity<Client>(entity =>
             {
                 entity.ToTable("Clients");
-                HasGuidKey(entity);
+
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.Id).IsUnique();
+                entity.Property(e => e.Id).HasColumnType("char(36)");
 
                 entity.Property(e => e.DocumentType).HasColumnType("varchar(5)").HasMaxLength(5);
                 entity.Property(e => e.DocumentId).HasColumnType("varchar(20)").IsUnicode();
@@ -178,31 +185,36 @@ namespace Transenvios.Shipping.Api.Infraestructure
                     .HasOne(d => d.PickUpCity)
                     .WithMany(p => p.PickUpCities)
                     .HasForeignKey(d => d.PickUpCityId)
-                    .HasConstraintName("ShipmentOrders_PickupCityId_FK");
+                    .HasConstraintName("ShipmentOrders_PickupCityId_FK")
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity
                     .HasOne(d => d.DropOffCity)
                     .WithMany(p => p.DropOffCities)
                     .HasForeignKey(d => d.DropOffCityId)
-                    .HasConstraintName("ShipmentOrders_DropOffCityId_FK");
+                    .HasConstraintName("ShipmentOrders_DropOffCityId_FK")
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity
                     .HasOne(d => d.Customer)
                     .WithMany(p => p.Shipments)
                     .HasForeignKey(d => d.CustomerId)
-                    .HasConstraintName("ShipmentOrders_CustomerId_FK");
+                    .HasConstraintName("ShipmentOrders_CustomerId_FK")
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity
                     .HasOne(d => d.ModifyUser)
-                    .WithMany(p => p.AdminOrders)
+                    .WithMany(p => p.Shipments)
                     .HasForeignKey(d => d.ModifyUserId)
-                    .HasConstraintName("ShipmentOrders_ModifyUserId_FK");
+                    .HasConstraintName("ShipmentOrders_ModifyUserId_FK")
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity
                     .HasOne(d => d.Transporter)
                     .WithMany(p => p.Shipments)
                     .HasForeignKey(d => d.TransporterId)
-                    .HasConstraintName("ShipmentOrders_TransporterId_FK");
+                    .HasConstraintName("ShipmentOrders_TransporterId_FK")
+                    .OnDelete(DeleteBehavior.Restrict);
             });
         }
         #endregion Shipment Header

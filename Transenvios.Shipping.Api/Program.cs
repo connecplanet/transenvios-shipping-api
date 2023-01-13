@@ -59,7 +59,7 @@ var env = builder.Environment;
     services.AddScoped<ICatalogQuery<IdType>, IdTypeMediator>();
     services.AddScoped<ICatalogQuery<Country>, CountryMediator>();
     services.AddScoped<ClientProcessor>();
-    services.AddTransient<IClientStorage, ClientMediator>();
+    services.AddTransient<IClientMediator, ClientMediator>();
     services.AddScoped<IOrderChargesCalculator, ShipmentOrderMediator>();
     services.AddScoped<IOrderStorage, ShipmentOrderMediator>();
     services.AddScoped<CityProcessor>();

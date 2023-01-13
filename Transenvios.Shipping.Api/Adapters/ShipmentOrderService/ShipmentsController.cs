@@ -56,9 +56,10 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         }
 
         [HttpGet()]
-        public async Task<ActionResult<ShipmentOrderListResponse>> GetShipmentListAsync()
+        public async Task<ActionResult<ShipmentOrderListResponse>> GetShipmentListAsync(int page = 0, int limit = 0)
         {
-            throw new NotImplementedException();
+            var response = await _orderProcessor.GetShipmentOrders(page, limit);
+            return response;
         }
     }
 }

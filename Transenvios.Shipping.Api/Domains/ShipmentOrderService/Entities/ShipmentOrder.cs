@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Transenvios.Shipping.Api.Domains.CatalogService;
+using Transenvios.Shipping.Api.Domains.ClientService;
 using Transenvios.Shipping.Api.Domains.DriverService;
 using Transenvios.Shipping.Api.Domains.UserService;
 
@@ -49,7 +50,7 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities
 
         public Guid CustomerId { get; set; }
         [JsonIgnore]
-        public User? Customer { get; set; }
+        public Client? Customer { get; set; }
 
         public Guid? ModifyUserId { get; set; }
         [JsonIgnore]

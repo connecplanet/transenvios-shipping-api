@@ -9,5 +9,7 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.Responses
         public decimal Total { get; set; }
         public HttpStatusCode ResultCode { get; set; } = HttpStatusCode.OK;
         public string? ErrorMessage { get; set; }
+        public long? OrderId { get; set; }
+        public int? Items { get; set; }
     }
 }

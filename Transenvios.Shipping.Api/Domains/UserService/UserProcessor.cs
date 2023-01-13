@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Transenvios.Shipping.Api.Domains.CatalogService;
+using Transenvios.Shipping.Api.Domains.ClientService;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities;
 using Transenvios.Shipping.Api.Infraestructure;
 
@@ -14,7 +16,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
         private readonly IRemoveUser _removeUser;
         private readonly IGetAuthorizeUser _getAuthorizeUser;
         private readonly IPasswordReset _passwordReset;
-        private const string _roleAdmin = "admin";
+        private readonly ClientProcessor _clientProcess;
 
         public UserProcessor(
             IMapper mapper,
@@ -24,7 +26,8 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             IUpdateUser updateUser,
             IRemoveUser removeUser,
             IGetAuthorizeUser getAuthorizeUser,
-            IPasswordReset passwordReset
+            IPasswordReset passwordReset,
+            ClientProcessor clientProcess
             )
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -35,37 +38,34 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             _removeUser = removeUser ?? throw new ArgumentNullException(nameof(removeUser));
             _getAuthorizeUser = getAuthorizeUser ?? throw new ArgumentNullException(nameof(getAuthorizeUser));
             _passwordReset = passwordReset ?? throw new ArgumentNullException(nameof(passwordReset));
+            _clientProcess = clientProcess ?? throw new ArgumentNullException(nameof(clientProcess));
         }
 
         public async Task<UserStateResponse> SignUpAsync(UserRegisterRequest model)
         {
             try
             {
-                model.Role ??= UserRoles.Customer;
+                var roleValue = int.TryParse(model.Role, out var enumValue) && Enum.IsDefined(typeof(UserRoles), enumValue)
+                    ? (UserRoles)enumValue
+                    : UserRoles.Customer;
+                model.Role = ((int)roleValue).ToString();
 
-                if (string.IsNullOrWhiteSpace(model.CountryCode))
-                {
-                    model.CountryCode = UserConstants.ColombiaId;
-                }
-
-                var result = model.Email != null && await _getUser.Exists(model.Email);
-
-                if (result)
-                {
-                    throw new AppException($"Email '{model.Email}' is already registered");
-                }
+                var countryCode = !string.IsNullOrWhiteSpace(model.CountryCode) &&
+                                  int.TryParse(model.CountryCode.Replace("+", string.Empty), out var countryId)
+                    ? countryId.ToString()
+                    : UserConstants.ColombiaNumber;
+                model.CountryCode = countryCode;
 
                 var user = _mapper.Map<User>(model);
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
                 user.Active = true;
-                var items = await _registerUser.SignUpAsync(user);
 
-                return new UserStateResponse
+                if (roleValue == UserRoles.Employee)
                 {
-                    Id = user.Id,
-                    Items = items,
-                    Message = "Registration successful"
-                };
+                    return await EmployeeSignUp(model, user);
+                }
+
+                return await CustomerSignUp(user, roleValue);
             }
             catch (Exception ex)
             {
@@ -96,16 +96,30 @@ namespace Transenvios.Shipping.Api.Domains.UserService
                 throw new AppException("Email is required.");
             }
 
-            var user = await _getUser.GetAsync(model.Email);
+            var roleValue = int.TryParse(model.Role, out var enumValue) && Enum.IsDefined(typeof(UserRoles), enumValue)
+                ? (UserRoles)enumValue
+                : UserRoles.Customer;
+            model.Role = ((int)roleValue).ToString();
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
+            Person person;
+
+            if (roleValue == UserRoles.Employee)
+            {
+                person = await _getUser.GetAsync(model.Email);
+            }
+            else
+            {
+                person = await _clientProcess.GetAsync(model.Email);
+            }
+
+            if (person == null || !BCrypt.Net.BCrypt.Verify(model.Password, person.PasswordHash))
             {
                 throw new AppException("Username or password is incorrect.");
             }
 
-            var response = _mapper.Map<UserAuthenticateResponse>(user);
+            var response = _mapper.Map<UserAuthenticateResponse>(person);
 
-            response.Token = _jwtUtils.GenerateToken(user);
+            response.Token = _jwtUtils.GenerateToken(person);
             response.Avatar = "assets/images/avatars/transenvios.png";
             response.Status = "online";
             return response;
@@ -155,15 +169,6 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             };
         }
 
-        private async Task<User> GetUserAsync(Guid id)
-        {
-            var user = await _getAuthorizeUser.GetAsync(id);
-            if (user == null)
-            {
-                throw new KeyNotFoundException("User not found");
-            }
-            return user;
-        }
         public async Task<UserStateResponse> PasswordResetAsync(string email)
         {
             var user = await _getUser.GetAsync(email);
@@ -212,6 +217,57 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             }
 
             return response;
+        }
+
+        private async Task<User> GetUserAsync(Guid id)
+        {
+            var user = await _getAuthorizeUser.GetAsync(id);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found");
+            }
+            return user;
+        }
+
+        private async Task<UserStateResponse> CustomerSignUp(User user, UserRoles roleValue)
+        {
+            var customer = new ClientUpdateRequest
+            {
+                DocumentType = user.DocumentType,
+                DocumentId = user.DocumentId,
+                Email = user.Email,
+                CountryCode = user.CountryCode,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PasswordHash = user.PasswordHash,
+                Phone = user.Phone,
+                Role = ((int)roleValue).ToString(),
+            };
+            var addResult = await _clientProcess.AddAsync(customer);
+            return new UserStateResponse
+            {
+                Id = addResult.Id,
+                Items = addResult.Items,
+                Message = addResult.Message
+            };
+        }
+
+        private async Task<UserStateResponse> EmployeeSignUp(UserRegisterRequest model, User user)
+        {
+            var validationResult = model.Email != null && await _getUser.Exists(model.Email);
+
+            if (validationResult)
+            {
+                throw new AppException($"Email '{model.Email}' is already registered");
+            }
+
+            var itemsAffected = await _registerUser.SignUpAsync(user);
+            return new UserStateResponse
+            {
+                Id = user.Id,
+                Items = itemsAffected,
+                Message = "Registration successful"
+            };
         }
     }
 }

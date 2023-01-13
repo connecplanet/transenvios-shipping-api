@@ -1,8 +1,10 @@
-﻿namespace Transenvios.Shipping.Api.Domains.UserService
+﻿using Transenvios.Shipping.Api.Domains.CatalogService;
+
+namespace Transenvios.Shipping.Api.Domains.UserService
 {
     public interface IJwtUtils
     {
-        public string GenerateToken(User user);
+        public string GenerateToken(Person user);
         public Guid? ValidateToken(string? token);
     }
 }

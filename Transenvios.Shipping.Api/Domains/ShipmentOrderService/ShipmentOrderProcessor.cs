@@ -84,7 +84,7 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             return await _orderStorage.SubmitOrderAsync(order);
         }
 
-        public async Task<ShipmentOrderListResponse> GetShipmentOrders(int page, int limit)
+        public async Task<ShipmentOrderListResponse> GetShipmentOrders(int page = 0, int limit = 0)
         {
             if (page == 0)
                 page = 1;

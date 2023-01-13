@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Infraestructure;
 
 namespace Transenvios.Shipping.Api.Domains.UserService
@@ -16,7 +17,7 @@ namespace Transenvios.Shipping.Api.Domains.UserService
             _appSettings = appSettings.Value;
         }
 
-        public string GenerateToken(User user)
+        public string GenerateToken(Person user)
         {
             // generate token that is valid for 1 days
             var tokenHandler = new JwtSecurityTokenHandler();

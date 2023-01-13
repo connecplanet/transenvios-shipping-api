@@ -1,12 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Transenvios.Shipping.Api.Domains.CatalogService;
+using Transenvios.Shipping.Api.Domains.ClientService;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Responses;
 using Transenvios.Shipping.Api.Domains.UserService;
 using Transenvios.Shipping.Api.Infraestructure;
+using Transenvios.Shipping.Api.Mediators.ClientService;
 
 namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
 {
@@ -16,17 +18,20 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
         private readonly IDbContext _context;
         private readonly IGetUser _getUser;
         private readonly ICatalogStorage<City> _getCity;
+        private readonly IClientMediator _clientMediator;
 
         public ShipmentOrderMediator(
             IOptions<AppSettings> appSettings,
             IDbContext context,
             IGetUser getUser,
-            ICatalogStorage<City> getCity)
+            ICatalogStorage<City> getCity,
+            IClientMediator clientMediator)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _settings = appSettings.Value.Shipment ?? throw new ArgumentNullException(nameof(appSettings));
             _getUser = getUser ?? throw new ArgumentNullException(nameof(getUser));
             _getCity = getCity ?? throw new ArgumentNullException(nameof(getCity));
+            _clientMediator = clientMediator ?? throw new ArgumentNullException(nameof(clientMediator));
         }
 
         public decimal CalculateChargeByWeight(ShipmentRoute route, decimal weight)
@@ -90,17 +95,6 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return charges;
         }
 
-        private async Task<Guid> GetApplicantId(string? email)
-        {
-            var applicant = await _getUser?.GetAsync(email ?? string.Empty);
-            if (applicant == null)
-            {
-                throw new ArgumentException("Applicant Not Found");
-            }
-
-            return applicant.Id;
-        }
-
         public async Task<ShipmentOrderSubmitResponse> SubmitOrderAsync(ShipmentOrderRequest? order)
         {
             var orderResponse = new ShipmentOrderSubmitResponse();
@@ -112,16 +106,20 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
                     throw new ArgumentException("Sender or Recipient is null");
                 }
 
-                var applicantId = await GetApplicantId(order.ApplicantEmail);
+                var customer = await GetCustomer(order);
 
                 orderResponse.BasePrice = order.BasePrice;
                 orderResponse.Taxes = order.Taxes;
                 orderResponse.Total = order.Total;
 
-                var shipmentOrder = await SaveOrderHeader(order, applicantId);
+                var shipmentOrder = await SaveOrderHeader(order, customer.Id);
                 await SaveOrderItems(order, shipmentOrder.Id);
+                var itemsAffected = await _context.SaveChangesAsync();
 
-                await _context.SaveChangesAsync();
+                itemsAffected += await UpdateCustomer(order, customer);
+
+                orderResponse.OrderId = shipmentOrder.Id;
+                orderResponse.Items = itemsAffected;
             }
             catch (Exception error)
             {
@@ -129,59 +127,6 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             }
 
             return orderResponse;
-        }
-
-        public async Task<ShipmentOrderListResponse> GetShipmentListAsync(int offset, int limit)
-        {
-            // await _context.Shipments.Include(x => x.)
-
-            //var totalRows = await _context.Shipments!.CountAsync();
-            //var records = await _context.Shipments.FromSqlRaw<ShipmentOrderListResponse>(
-            //    @"SELECT " +
-            //    "   so.id AS OrderId, " +
-            //    "   CONCAT(u.LastName, ', ', u.FirstName) AS ApplicantName, " +
-            //    "   CONCAT('+', u.CountryCode, ' ', u.Phone) AS Phone, " +
-            //    "   pc.Name AS FromCity, " +
-            //    "   dc.Name AS ToCity, " +
-            //    "   CASE so.PaymentState " +
-            //    "   WHEN 1 THEN 'Pagado' " +
-            //    "   ELSE 'Sin Pagar' " +
-            //    "   END AS PaymentState, " +
-            //    "   CONCAT(d.LastName, ', ', d.FirstName) AS TransporterName, " +
-            //    "   so.TransporterId, " +
-            //    "   CASE so.ShipmentState " +
-            //    "   WHEN 1 THEN 'Recogiendo' " +
-            //    "   WHEN 2 THEN 'En bodega' " +
-            //    "   WHEN 3 THEN 'En ruta' " +
-            //    "   WHEN 4 THEN 'Entregado' " +
-            //    "   WHEN 5 THEN 'Cancelado' " +
-            //    "   ELSE 'Ordenado' " +
-            //    "   END AS ShipmentState, " +
-            //    "   ROUND(so.TotalPrice, 2) AS ShippingCost " +
-            //    " FROM Shipments so " +
-            //    "   LEFT OUTER JOIN Users u ON so.CustomerId = u.Id " +
-            //    "   LEFT OUTER JOIN Cities pc ON so.PickUpCityId = pc.Code " +
-            //    "   LEFT OUTER JOIN Cities dc ON so.DropOffCityId = dc.Code " +
-            //    "   LEFT OUTER JOIN Drivers d ON so.TransporterId = d.Id;")
-            //    .Skip(offset).Take(limit).ToArrayAsync();
-            //var count = records.Length;
-            //var response = new ShipmentOrderListResponse
-            //{
-            //    Pagination = new ShipmentOrderListPaginationResponse
-            //    {
-            //        Total = totalRows,
-            //        Count = count,
-            //        Offset = offset,
-            //        Limit = limit
-            //    },
-            //    Items = records.Select(r => new ShipmentOrderListItemResponse
-            //    {
-            //        OrderId = r.Id
-            //    }).ToList()
-            //};
-
-            //return response;
-            throw new NotImplementedException();
         }
 
         public async Task<long> GetNextOrderIdAsync()
@@ -194,7 +139,73 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return valueMax == 0 ? 1 : valueMax + 1;
         }
 
-        private async Task<ShipmentOrder> SaveOrderHeader(ShipmentOrderRequest order, Guid applicantId)
+        public async Task<ShipmentOrderListResponse> GetShipmentListAsync(int offset, int limit)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task<Client> GetCustomer(ShipmentOrderRequest order)
+        {
+            if (order?.Sender == null || order.Recipient == null)
+            {
+                throw new ArgumentException("Sender or Recipient is null");
+            }
+
+            var customerEmail = order.ApplicantEmail;
+            if (string.IsNullOrEmpty(customerEmail))
+            {
+                if (order.Sender!.IsClient)
+                {
+                    customerEmail = order.Sender!.Email;
+                }
+                else if (order.Recipient!.IsClient)
+                {
+                    customerEmail = order.Recipient!.Email;
+                }
+            }
+
+            if (string.IsNullOrEmpty(customerEmail))
+            {
+                throw new ArgumentException("Customer email is required");
+            }
+
+            var customer = await _clientMediator?.GetAsync(customerEmail)!;
+            if (customer == null)
+            {
+                throw new ArgumentException("Customer Not Found");
+            }
+
+            return customer;
+        }
+
+        private async Task<int> UpdateCustomer(ShipmentOrderRequest order, Client customer)
+        {
+            var customerDocumentType = string.Empty;
+            var customerDocumentId = string.Empty;
+
+            if (order.Sender!.IsClient)
+            {
+                customerDocumentType = order.Sender.DocumentType;
+                customerDocumentId = order.Sender.DocumentId;
+            }
+            else if (order.Recipient!.IsClient)
+            {
+                customerDocumentType = order.Recipient.DocumentType;
+                customerDocumentId = order.Recipient.DocumentId;
+            }
+
+            if (!string.Equals(customer.DocumentType ?? string.Empty, customerDocumentType ?? string.Empty) ||
+                !string.Equals(customer.DocumentId ?? string.Empty, customerDocumentId ?? string.Empty))
+            {
+                customer.DocumentType = customerDocumentType;
+                customer.DocumentId = customerDocumentId;
+                return await _clientMediator.UpdateAsync(customer);
+            }
+
+            return 0;
+        }
+
+        private async Task<ShipmentOrder> SaveOrderHeader(ShipmentOrderRequest order, Guid customerId)
         {
             var orderId = await GetNextOrderIdAsync();
             var fromCityId = await _getCity.GetAsync(order.Route?.PickUp?.CityCode ?? string.Empty);
@@ -222,11 +233,8 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
                 TotalPrice = order.Total,
                 PaymentState = PaymentStates.UnPaid,
                 ShipmentState = ShipmentStates.Ordered,
-                TransporterId = null,
-                CustomerId = applicantId,
+                CustomerId = customerId,
                 ApplicationDate = DateTime.Now,
-                ModifyDate = DateTime.Now,
-                ModifyUserId = applicantId,
                 SenderDocumentType = order.Sender?.DocumentType,
                 SenderDocumentId = order.Sender?.DocumentId.ToString(),
                 SenderFirstName = order.Sender?.FirstName,

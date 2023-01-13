@@ -25,6 +25,11 @@ namespace Transenvios.Shipping.Api.Adapters.UserService
             _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
+        /// <summary>
+        /// Authenticate the user as a Employee or a Customer
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [AllowAnonymous, HttpPost("Authenticate")]
         public async Task<IActionResult> SignInAsync(UserAuthenticateRequest model)
         {
@@ -32,6 +37,11 @@ namespace Transenvios.Shipping.Api.Adapters.UserService
             return Ok(response);
         }
 
+        /// <summary>
+        /// Register the user as a Employee or a Customer
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [AllowAnonymous, HttpPost]
         public async Task<ActionResult<UserStateResponse>> SignUpAsync(UserRegisterRequest model)
         {

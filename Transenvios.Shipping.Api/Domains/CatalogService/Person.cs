@@ -1,22 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Text.Json.Serialization;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities;
 
-namespace Transenvios.Shipping.Api.Domains.UserService
+namespace Transenvios.Shipping.Api.Domains.CatalogService
 {
-    public class UserRegisterRequest
+    public class Person : BaseEntity<Guid>
     {
-        [Required]
         public string? FirstName { get; set; }
-        [Required]
         public string? LastName { get; set; }
-        [Required]
         public string? Email { get; set; }
-        [Required]
-        public string? Password { get; set; }
         public string? CountryCode { get; set; }
         public string? Phone { get; set; }
-        public string? Role { get; set; }
+        public UserRoles? Role { get; set; }
         public string? DocumentType { get; set; }
         public string? DocumentId { get; set; }
+        public bool? Active { get; set; }
+        [JsonIgnore]
+        public string? PasswordHash { get; set; }
     }
 }

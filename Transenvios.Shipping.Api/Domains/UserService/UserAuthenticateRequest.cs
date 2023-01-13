@@ -9,5 +9,6 @@ namespace Transenvios.Shipping.Api.Domains.UserService
 
         [Required]
         public string? Password { get; set; }
+        public string? Role { get; set; }
     }
 }

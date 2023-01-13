@@ -11,7 +11,7 @@ using Transenvios.Shipping.Api.Infraestructure;
 namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 {
     [DbContext(typeof(MySqlDataContext))]
-    [Migration("20230112142403_01-initial-migration")]
+    [Migration("20230113193050_01-initial-migration")]
     partial class _01initialmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -93,8 +93,11 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<sbyte?>("CountryCode")
-                        .HasColumnType("tinyint");
+                    b.Property<ulong>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("CountryCode")
+                        .HasColumnType("varchar(5)");
 
                     b.Property<string>("DocumentId")
                         .IsUnicode(true)
@@ -123,11 +126,14 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.Property<string>("Phone")
                         .HasColumnType("varchar(10)");
 
-                    b.Property<string>("Role")
+                    b.Property<sbyte?>("Role")
                         .HasMaxLength(2)
-                        .HasColumnType("char(2)");
+                        .HasColumnType("tinyint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.HasIndex("Id")
                         .IsUnique();
@@ -406,7 +412,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.HasOne("Transenvios.Shipping.Api.Domains.CatalogService.City", "PickUpCity")
                         .WithMany("Drivers")
                         .HasForeignKey("PickUpCityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("Drivers_PickUpCityId_FK");
 
@@ -415,35 +421,37 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities.ShipmentOrder", b =>
                 {
-                    b.HasOne("Transenvios.Shipping.Api.Domains.UserService.User", "Customer")
+                    b.HasOne("Transenvios.Shipping.Api.Domains.ClientService.Client", "Customer")
                         .WithMany("Shipments")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("ShipmentOrders_CustomerId_FK");
 
                     b.HasOne("Transenvios.Shipping.Api.Domains.CatalogService.City", "DropOffCity")
                         .WithMany("DropOffCities")
                         .HasForeignKey("DropOffCityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("ShipmentOrders_DropOffCityId_FK");
 
                     b.HasOne("Transenvios.Shipping.Api.Domains.UserService.User", "ModifyUser")
-                        .WithMany("AdminOrders")
+                        .WithMany("Shipments")
                         .HasForeignKey("ModifyUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("ShipmentOrders_ModifyUserId_FK");
 
                     b.HasOne("Transenvios.Shipping.Api.Domains.CatalogService.City", "PickUpCity")
                         .WithMany("PickUpCities")
                         .HasForeignKey("PickUpCityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("ShipmentOrders_PickupCityId_FK");
 
                     b.HasOne("Transenvios.Shipping.Api.Domains.DriverService.Driver", "Transporter")
                         .WithMany("Shipments")
                         .HasForeignKey("TransporterId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("ShipmentOrders_TransporterId_FK");
 
                     b.Navigation("Customer");
@@ -478,6 +486,11 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.Navigation("PickUpCities");
                 });
 
+            modelBuilder.Entity("Transenvios.Shipping.Api.Domains.ClientService.Client", b =>
+                {
+                    b.Navigation("Shipments");
+                });
+
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.DriverService.Driver", b =>
                 {
                     b.Navigation("Shipments");
@@ -490,8 +503,6 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
 
             modelBuilder.Entity("Transenvios.Shipping.Api.Domains.UserService.User", b =>
                 {
-                    b.Navigation("AdminOrders");
-
                     b.Navigation("Shipments");
                 });
 #pragma warning restore 612, 618

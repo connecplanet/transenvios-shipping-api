@@ -6,18 +6,16 @@ namespace Transenvios.Shipping.Api.Domains.ClientService
 {
     public class ClientProcessor
     {
-        private readonly IClientStorage _clients;
-
+        private readonly IClientMediator _clients;
         private readonly IMapper _mapper;
 
-        public ClientProcessor(IClientStorage clients,
+        public ClientProcessor(IClientMediator clients,
             IMapper mapper)
         {
             _clients = clients ??
                 throw new ArgumentNullException(nameof(clients));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
-
 
         public async Task<IList<Client>> GetAllAsync()
         {
@@ -27,6 +25,16 @@ namespace Transenvios.Shipping.Api.Domains.ClientService
         public async Task<Client> GetAsync(Guid id)
         {
             var client = await _clients.GetAsync(id);
+            if (client == null)
+            {
+                throw new KeyNotFoundException("Client not found");
+            }
+            return client;
+        }
+
+        public async Task<Client> GetAsync(string email)
+        {
+            var client = await _clients.GetAsync(email);
             if (client == null)
             {
                 throw new KeyNotFoundException("Client not found");
@@ -92,6 +100,7 @@ namespace Transenvios.Shipping.Api.Domains.ClientService
                 }
 
                 var client = _mapper.Map<Client>(model);
+                client.Active = true;
                 var items = await _clients.AddAsync(client);
 
                 return new CatalogStateResponse
