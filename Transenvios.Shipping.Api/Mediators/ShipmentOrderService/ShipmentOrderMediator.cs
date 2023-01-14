@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.ClientService;
@@ -141,7 +142,46 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
 
         public async Task<ShipmentOrderListResponse> GetShipmentListAsync(int offset, int limit)
         {
-            throw new NotImplementedException();
+            var currentPage = offset == 0 ? 1 : offset % limit;
+            var totalRows = await _context.ShipmentOrders!.CountAsync();
+            var response = new ShipmentOrderListResponse
+            {
+                Pagination = new ShipmentOrderListPaginationResponse
+                {
+                    Total = totalRows,
+                    Page = currentPage,
+                    Limit = limit
+                }
+            };
+
+            var orders = await _context.ShipmentOrders!
+                .Include(b => b.Customer)
+                .Include(b => b.PickUpCity)
+                .Include(b => b.DropOffCity)
+                .Include(b => b.Transporter)
+                .Skip(offset)
+                .Take(limit)
+                .Select(order => new ShipmentOrderListItemResponse
+                {
+                    OrderId = order.Id,
+                    CustomerName = $"{order.Customer!.LastName}, {order.Customer!.FirstName}",
+                    Phone = order.Customer!.Phone!,
+                    FromCity = order.PickUpCity!.Name!,
+                    ToCity = order.DropOffCity!.Name!,
+                    PaymentState = order.PaymentState.GetEnumDescription(),
+                    TransporterId = order.TransporterId,
+                    TransporterName = order.Transporter != null 
+                        ? $"{order.Transporter!.LastName}, {order.Transporter!.FirstName}"
+                        : null,
+                    ShipmentState = order.ShipmentState.GetEnumDescription(),
+                    ShipmentPrice = order.TotalPrice.ToString("#,###")
+                })
+                .ToListAsync();
+
+            response.Items = orders;
+            response.Pagination.Count = orders.Count;
+
+            return response;
         }
 
         private async Task<Client> GetCustomer(ShipmentOrderRequest order)
