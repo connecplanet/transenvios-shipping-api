@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.RoutesService;
 
@@ -20,14 +19,27 @@ namespace Transenvios.Shipping.Api.Adapters.RouteService
         [HttpGet]
         public async Task<ActionResult<IList<ShipmentRoute>>> GetAllAsync()
         {
-            var client = await _processor.GetAllAsync();
-            return Ok(client);
+            var response = await _processor.GetAllAsync();
+            return Ok(response);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ShipmentRoute>> GetAsync(Guid id)
+        {
+            var response = await _processor.GetAsync(id);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(response);
         }
 
         [HttpPost]
-        public async Task<ActionResult<RouteStateResponse>> RegisterAsync(RouteCreateUpdateRequest model)
+        public async Task<ActionResult<RouteStateResponse>> AddAsync(RouteCreateUpdateRequest model)
         {
-            var response = await _processor.RegisterAsync(model);
+            var response = await _processor.AddAsync(model);
             return Ok(response);
         }
 

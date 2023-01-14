@@ -1,18 +1,15 @@
 ﻿using System.Text.Json.Serialization;
+using Transenvios.Shipping.Api.Domains.CatalogService;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities;
 
 namespace Transenvios.Shipping.Api.Domains.UserService
 {
-    public class User : BaseEntity<Guid>
+    /// <summary>
+    /// Administrator Users
+    /// </summary>
+    public class User : Person
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? Email { get; set; }
-        public string? CountryCode { get; set; }
-        public string? Phone { get; set; }
-        public string? Role { get; set; }
         [JsonIgnore]
-        public string? PasswordHash { get; set; }
-        public string? DocumentType { get; set; }
-        public int? DocumentId { get; set; }
+        public List<ShipmentOrder>? Shipments { get; set; }
     }
 }

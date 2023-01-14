@@ -1,6 +1,6 @@
-﻿namespace Transenvios.Shipping.Api.Domains.ClientService
+﻿namespace Transenvios.Shipping.Api.Domains.DriverService
 {
-    public class ClientUpdateRequest
+    public class DriverRequest
     {
         public string? DocumentType { get; set; }
         public string? DocumentId { get; set; }
@@ -9,8 +9,7 @@
         public string? Email { get; set; }
         public string? CountryCode { get; set; }
         public string? Phone { get; set; }
-        public string? Role { get; set; }
-        public string? PasswordHash { get; set; }
-
+        public string? PickUpCityId { get; set; }
+        public string? PickUpAddress { get; set; }
     }
 }

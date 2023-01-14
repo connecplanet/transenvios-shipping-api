@@ -6,9 +6,9 @@ namespace Transenvios.Shipping.Api.Mediators.CatalogService
 {
     public class ShipmentRouteMediator : ICatalogQuery<ShipmentRoute>
     {
-        private readonly DataContext _context;
+        private readonly IDbContext _context;
 
-        public ShipmentRouteMediator(DataContext context)
+        public ShipmentRouteMediator(IDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }

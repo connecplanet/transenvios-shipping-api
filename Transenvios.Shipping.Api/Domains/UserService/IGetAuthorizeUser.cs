@@ -2,6 +2,6 @@
 {
     public interface IGetAuthorizeUser
     {
-        Task<User> GetByIdAsync(Guid id);
+        Task<User> GetAsync(Guid id);
     }
 }

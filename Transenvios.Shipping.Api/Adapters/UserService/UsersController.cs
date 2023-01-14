@@ -25,21 +25,31 @@ namespace Transenvios.Shipping.Api.Adapters.UserService
             _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
-        [AllowAnonymous, HttpPost("Authenticate")] // sign-in
-        public async Task<IActionResult> AuthenticateAsync(UserAuthenticateRequest model)
+        /// <summary>
+        /// Authenticate the user as a Employee or a Customer
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AllowAnonymous, HttpPost("Authenticate")]
+        public async Task<IActionResult> SignInAsync(UserAuthenticateRequest model)
         {
-            var response = await _userProcessor.AuthenticateAsync(model);
+            var response = await _userProcessor.SignInAsync(model);
             return Ok(response);
         }
 
-        [AllowAnonymous, HttpPost] // sign-up
-        public async Task<ActionResult<UserStateResponse>> RegisterAsync(UserRegisterRequest model)
+        /// <summary>
+        /// Register the user as a Employee or a Customer
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AllowAnonymous, HttpPost]
+        public async Task<ActionResult<UserStateResponse>> SignUpAsync(UserRegisterRequest model)
         {
-            var response = await _userProcessor.RegisterAsync(model);
+            var response = await _userProcessor.SignUpAsync(model);
             return Ok(response);
         }
 
-        [AllowAnonymous, HttpPost("ForgotPassword")] // forgot-password
+        [AllowAnonymous, HttpPost("ForgotPassword")]
         public async Task<ActionResult<UserStateResponse>> ForgotPassword(UserAuthenticateRequest? data)
         {
             if (data == null || string.IsNullOrWhiteSpace(data.Email))
@@ -78,16 +88,16 @@ namespace Transenvios.Shipping.Api.Adapters.UserService
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserAuthenticateResponse>> GetByIdAsync(Guid id)
+        public async Task<ActionResult<UserAuthenticateResponse>> GetAsync(Guid id)
         {
-            var user = await _userProcessor.GetByIdAsync(id);
+            var response = await _userProcessor.GetAsync(id);
 
-            if (user == null)
+            if (response == null)
             {
                 return NotFound();
             }
 
-            return Ok(user);
+            return Ok(response);
         }
 
         [HttpPut("{id}")]

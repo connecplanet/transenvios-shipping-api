@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Transenvios.Shipping.Api.Adapters.UserService;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Responses;
 
 namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
 {
@@ -19,7 +21,7 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         }
 
         [HttpPost("Calculate")]
-        public async Task<ActionResult<ShipmentOrderResponse>> CalculateChargesAsync(ShipmentOrderRequest? order)
+        public async Task<ActionResult<ShipmentOrderSubmitResponse>> CalculateChargesAsync(ShipmentOrderRequest? order)
         {
             var response = await _orderProcessor.CalculateAsync(order);
 
@@ -33,7 +35,7 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         }
 
         [HttpPost()]
-        public async Task<ActionResult<ShipmentOrderResponse>> SubmitOrderAsync(ShipmentOrderRequest? order)
+        public async Task<ActionResult<ShipmentOrderSubmitResponse>> SubmitOrderAsync(ShipmentOrderRequest? order)
         {
             var response = await _orderProcessor.SubmitOrderAsync(order);
 
@@ -49,8 +51,15 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         [HttpGet("Catalogs")]
         public async Task<ActionResult<CatalogResponse>> GetCatalogAsync()
         {
-            var catalog = await _orderProcessor.GetCatalogAsync();
-            return Ok(catalog);
+            var response = await _orderProcessor.GetCatalogAsync();
+            return Ok(response);
+        }
+
+        [HttpGet()]
+        public async Task<ActionResult<ShipmentOrderListResponse>> GetShipmentListAsync(int page = 0, int limit = 0)
+        {
+            var response = await _orderProcessor.GetShipmentOrders(page, limit);
+            return response;
         }
     }
 }

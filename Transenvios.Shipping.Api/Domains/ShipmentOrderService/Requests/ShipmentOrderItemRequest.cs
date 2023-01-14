@@ -1,4 +1,4 @@
-﻿namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
+﻿namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests
 {
     public class ShipmentOrderItemRequest
     {

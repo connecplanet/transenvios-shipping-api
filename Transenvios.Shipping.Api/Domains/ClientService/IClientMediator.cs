@@ -1,6 +1,6 @@
 ﻿namespace Transenvios.Shipping.Api.Domains.ClientService
 {
-    public interface IClientStorage
+    public interface IClientMediator
     {
         Task<IList<Client>> GetAllAsync();
         Task<bool> Exists(string email);

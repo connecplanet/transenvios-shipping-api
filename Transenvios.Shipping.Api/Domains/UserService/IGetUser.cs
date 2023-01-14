@@ -3,8 +3,8 @@
     public interface IGetUser
     {
         Task<IList<User>> GetAllAsync();
-        Task<bool> ExistsEmail(string email);
-        Task<User> GetByEmailAsync(string email);
+        Task<bool> Exists(string email);
+        Task<User> GetAsync(string email);
 
     }
 }

@@ -7,9 +7,8 @@ namespace Transenvios.Shipping.Api.Mediators.RoutesService
 {
     public class RouteMediator : IRouteStorage
     {
-
-        private readonly DataContext _context;
-        public RouteMediator(DataContext context)
+        private readonly IDbContext _context;
+        public RouteMediator(IDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }

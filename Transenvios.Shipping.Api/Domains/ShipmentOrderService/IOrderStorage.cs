@@ -1,7 +1,12 @@
-﻿namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
+﻿using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
+using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Responses;
+
+namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
 {
     public interface IOrderStorage
     {
-        Task<ShipmentOrderResponse> SubmitOrderAsync(ShipmentOrderRequest? order);
+        Task<ShipmentOrderSubmitResponse> SubmitOrderAsync(ShipmentOrderRequest? order);
+
+        Task<ShipmentOrderListResponse> GetShipmentListAsync(int offset, int skip);
     }
 }

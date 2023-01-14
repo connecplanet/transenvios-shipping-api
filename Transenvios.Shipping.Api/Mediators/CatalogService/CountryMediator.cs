@@ -12,7 +12,7 @@ namespace Transenvios.Shipping.Api.Mediators.CatalogService
                 {
                     Id = Guid.NewGuid(),
                     Code = "+57",
-                    Name = "Colombia",
+                    Name = "ColombiaId",
                     Active = true
                 }
             };

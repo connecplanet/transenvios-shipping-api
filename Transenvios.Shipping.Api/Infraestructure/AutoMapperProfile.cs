@@ -12,9 +12,13 @@ namespace Transenvios.Shipping.Api.Infraestructure
         {
             // User -> AuthenticateResponse
             CreateMap<User, UserAuthenticateResponse>();
+            CreateMap<Client, UserAuthenticateResponse>();
+            CreateMap<Person, UserAuthenticateResponse>();
 
             // RegisterRequest -> User
             CreateMap<UserRegisterRequest, User>();
+            CreateMap<UserRegisterRequest, Client>();
+            CreateMap<UserRegisterRequest, Person>();
 
             // UpdateRequest -> User
             CreateMap<UserUpdateRequest, User>()
@@ -31,7 +35,6 @@ namespace Transenvios.Shipping.Api.Infraestructure
 
             // RegisterRequest -> User
             CreateMap<ClientUpdateRequest, User>();
-
 
             // UpdateRequest -> Client
             CreateMap<ClientUpdateRequest, Client>()
@@ -57,8 +60,6 @@ namespace Transenvios.Shipping.Api.Infraestructure
                         return true;
                     }
                 ));
-
-
         }
     }
 }

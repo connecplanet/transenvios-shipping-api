@@ -2,6 +2,6 @@
 {
     public interface IRemoveUser
     {
-        Task<int> RemoveAsync(User user);
+        Task<int> DeleteAsync(User user);
     }
 }
