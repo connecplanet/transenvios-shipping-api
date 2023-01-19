@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.ClientService;
@@ -7,9 +6,7 @@ using Transenvios.Shipping.Api.Domains.ShipmentOrderService;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Responses;
-using Transenvios.Shipping.Api.Domains.UserService;
 using Transenvios.Shipping.Api.Infraestructure;
-using Transenvios.Shipping.Api.Mediators.ClientService;
 
 namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
 {
@@ -17,20 +14,17 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
     {
         private readonly ShipmentSettings _settings;
         private readonly IDbContext _context;
-        private readonly IGetUser _getUser;
         private readonly ICatalogStorage<City> _getCity;
         private readonly IClientMediator _clientMediator;
 
         public ShipmentOrderMediator(
             IOptions<AppSettings> appSettings,
             IDbContext context,
-            IGetUser getUser,
             ICatalogStorage<City> getCity,
             IClientMediator clientMediator)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _settings = appSettings.Value.Shipment ?? throw new ArgumentNullException(nameof(appSettings));
-            _getUser = getUser ?? throw new ArgumentNullException(nameof(getUser));
             _getCity = getCity ?? throw new ArgumentNullException(nameof(getCity));
             _clientMediator = clientMediator ?? throw new ArgumentNullException(nameof(clientMediator));
         }
@@ -184,6 +178,86 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return response;
         }
 
+        public async Task<ShipmentOrderEditResponse?> GetShipmentAsync(long id)
+        {
+            var order = await GetShipmentOrderEditHeader(id);
+            await GetShipmentOrderEditPackages(id, order);
+
+            return order;
+        }
+
+        private async Task GetShipmentOrderEditPackages(long id, ShipmentOrderEditResponse? order)
+        {
+            if (order != null)
+            {
+                order.Packages = await _context.ShipmentOrderItems!
+                    .Where(o => o.OrderId == id)
+                    .Select(item => new ShipmentOrderItemEditResponse
+                    {
+                        Height = $"{item.Height:#,###} cm",
+                        Width = $"{item.Width:#,###} cm",
+                        Length = $"{item.Length:#,###} cm",
+                        Weight = $"{item.Weight:#,###} Kg",
+                        IsFragile = item.IsFragile,
+                        Quantity = 1
+                    }).ToListAsync();
+            }
+        }
+
+        private async Task<ShipmentOrderEditResponse?> GetShipmentOrderEditHeader(long id)
+        {
+            var order = await _context.ShipmentOrders!
+                .Include(b => b.Customer)
+                .Include(b => b.PickUpCity)
+                .Include(b => b.DropOffCity)
+                .Include(b => b.Transporter)
+                .Where(o => o.Id == id)
+                .Select(order => new ShipmentOrderEditResponse
+                {
+                    OrderId = order.Id,
+                    ApplicationDate = order.ApplicationDate.ToString("dd-MM-yyyy"),
+                    PaymentState = order.PaymentState,
+                    ShipmentState = order.ShipmentState,
+                    TransporterId = order.TransporterId,
+                    InitialPrice = order.InitialPrice!.Value.ToString("#,###"),
+                    Taxes = order.Taxes.ToString("#,###"),
+                    TotalPrice = order.TotalPrice.ToString("#,###"),
+                    Customer = new PersonResponse
+                    {
+                        DocumentType = order.Customer!.DocumentType,
+                        DocumentId = order.Customer!.DocumentId,
+                        FirstName = order.Customer!.FirstName,
+                        LastName = order.Customer!.LastName,
+                        Phone = order.Customer!.Phone,
+                        Email = order.Customer!.Email
+                    },
+                    Sender = new PersonShipmentResponse
+                    {
+                        DocumentType = order.SenderDocumentType,
+                        DocumentId = order.SenderDocumentId,
+                        FirstName = order.SenderFirstName,
+                        LastName = order.SenderLastName,
+                        Phone = order.SenderPhone,
+                        Email = order.SenderEmail,
+                        CityName = order.PickUpCity!.Name,
+                        Address = order.PickUpAddress
+                    },
+                    Recipient = new PersonShipmentResponse
+                    {
+                        DocumentType = order.RecipientDocumentType,
+                        DocumentId = order.RecipientDocumentId,
+                        FirstName = order.RecipientFirstName,
+                        LastName = order.RecipientLastName,
+                        Phone = order.RecipientPhone,
+                        Email = order.RecipientEmail,
+                        CityName = order.DropOffCity!.Name,
+                        Address = order.DropOffAddress
+                    }
+                })
+                .FirstOrDefaultAsync();
+            return order;
+        }
+
         private async Task<Client> GetCustomer(ShipmentOrderRequest order)
         {
             if (order?.Sender == null || order.Recipient == null)
@@ -234,15 +308,15 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
                 customerDocumentId = order.Recipient.DocumentId;
             }
 
-            if (!string.Equals(customer.DocumentType ?? string.Empty, customerDocumentType ?? string.Empty) ||
-                !string.Equals(customer.DocumentId ?? string.Empty, customerDocumentId ?? string.Empty))
+            if (string.Equals(customer.DocumentType ?? string.Empty, customerDocumentType ?? string.Empty) &&
+                string.Equals(customer.DocumentId ?? string.Empty, customerDocumentId ?? string.Empty))
             {
-                customer.DocumentType = customerDocumentType;
-                customer.DocumentId = customerDocumentId;
-                return await _clientMediator.UpdateAsync(customer);
+                return 0;
             }
 
-            return 0;
+            customer.DocumentType = customerDocumentType;
+            customer.DocumentId = customerDocumentId;
+            return await _clientMediator.UpdateAsync(customer);
         }
 
         private async Task<ShipmentOrder> SaveOrderHeader(ShipmentOrderRequest order, Guid customerId)
@@ -276,18 +350,18 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
                 CustomerId = customerId,
                 ApplicationDate = DateTime.Now,
                 SenderDocumentType = order.Sender?.DocumentType,
-                SenderDocumentId = order.Sender?.DocumentId.ToString(),
+                SenderDocumentId = order.Sender?.DocumentId!.ToString(),
                 SenderFirstName = order.Sender?.FirstName,
                 SenderLastName = order.Sender?.LastName,
                 SenderEmail = order.Sender?.Email,
-                SenderCountryCode = order.Sender?.CountryCode.ToString(),
+                SenderCountryCode = order.Sender?.CountryCode!.ToString(),
                 SenderPhone = order.Sender?.Phone,
                 RecipientDocumentType = order.Recipient?.DocumentType,
-                RecipientDocumentId = order.Recipient?.DocumentId.ToString(),
+                RecipientDocumentId = order.Recipient?.DocumentId!.ToString(),
                 RecipientFirstName = order.Recipient?.FirstName,
                 RecipientLastName = order.Recipient?.LastName,
                 RecipientEmail = order.Recipient?.Email,
-                RecipientCountryCode = order.Recipient?.CountryCode.ToString(),
+                RecipientCountryCode = order.Recipient?.CountryCode!.ToString(),
                 RecipientPhone = order.Recipient?.Phone
             };
 

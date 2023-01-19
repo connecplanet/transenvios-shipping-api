@@ -10,7 +10,7 @@
 			"name": "auth",
 			"item": [
 				{
-					"name": "SignUp",
+					"name": "SignUp-App",
 					"event": [
 						{
 							"listen": "test",
@@ -35,7 +35,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"firstName\": \"Edwin\",\r\n    \"lastName\": \"Diaz\",\r\n    \"email\": \"ediaz.connectplanet@gmail.com\",\r\n    \"password\": \"Edwin1234\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"6046050769\"\r\n}",
+							"raw": "{\r\n    \"firstName\": \"Tom\",\r\n    \"lastName\": \"Welling\",\r\n    \"email\": \"Tom.Welling@gmail.com\",\r\n    \"password\": \"Edwin1234\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"6042850742\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -56,7 +56,53 @@
 					"response": []
 				},
 				{
-					"name": "SignIn",
+					"name": "SignUp-Web",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"pm.test(\"The response has all properties\", () => {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.environment.set(\"user_id\", jsonData[\"id\"]);\r",
+									"    pm.expect(jsonData.id).to.have.lessThan(1);\r",
+									"    console.log(jsonData.message);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Tom\",\r\n    \"lastName\": \"Welling\",\r\n    \"email\": \"Tom.Welling@gmail.com\",\r\n    \"password\": \"Edwin1234\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"6042850742\",\r\n    \"role\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignIn-App",
 					"event": [
 						{
 							"listen": "test",
@@ -85,7 +131,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"ediaz.connectplanet@gmail.com\",\r\n    \"password\": \"Edwin1234\"\r\n}",
+							"raw": "{\r\n    \"email\": \"carlos2@gmail.com\",\r\n    \"password\": \"12345678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -105,6 +151,123 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "SignIn-Web",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"access_token\", jsonData[\"token\"]);\r",
+									"pm.environment.set(\"user_id\", jsonData[\"id\"]);\r",
+									"\r",
+									"pm.test(\"The response has all properties\", () => {\r",
+									"    var access_token = pm.environment.get(\"access_token\");  \r",
+									"    pm.expect(access_token).to.have.lessThan(1);    \r",
+									"    console.log(\"access_token:\", access_token);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"ediaz.connectplanet@gmail.com\",\r\n    \"password\": \"EdwinDiaz660\",\r\n    \"role\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/authenticate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignInWithToken",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"AccessToken\" : \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6IkpXVCJ9.eyJpZCI6IjA4ZGFlOWRhLTlkMmUtNDE1MS04NmMwLTBkZGI4Y2FhY2U3MiIsIm5iZiI6MTY3MzY0NjExNiwiZXhwIjoxNjczNzMyNTE2LCJpYXQiOjE2NzM2NDYxMTZ9.pr3M06eAqUwsDj-xiGraYOGfsX2HY9YgXrODVxOSC_k\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/sign-in-with-token",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"sign-in-with-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ForgotPassword",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \r\n    \"email\": \"dciro.connectplanet@gmail.com\",\r\n    \"password\": \"*\",\r\n    \"role\": \"*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/Users/ForgotPassword",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Users",
+								"ForgotPassword"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -115,7 +278,44 @@
 					"name": "cities",
 					"item": [
 						{
-							"name": "ListCities",
+							"name": "CityAdd",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": \"ITA\",\r\n    \"name\": \"Itagüí\",\r\n    \"active\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/Cities",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"Cities"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CityGetAll",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -153,14 +353,12 @@
 								}
 							},
 							"response": []
-						}
-					]
-				},
-				{
-					"name": "users",
-					"item": [
+						},
 						{
-							"name": "ListUsers",
+							"name": "CityGetOne",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
 							"request": {
 								"auth": {
 									"type": "bearer",
@@ -174,21 +372,31 @@
 								},
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
-									"raw": "{{base_url}}/api/users",
+									"raw": "{{base_url}}/api/Cities/025510c5-d51e-4ee1-90e5-6f67f0b11d3c",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"users"
+										"Cities",
+										"025510c5-d51e-4ee1-90e5-6f67f0b11d3c"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "UpdateUser",
+							"name": "CityUpdate",
 							"request": {
 								"auth": {
 									"type": "bearer",
@@ -204,7 +412,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"ediaz.connectplanet@gmail.com\",\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Doe\"\r\n}",
+									"raw": "{\r\n    \"code\": \"ITA\",\r\n    \"name\": \"Itagui\",\r\n    \"active\": true,\r\n    \"id\": \"025510c5-d51e-4ee1-90e5-6f67f0b11d3c\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -212,21 +420,21 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/users/{{user_id}}",
+									"raw": "{{base_url}}/api/Cities/025510c5-d51e-4ee1-90e5-6f67f0b11d3c",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"users",
-										"{{user_id}}"
+										"Cities",
+										"025510c5-d51e-4ee1-90e5-6f67f0b11d3c"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "DeleteUser",
+							"name": "CityDelete",
 							"request": {
 								"auth": {
 									"type": "bearer",
@@ -242,7 +450,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{}",
+									"raw": "",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -250,21 +458,85 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/users/{{user_id}}",
+									"raw": "{{base_url}}/api/Cities/025510c5-d51e-4ee1-90e5-6f67f0b11d3c",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"users",
-										"{{user_id}}"
+										"Cities",
+										"025510c5-d51e-4ee1-90e5-6f67f0b11d3c"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "drivers",
+					"item": [
+						{
+							"name": "DriverAdd",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"  pm.expect(pm.response.code).to.eql(200);\r",
+											"});\r",
+											"pm.test(\"The response has all properties\", () => {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"user_id\", jsonData[\"id\"]);\r",
+											"    pm.expect(jsonData.id).to.have.lessThan(1);\r",
+											"    console.log(jsonData.message);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": null,\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": \"123456789\",\r\n    \"firstName\": \"JuanCho\",\r\n    \"lastName\": \"Carrancho\",\r\n    \"phone\": \"3006004080\",\r\n    \"email\": \"juancho.carrancho@elcafe.com\",\r\n    \"country\": \"co\",\r\n    \"pickUpCityId\": \"MDE\",\r\n    \"pickUpAddress\": \"Calle 10 # 14 Sur - 50\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/drivers",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"drivers"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "GetUser",
+							"name": "DriverGetAll",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
 							"request": {
 								"auth": {
 									"type": "bearer",
@@ -278,32 +550,190 @@
 								},
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
-									"raw": "{{base_url}}/api/users/{{user_id}}",
+									"raw": "{{base_url}}/api/drivers",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"users",
-										"{{user_id}}"
+										"drivers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DriverGetOne",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/drivers/c3f45285-a5c0-4b3c-957f-e097d1281f94",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"drivers",
+										"c3f45285-a5c0-4b3c-957f-e097d1281f94"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DriverUpdate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"  pm.expect(pm.response.code).to.eql(200);\r",
+											"});\r",
+											"pm.test(\"The response has all properties\", () => {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"user_id\", jsonData[\"id\"]);\r",
+											"    pm.expect(jsonData.id).to.have.lessThan(1);\r",
+											"    console.log(jsonData.message);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"documentType\": \"CC\",\r\n        \"documentId\": \"123456789\",\r\n        \"firstName\": \"JuanCho\",\r\n        \"lastName\": \"Carrancho\",\r\n        \"email\": \"juancho.carrancho@elcafe.com\",\r\n        \"countryCode\": \"57\",\r\n        \"phone\": \"3006004080\",\r\n        \"pickUpAddress\": \"Calle 10 # 14 Sur - 50\",\r\n        \"pickUpCityId\": \"08da7364-d15d-4ec3-8093-6ee1f723669d\",\r\n        \"active\": true,\r\n        \"id\": \"c3f45285-a5c0-4b3c-957f-e097d1281f94\"\r\n    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/drivers/c3f45285-a5c0-4b3c-957f-e097d1281f94",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"drivers",
+										"c3f45285-a5c0-4b3c-957f-e097d1281f94"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DriverDelete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"  pm.expect(pm.response.code).to.eql(200);\r",
+											"});\r",
+											"pm.test(\"The response has all properties\", () => {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"user_id\", jsonData[\"id\"]);\r",
+											"    pm.expect(jsonData.id).to.have.lessThan(1);\r",
+											"    console.log(jsonData.message);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/drivers/c3f45285-a5c0-4b3c-957f-e097d1281f94",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"drivers",
+										"c3f45285-a5c0-4b3c-957f-e097d1281f94"
 									]
 								}
 							},
 							"response": []
 						}
 					]
-				}
-			]
-		},
-		{
-			"name": "features",
-			"item": [
+				},
 				{
-					"name": "shipments",
+					"name": "routes",
 					"item": [
 						{
-							"name": "CalculateCharges",
+							"name": "RouteAdd",
 							"event": [
 								{
 									"listen": "test",
@@ -340,7 +770,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"route\": {\r\n    \"pickUp\": {\r\n      \"cityCode\": \"MED\",\r\n      \"address\": \"CL 4 # 2 - 4\"\r\n    },\r\n    \"dropOff\": {\r\n      \"cityCode\": \"MON\",\r\n      \"address\": \"CL 44 # 3 - 5\"\r\n    }\r\n  },\r\n  \"items\": [\r\n    {\r\n      \"id\": 0,\r\n      \"idOrder\": 0,\r\n      \"weight\": 20,\r\n      \"height\": 100,\r\n      \"length\": 20,\r\n      \"width\": 20,\r\n      \"insuredAmount\":15000,\r\n      \"isFragile\": true,\r\n      \"isUrgent\": true\r\n    }\r\n  ],\r\n  \"sender\": {\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": 123,\r\n    \"firstName\": \"David Fernando\",\r\n    \"lastName\": \"Ciro\",\r\n    \"email\": \"inforfercho@gmail.com\",\r\n    \"countryCode\": 57,\r\n    \"phone\": \"318466618\",\r\n    \"isClient\": true\r\n  },\r\n  \"recipient\": {\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": 456,\r\n    \"firstName\": \"Juan\",\r\n    \"lastName\": \"Vasquez\",\r\n    \"email\": \"camilooo@gmail.com\",\r\n    \"countryCode\": 57,\r\n    \"phone\": \"6046050769\",\r\n    \"isClient\": false\r\n  },\r\n  \"basePrice\": 74100,\r\n  \"taxes\": 14079,\r\n  \"total\": 88179,\r\n  \"applicantEmail\": \"dciro.connectplanet@gmail.com\"\r\n}",
+									"raw": "{\r\n    \"fromCityCode\": \"ITA\",\r\n    \"toCityCode\": \"MDE\",\r\n    \"initialKiloPrice\": 10.00,\r\n    \"additionalKiloPrice\": 20.00,\r\n    \"priceCm3\": 20.00,\r\n    \"active\": true\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -348,22 +778,44 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/Shipments/Calculate",
+									"raw": "{{base_url}}/api/ShipmentRoute",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"Shipments",
-										"Calculate"
+										"ShipmentRoute"
 									]
-								},
-								"description": "Calcute Values"
+								}
 							},
 							"response": []
 						},
 						{
-							"name": "SignInWithToken",
+							"name": "RouteGetAll",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"  pm.expect(pm.response.code).to.eql(200);\r",
+											"});\r",
+											"\r",
+											"var jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"The response has all properties\", () => {\r",
+											"    pm.expect(jsonData[\"basePrice\"]).to.have.greaterThan(0);\r",
+											"    pm.expect(jsonData[\"taxes\"]).to.have.greaterThan(0);\r",
+											"    pm.expect(jsonData[\"total\"]).to.have.greaterThan(0);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
 							"request": {
 								"auth": {
 									"type": "bearer",
@@ -375,11 +827,11 @@
 										}
 									]
 								},
-								"method": "POST",
+								"method": "GET",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"AccessToken\" : \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6IkpXVCJ9.eyJpZCI6IjA4ZGFkMDllLTFlZmEtNGFjYi04MjQ2LTYyNDI1MTQ2NDc4MiIsIm5iZiI6MTY3MTA0OTU3MywiZXhwIjoxNjcxMTM1OTczLCJpYXQiOjE2NzEwNDk1NzN9.AHRLWVXsxkhaiEtvO6vObsgd3PQ9N6vCh25qtpuAEvU\"\r\n}",
+									"raw": "{}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -387,20 +839,723 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/users/sign-in-with-token",
+									"raw": "{{base_url}}/api/ShipmentRoute",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"users",
-										"sign-in-with-token"
+										"ShipmentRoute"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RouteGetOne",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"  pm.expect(pm.response.code).to.eql(200);\r",
+											"});\r",
+											"\r",
+											"var jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"The response has all properties\", () => {\r",
+											"    pm.expect(jsonData[\"basePrice\"]).to.have.greaterThan(0);\r",
+											"    pm.expect(jsonData[\"taxes\"]).to.have.greaterThan(0);\r",
+											"    pm.expect(jsonData[\"total\"]).to.have.greaterThan(0);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/ShipmentRoute/08daf5ac-7306-468e-8af8-bb86d20ab1c7",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"ShipmentRoute",
+										"08daf5ac-7306-468e-8af8-bb86d20ab1c7"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RouteUpdate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"  pm.expect(pm.response.code).to.eql(200);\r",
+											"});\r",
+											"\r",
+											"var jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"The response has all properties\", () => {\r",
+											"    pm.expect(jsonData[\"basePrice\"]).to.have.greaterThan(0);\r",
+											"    pm.expect(jsonData[\"taxes\"]).to.have.greaterThan(0);\r",
+											"    pm.expect(jsonData[\"total\"]).to.have.greaterThan(0);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"fromCityCode\": \"ITA\",\r\n    \"toCityCode\": \"MDE\",\r\n    \"initialKiloPrice\": 10.00,\r\n    \"additionalKiloPrice\": 20.00,\r\n    \"priceCm3\": 20.00,\r\n    \"active\": true,\r\n    \"id\": \"08daf5ac-7306-468e-8af8-bb86d20ab1c7\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/ShipmentRoute/08daf5ac-7306-468e-8af8-bb86d20ab1c7",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"ShipmentRoute",
+										"08daf5ac-7306-468e-8af8-bb86d20ab1c7"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RouteDelete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"  pm.expect(pm.response.code).to.eql(200);\r",
+											"});\r",
+											"\r",
+											"var jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"The response has all properties\", () => {\r",
+											"    pm.expect(jsonData[\"basePrice\"]).to.have.greaterThan(0);\r",
+											"    pm.expect(jsonData[\"taxes\"]).to.have.greaterThan(0);\r",
+											"    pm.expect(jsonData[\"total\"]).to.have.greaterThan(0);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/ShipmentRoute/08daf5ac-7306-468e-8af8-bb86d20ab1c7",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"ShipmentRoute",
+										"08daf5ac-7306-468e-8af8-bb86d20ab1c7"
 									]
 								}
 							},
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "clients",
+					"item": [
+						{
+							"name": "ClientGetAll",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/clients",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"clients"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ClientGetOne",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/clients/08daf5bb-02b2-481f-8215-7bca159fc6a5",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"clients",
+										"08daf5bb-02b2-481f-8215-7bca159fc6a5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ClientUpdate",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstName\": \"Tom\",\r\n    \"lastName\": \"Welling\",\r\n    \"email\": \"Tom.Welling@gmail.com\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"6042850742\",\r\n    \"role\": \"0\",\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": \"1234\",\r\n    \"active\": true,\r\n    \"id\": \"08daf5bb-02b2-481f-8215-7bca159fc6a5\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/clients/08daf5bb-02b2-481f-8215-7bca159fc6a5",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"clients",
+										"08daf5bb-02b2-481f-8215-7bca159fc6a5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ClientDelete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/clients/08daf5ab-8b61-4b03-8c64-074ac6318584",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"clients",
+										"08daf5ab-8b61-4b03-8c64-074ac6318584"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "administrators",
+					"item": [
+						{
+							"name": "UserGetAll",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UserGetOne",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/users/08daf5ab-9aea-467e-8a7c-e1ce6509088b",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"08daf5ab-9aea-467e-8a7c-e1ce6509088b"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UserUpdate",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": \"08daf5ab-9aea-467e-8a7c-e1ce6509088b\",\r\n    \"firstName\": \"Tom\",\r\n    \"lastName\": \"Welling\",\r\n    \"email\": \"Tom.Welling@gmail.com\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"6042850742\",\r\n    \"name\": \"Welling, Tom\",\r\n    \"avatar\": null,\r\n    \"status\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/users/08daf5ab-9aea-467e-8a7c-e1ce6509088b",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"08daf5ab-9aea-467e-8a7c-e1ce6509088b"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UserDelete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/users/08daf5ab-9aea-467e-8a7c-e1ce6509088b",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"08daf5ab-9aea-467e-8a7c-e1ce6509088b"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "shipments",
+			"item": [
+				{
+					"name": "CalculateCharges",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"The response has all properties\", () => {\r",
+									"    pm.expect(jsonData[\"basePrice\"]).to.have.greaterThan(0);\r",
+									"    pm.expect(jsonData[\"taxes\"]).to.have.greaterThan(0);\r",
+									"    pm.expect(jsonData[\"total\"]).to.have.greaterThan(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"route\": {\r\n    \"pickUp\": {\r\n      \"cityCode\": \"MDE\",\r\n      \"address\": \"CL 4 # 2 - 4\"\r\n    },\r\n    \"dropOff\": {\r\n      \"cityCode\": \"MTR\",\r\n      \"address\": \"CL 44 # 3 - 5\"\r\n    }\r\n  },\r\n  \"items\": [\r\n    {\r\n      \"id\": 0,\r\n      \"idOrder\": 0,\r\n      \"weight\": 20,\r\n      \"height\": 100,\r\n      \"length\": 20,\r\n      \"width\": 20,\r\n      \"insuredAmount\":15000,\r\n      \"isFragile\": true,\r\n      \"isUrgent\": true\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/Shipments/Calculate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Shipments",
+								"Calculate"
+							]
+						},
+						"description": "Calcute Values"
+					},
+					"response": []
+				},
+				{
+					"name": "GetCatalogs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"The response has all properties\", () => {\r",
+									"    pm.expect(jsonData[\"basePrice\"]).to.have.greaterThan(0);\r",
+									"    pm.expect(jsonData[\"taxes\"]).to.have.greaterThan(0);\r",
+									"    pm.expect(jsonData[\"total\"]).to.have.greaterThan(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/Shipments/Catalogs",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Shipments",
+								"Catalogs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ShipmentSubmitOrder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"The response has all properties\", () => {\r",
+									"    pm.expect(jsonData[\"basePrice\"]).to.have.greaterThan(0);\r",
+									"    pm.expect(jsonData[\"taxes\"]).to.have.greaterThan(0);\r",
+									"    pm.expect(jsonData[\"total\"]).to.have.greaterThan(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"route\": {\r\n    \"pickUp\": {\r\n      \"cityCode\": \"MDE\",\r\n      \"address\": \"CL 4 # 2 - 4\"\r\n    },\r\n    \"dropOff\": {\r\n      \"cityCode\": \"MTR\",\r\n      \"address\": \"CL 44 # 3 - 5\"\r\n    }\r\n  },\r\n  \"items\": [\r\n    {\r\n      \"height\": 15,\r\n      \"length\": 30,\r\n      \"width\": 30,\r\n      \"weight\": 3,\r\n      \"insuredAmount\": 125000,\r\n      \"isFragile\": true,\r\n      \"isUrgent\": true\r\n    }\r\n  ],\r\n  \"sender\": {\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": \"123\",\r\n    \"firstName\": \"David Fernando\",\r\n    \"lastName\": \"Ciro\",\r\n    \"email\": \"Tom.Welling@gmail.com\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"318466618\",\r\n    \"isClient\": true\r\n  },\r\n  \"recipient\": {\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": \"456\",\r\n    \"firstName\": \"Juan\",\r\n    \"lastName\": \"Vasquez\",\r\n    \"email\": \"camilooo@gmail.com\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"6046050769\",\r\n    \"isClient\": false\r\n  },\r\n  \"basePrice\": 74100,\r\n  \"taxes\": 14079,\r\n  \"total\": 88179,\r\n  \"applicantEmail\": \"Tom.Welling@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/Shipments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Shipments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ShipmentGetAll",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/Shipments?limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Shipments"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ShipmentGetOne",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/Shipments/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Shipments",
+								"1"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
