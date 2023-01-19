@@ -1,5 +1,5 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using Transenvios.Shipping.Api.Adapters.UserService;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
@@ -34,7 +34,7 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
                 : Ok(response);
         }
 
-        [HttpPost()]
+        [HttpPost]
         public async Task<ActionResult<ShipmentOrderSubmitResponse>> SubmitOrderAsync(ShipmentOrderRequest? order)
         {
             var response = await _orderProcessor.SubmitOrderAsync(order);
@@ -55,10 +55,17 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
             return Ok(response);
         }
 
-        [HttpGet()]
+        [HttpGet]
         public async Task<ActionResult<ShipmentOrderListResponse>> GetShipmentListAsync(int page = 0, int limit = 0)
         {
             var response = await _orderProcessor.GetShipmentOrders(page, limit);
+            return response;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ShipmentOrderEditResponse>> GetShipmentAsync(long id)
+        {
+            var response = await _orderProcessor.GetShipmentAsync(id);
             return response;
         }
     }

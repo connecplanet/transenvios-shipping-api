@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.RoutesService;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
@@ -10,25 +11,25 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
     {
         private readonly IOrderChargesCalculator _chargesCalculator;
         private readonly IRouteStorage _routeStorage;
-        private readonly ICatalogStorage<City> _cityStorage;
-        private readonly ICatalogQuery<Country> _countryStorage;
-        private readonly ICatalogQuery<IdType> _idTypeStorage;
-        private readonly IOrderStorage _orderStorage;
+        private readonly ICatalogStorage<City> _cityMediator;
+        private readonly ICatalogQuery<Country> _countryMediator;
+        private readonly ICatalogQuery<IdType> _idTypeMediator;
+        private readonly IOrderStorage _orderMediator;
 
         public ShipmentOrderProcessor(
-            IOrderChargesCalculator calculateShipmentCharges,
-            IRouteStorage routeStorage,
-            ICatalogStorage<City> cityStorage,
-            ICatalogQuery<Country> countryStorage,
-            ICatalogQuery<IdType> idTypeStorage,
-            IOrderStorage orderStorage)
+            IOrderChargesCalculator chargesCalculator,
+            IRouteStorage routeMediator,
+            ICatalogStorage<City> cityMediator,
+            ICatalogQuery<Country> countryMediator,
+            ICatalogQuery<IdType> idTypeMediator,
+            IOrderStorage orderMediator)
         {
-            _chargesCalculator = calculateShipmentCharges ?? throw new ArgumentNullException(nameof(calculateShipmentCharges));
-            _routeStorage = routeStorage ?? throw new ArgumentNullException(nameof(routeStorage));
-            _cityStorage = cityStorage ?? throw new ArgumentNullException(nameof(cityStorage));
-            _countryStorage = countryStorage ?? throw new ArgumentNullException(nameof(countryStorage));
-            _idTypeStorage = idTypeStorage ?? throw new ArgumentNullException(nameof(idTypeStorage));
-            _orderStorage = orderStorage ?? throw new ArgumentNullException(nameof(orderStorage));
+            _chargesCalculator = chargesCalculator ?? throw new ArgumentNullException(nameof(chargesCalculator));
+            _routeStorage = routeMediator ?? throw new ArgumentNullException(nameof(routeMediator));
+            _cityMediator = cityMediator ?? throw new ArgumentNullException(nameof(cityMediator));
+            _countryMediator = countryMediator ?? throw new ArgumentNullException(nameof(countryMediator));
+            _idTypeMediator = idTypeMediator ?? throw new ArgumentNullException(nameof(idTypeMediator));
+            _orderMediator = orderMediator ?? throw new ArgumentNullException(nameof(orderMediator));
         }
 
         public async Task<ShipmentOrderSubmitResponse> CalculateAsync(ShipmentOrderRequest? order)
@@ -64,9 +65,9 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             var catalog = new CatalogResponse
             {
                 Routes = await _routeStorage.GetAllAsync(),
-                Cities = await _cityStorage.GetAllAsync(),
-                Countries = await _countryStorage.GetAllAsync(),
-                IdTypes = await _idTypeStorage.GetAllAsync()
+                Cities = await _cityMediator.GetAllAsync(),
+                Countries = await _countryMediator.GetAllAsync(),
+                IdTypes = await _idTypeMediator.GetAllAsync()
             };
 
             return catalog;
@@ -81,7 +82,7 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
                 return response;
             }
 
-            return await _orderStorage.SubmitOrderAsync(order);
+            return await _orderMediator.SubmitOrderAsync(order);
         }
 
         public async Task<ShipmentOrderListResponse> GetShipmentOrders(int page = 0, int limit = 0)
@@ -94,7 +95,12 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
 
             var skip = (page - 1) * limit;
 
-            return await _orderStorage.GetShipmentListAsync(skip, limit);
+            return await _orderMediator.GetShipmentListAsync(skip, limit);
+        }
+
+        public async Task<ShipmentOrderEditResponse?> GetShipmentAsync(long id)
+        {
+            return await _orderMediator.GetShipmentAsync(id);
         }
     }
 }
