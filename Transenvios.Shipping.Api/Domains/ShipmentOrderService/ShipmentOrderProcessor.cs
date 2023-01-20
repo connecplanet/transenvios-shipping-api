@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Globalization;
 using System.Net;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.RoutesService;
@@ -52,7 +52,7 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
                 return new ShipmentOrderSubmitResponse
                 {
                     ResultCode = HttpStatusCode.NotFound,
-                    ErrorMessage = $"Route {fromCityCode} to {toCityCode} not found"
+                    ErrorMessage = $"Route {fromCityCode} to {toCityCode} does not found"
                 };
             }
             
@@ -62,12 +62,39 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
 
         public async Task<CatalogResponse> GetCatalogAsync()
         {
+            var countries = (await _countryMediator.GetAllAsync())
+                .Where(c => c.Active == true)
+                .Select(c => new ItemCatalogResponse
+                {
+                    Id = c.Id,
+                    Code = c.Code,
+                    Name = c.Name
+                }).ToList();
+
+            var idTypes = (await _idTypeMediator.GetAllAsync())
+                .Where(c => c.Active == true)
+                .Select(c => new ItemCatalogResponse
+                {
+                    Id = c.Id,
+                    Code = c.Code,
+                    Name = c.Name
+                }).ToList();
+
+            var cities = (await _cityMediator.GetAllAsync())
+                .Where(c => c.Active == true)
+                .Select(c => new ItemCatalogResponse
+                {
+                    Id = c.Id,
+                    Code = c.Code,
+                    Name = c.Name
+                }).ToList();
+
             var catalog = new CatalogResponse
             {
-                Routes = await _routeStorage.GetAllAsync(),
-                Cities = await _cityMediator.GetAllAsync(),
-                Countries = await _countryMediator.GetAllAsync(),
-                IdTypes = await _idTypeMediator.GetAllAsync()
+                Routes = await _routeStorage.GetAllAsync(true),
+                Cities = cities,
+                Countries = countries,
+                IdTypes = idTypes
             };
 
             return catalog;
@@ -82,25 +109,77 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
                 return response;
             }
 
-            return await _orderMediator.SubmitOrderAsync(order);
+            return await _orderMediator.SubmitAsync(order);
         }
 
-        public async Task<ShipmentOrderListResponse> GetShipmentOrders(int page = 0, int limit = 0)
+        public async Task<ShipmentOrderListResponse> GetShipmentOrders(string filterMonth)
         {
-            if (page == 0)
-                page = 1;
+            DateTime filterDate;
+            var validFormats = new[] {
+                "yyyyMMdd",
+                "MM/dd/yyyy", "MM-dd-yyyy",
+                "yyyy/MM/dd", "yyyy-MM-dd",
+                "MM/dd/yyyy HH:mm:ss", "MM-dd-yyyy HH:mm:ss",
+                "MM/dd/yyyy hh:mm tt", "MM-dd-yyyy hh:mm tt",
+                "yyyy-MM-dd HH:mm:ss, fff", "yyyy/MM/dd HH:mm:ss, fff"
+            };
 
-            if (limit == 0)
-                limit = int.MaxValue;
+            var provider = new CultureInfo("en-US");
 
-            var skip = (page - 1) * limit;
+            try
+            {
+                filterDate = DateTime.ParseExact(filterMonth, validFormats, provider);
+            }
+            catch (FormatException)
+            {
+                filterDate = DateTime.Today;
+            }
 
-            return await _orderMediator.GetShipmentListAsync(skip, limit);
+            var startDate = new DateTime(filterDate.Year, filterDate.Month, 1);
+            var endDate = startDate.AddMonths(1);
+
+            return await _orderMediator.GetAllAsync(startDate, endDate);
         }
 
         public async Task<ShipmentOrderEditResponse?> GetShipmentAsync(long id)
         {
-            return await _orderMediator.GetShipmentAsync(id);
+            return await _orderMediator.GetOneAsync(id);
+        }
+
+        public async Task<ShipmentOrderResponse> UpdateOrderAsync(ShipmentUpdateRequest? orderRequest)
+        {
+            var orderResponse = new ShipmentOrderResponse
+            {
+                ResultCode = HttpStatusCode.NotFound,
+                ErrorMessage = $"Order {orderRequest!.Id} does not found"
+            };
+
+            var orderEntry = await _orderMediator.GetAsync(orderRequest!.Id);
+            if (orderEntry == null)
+            {
+                return orderResponse;
+            }
+
+            orderEntry.PaymentState = orderRequest.PaymentState;
+            orderEntry.ShipmentState = orderRequest.ShipmentState;
+            orderEntry.TransporterId = orderRequest.TransporterId;
+            orderEntry.ModifyUserId = orderRequest.EmployeeId;
+            orderEntry.ApplicationDate = DateTime.Now;
+
+            var updates = await _orderMediator.UpdateAsync(orderEntry);
+
+            if (updates > 0)
+            {
+                orderResponse.ResultCode = HttpStatusCode.OK;
+                orderResponse.ErrorMessage = null;
+            }
+            else
+            {
+                orderResponse.ResultCode = HttpStatusCode.NotModified;
+                orderResponse.ErrorMessage = $"Order {orderRequest!.Id} does not modified";
+            }
+
+            return orderResponse;
         }
     }
 }

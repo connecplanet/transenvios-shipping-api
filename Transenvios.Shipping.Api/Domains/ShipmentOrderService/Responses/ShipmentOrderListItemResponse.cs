@@ -2,7 +2,8 @@
 {
     public class ShipmentOrderListItemResponse
     {
-        public long? OrderId { get; set; }
+        public long? Id { get; set; }
+        public string? ApplicationDate { get; set; }
         public string? CustomerName { get; set; }
         public string? Phone { get; set; }
         public string? FromCity { get; set; }

@@ -56,9 +56,9 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         }
 
         [HttpGet]
-        public async Task<ActionResult<ShipmentOrderListResponse>> GetShipmentListAsync(int page = 0, int limit = 0)
+        public async Task<ActionResult<ShipmentOrderListResponse>> GetShipmentListAsync(string month)
         {
-            var response = await _orderProcessor.GetShipmentOrders(page, limit);
+            var response = await _orderProcessor.GetShipmentOrders(month);
             return response;
         }
 
@@ -66,7 +66,21 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         public async Task<ActionResult<ShipmentOrderEditResponse>> GetShipmentAsync(long id)
         {
             var response = await _orderProcessor.GetShipmentAsync(id);
-            return response;
+            return response!;
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<ShipmentOrderResponse>> UpdateOrderAsync(ShipmentUpdateRequest? order)
+        {
+            var response = await _orderProcessor.UpdateOrderAsync(order);
+
+            return !string.IsNullOrEmpty(response.ErrorMessage)
+                ? response.ResultCode switch
+                {
+                    HttpStatusCode.NotFound => NotFound(response.ErrorMessage),
+                    _ => new BadRequestObjectResult(response.ErrorMessage)
+                }
+                : Ok(response);
         }
     }
 }

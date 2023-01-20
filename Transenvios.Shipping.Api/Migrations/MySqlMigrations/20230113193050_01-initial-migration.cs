@@ -315,7 +315,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentOrderItems_OrderId",
                 table: "ShipmentOrderItems",
-                column: "OrderId");
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentOrders_CustomerId",

@@ -1,12 +1,15 @@
-﻿using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
-using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Responses;
-
-namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
+﻿namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
 {
+    using Entities;
+    using Requests;
+    using Responses;
+
     public interface IOrderStorage
     {
-        Task<ShipmentOrderSubmitResponse> SubmitOrderAsync(ShipmentOrderRequest? order);
-        Task<ShipmentOrderListResponse> GetShipmentListAsync(int offset, int skip);
-        Task<ShipmentOrderEditResponse?> GetShipmentAsync(long id);
+        Task<ShipmentOrderSubmitResponse> SubmitAsync(ShipmentOrderRequest? order);
+        Task<ShipmentOrderListResponse> GetAllAsync(DateTime startDate, DateTime endDate);
+        Task<ShipmentOrderEditResponse?> GetOneAsync(long id);
+        Task<ShipmentOrder?> GetAsync(long id);
+        Task<int> UpdateAsync(ShipmentOrder order);
     }
 }

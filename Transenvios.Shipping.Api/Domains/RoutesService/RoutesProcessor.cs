@@ -64,13 +64,13 @@ namespace Transenvios.Shipping.Api.Domains.RoutesService
         {
             try
             {
-                var currentClient = await GetAsync(id);
-                _mapper.Map(model, currentClient);
-                var items = await _routes.UpdateAsync(currentClient);
+                var currentRoute = await GetAsync(id);
+                _mapper.Map(model, currentRoute);
+                var items = await _routes.UpdateAsync(currentRoute);
 
                 return new RouteStateResponse
                 {
-                    Id = currentClient.Id,
+                    Id = currentRoute.Id,
                     Items = items,
                     Message = "Routes updated successfully"
                 };
