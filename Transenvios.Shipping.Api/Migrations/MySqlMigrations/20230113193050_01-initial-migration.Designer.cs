@@ -333,7 +333,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                         .IsRequired()
                         .HasColumnType("decimal(16,2)");
 
-                    b.Property<long>("OrderId")
+                    b.Property<long>("Id")
                         .HasColumnType("bigint");
 
                     b.Property<decimal?>("Weight")
@@ -349,7 +349,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("Id");
 
                     b.ToTable("ShipmentOrderItems", (string)null);
                 });
@@ -469,7 +469,7 @@ namespace Transenvios.Shipping.Api.Migrations.MySqlMigrations
                 {
                     b.HasOne("Transenvios.Shipping.Api.Domains.ShipmentOrderService.Entities.ShipmentOrder", "Order")
                         .WithMany("Packages")
-                        .HasForeignKey("OrderId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("ShipmentOrderItems_ShipmentOrder_FK");

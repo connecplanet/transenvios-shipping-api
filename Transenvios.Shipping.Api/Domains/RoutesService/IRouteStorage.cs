@@ -5,6 +5,7 @@ namespace Transenvios.Shipping.Api.Domains.RoutesService
     public interface IRouteStorage
     {
         Task<IList<ShipmentRoute>> GetAllAsync();
+        Task<IList<RouteCatalogResponse>> GetAllAsync(bool isActive);
         Task<bool> Exists(string fromCityCode, string toCityCode);
         Task<ShipmentRoute> GetAsync(string fromCityCode, string toCityCode);
         Task<int> UpdateAsync(ShipmentRoute client);

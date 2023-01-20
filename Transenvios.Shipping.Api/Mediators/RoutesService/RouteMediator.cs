@@ -71,5 +71,19 @@ namespace Transenvios.Shipping.Api.Mediators.RoutesService
             _context.Routes!.Update(route);
             return await _context.SaveChangesAsync();
         }
+
+        public async Task<IList<RouteCatalogResponse>> GetAllAsync(bool isActive)
+        {
+            var routes = await _context.Routes!
+                .Where(r => r.Active == isActive)
+                .Select(r => new RouteCatalogResponse
+                {
+                    Id = r.Id,
+                    FromCityCode = r.FromCityCode,
+                    ToCityCode = r.ToCityCode
+                })
+                .ToListAsync();
+            return routes;
+        }
     }
 }

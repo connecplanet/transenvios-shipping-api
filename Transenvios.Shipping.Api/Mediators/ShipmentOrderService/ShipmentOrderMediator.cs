@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.ClientService;
@@ -90,7 +91,7 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return charges;
         }
 
-        public async Task<ShipmentOrderSubmitResponse> SubmitOrderAsync(ShipmentOrderRequest? order)
+        public async Task<ShipmentOrderSubmitResponse> SubmitAsync(ShipmentOrderRequest? order)
         {
             var orderResponse = new ShipmentOrderSubmitResponse();
 
@@ -113,7 +114,7 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
 
                 itemsAffected += await UpdateCustomer(order, customer);
 
-                orderResponse.OrderId = shipmentOrder.Id;
+                orderResponse.Id = shipmentOrder.Id;
                 orderResponse.Items = itemsAffected;
             }
             catch (Exception error)
@@ -134,17 +135,17 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return valueMax == 0 ? 1 : valueMax + 1;
         }
 
-        public async Task<ShipmentOrderListResponse> GetShipmentListAsync(int offset, int limit)
+        public async Task<ShipmentOrderListResponse> GetAllAsync(DateTime startDate, DateTime endDate)
         {
-            var currentPage = offset == 0 ? 1 : offset % limit;
-            var totalRows = await _context.ShipmentOrders!.CountAsync();
+            var totalRows = await _context.ShipmentOrders!
+                .Where(o => o.ApplicationDate >= startDate && o.ApplicationDate < endDate)
+                .CountAsync();
             var response = new ShipmentOrderListResponse
             {
                 Pagination = new ShipmentOrderListPaginationResponse
                 {
                     Total = totalRows,
-                    Page = currentPage,
-                    Limit = limit
+                    Filter = startDate.ToString("yyyy-MM-dd")
                 }
             };
 
@@ -153,11 +154,11 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
                 .Include(b => b.PickUpCity)
                 .Include(b => b.DropOffCity)
                 .Include(b => b.Transporter)
-                .Skip(offset)
-                .Take(limit)
+                .Where(o => o.ApplicationDate >= startDate && o.ApplicationDate < endDate)
                 .Select(order => new ShipmentOrderListItemResponse
                 {
-                    OrderId = order.Id,
+                    Id = order.Id,
+                    ApplicationDate = order.ApplicationDate.ToString("yyyy-MM-dd"),
                     CustomerName = $"{order.Customer!.LastName}, {order.Customer!.FirstName}",
                     Phone = order.Customer!.Phone!,
                     FromCity = order.PickUpCity!.Name!,
@@ -178,12 +179,23 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return response;
         }
 
-        public async Task<ShipmentOrderEditResponse?> GetShipmentAsync(long id)
+        public async Task<ShipmentOrderEditResponse?> GetOneAsync(long id)
         {
             var order = await GetShipmentOrderEditHeader(id);
             await GetShipmentOrderEditPackages(id, order);
 
             return order;
+        }
+
+        public async Task<ShipmentOrder?> GetAsync(long id)
+        {
+            return (await _context.ShipmentOrders!.FindAsync(id))!;
+        }
+
+        public async Task<int> UpdateAsync(ShipmentOrder order)
+        {
+            _context.ShipmentOrders!.Update(order);
+            return await _context.SaveChangesAsync();
         }
 
         private async Task GetShipmentOrderEditPackages(long id, ShipmentOrderEditResponse? order)
