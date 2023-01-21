@@ -55,10 +55,10 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
             return Ok(response);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<ShipmentOrderListResponse>> GetShipmentListAsync(string month)
+        [HttpGet("{date}/Orders")]
+        public async Task<ActionResult<ShipmentOrderListResponse>> GetShipmentListAsync(string date)
         {
-            var response = await _orderProcessor.GetShipmentOrders(month);
+            var response = await _orderProcessor.GetShipmentOrders(date);
             return response;
         }
 

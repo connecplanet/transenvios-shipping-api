@@ -1,9 +1,11 @@
 ﻿using System.Globalization;
 using System.Net;
 using Transenvios.Shipping.Api.Domains.CatalogService;
+using Transenvios.Shipping.Api.Domains.DriverService;
 using Transenvios.Shipping.Api.Domains.RoutesService;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Requests;
 using Transenvios.Shipping.Api.Domains.ShipmentOrderService.Responses;
+using Transenvios.Shipping.Api.Domains.UserService;
 
 namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
 {
@@ -15,6 +17,8 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
         private readonly ICatalogQuery<Country> _countryMediator;
         private readonly ICatalogQuery<IdType> _idTypeMediator;
         private readonly IOrderStorage _orderMediator;
+        private readonly IDriverStorage _driverMediator;
+        private readonly IGetAuthorizeUser _userMediator;
 
         public ShipmentOrderProcessor(
             IOrderChargesCalculator chargesCalculator,
@@ -22,7 +26,9 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             ICatalogStorage<City> cityMediator,
             ICatalogQuery<Country> countryMediator,
             ICatalogQuery<IdType> idTypeMediator,
-            IOrderStorage orderMediator)
+            IOrderStorage orderMediator,
+            IDriverStorage driverMediator,
+            IGetAuthorizeUser userMediator)
         {
             _chargesCalculator = chargesCalculator ?? throw new ArgumentNullException(nameof(chargesCalculator));
             _routeStorage = routeMediator ?? throw new ArgumentNullException(nameof(routeMediator));
@@ -30,6 +36,8 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             _countryMediator = countryMediator ?? throw new ArgumentNullException(nameof(countryMediator));
             _idTypeMediator = idTypeMediator ?? throw new ArgumentNullException(nameof(idTypeMediator));
             _orderMediator = orderMediator ?? throw new ArgumentNullException(nameof(orderMediator));
+            _driverMediator = driverMediator ?? throw new ArgumentNullException(nameof(driverMediator));
+            _userMediator = userMediator ?? throw new ArgumentNullException(nameof(userMediator));
         }
 
         public async Task<ShipmentOrderSubmitResponse> CalculateAsync(ShipmentOrderRequest? order)
@@ -150,6 +158,7 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
         {
             var orderResponse = new ShipmentOrderResponse
             {
+                Id = orderRequest!.Id,
                 ResultCode = HttpStatusCode.NotFound,
                 ErrorMessage = $"Order {orderRequest!.Id} does not found"
             };
@@ -160,6 +169,18 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
                 return orderResponse;
             }
 
+            var transporter = await _driverMediator.GetAsync(orderRequest.TransporterId!.Value);
+            if (transporter == null)
+            {
+                return (orderResponse.Configure(HttpStatusCode.FailedDependency, "Transporter does not found"));
+            }
+
+            var employee = await _userMediator.GetAsync(orderRequest.EmployeeId!.Value);
+            if (employee == null)
+            {
+                return (orderResponse.Configure(HttpStatusCode.FailedDependency, "Employee does not found"));
+            }
+
             orderEntry.PaymentState = orderRequest.PaymentState;
             orderEntry.ShipmentState = orderRequest.ShipmentState;
             orderEntry.TransporterId = orderRequest.TransporterId;
@@ -168,18 +189,9 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
 
             var updates = await _orderMediator.UpdateAsync(orderEntry);
 
-            if (updates > 0)
-            {
-                orderResponse.ResultCode = HttpStatusCode.OK;
-                orderResponse.ErrorMessage = null;
-            }
-            else
-            {
-                orderResponse.ResultCode = HttpStatusCode.NotModified;
-                orderResponse.ErrorMessage = $"Order {orderRequest!.Id} does not modified";
-            }
-
-            return orderResponse;
+            return updates > 0 
+                ? orderResponse.Configure(HttpStatusCode.OK, null) 
+                : orderResponse.Configure(HttpStatusCode.NotModified, $"Order {orderRequest!.Id} does not modified");
         }
     }
 }
