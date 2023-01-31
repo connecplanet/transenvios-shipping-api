@@ -132,7 +132,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
         }
         #endregion Clients/Customers
 
-        #region Shipment Header
+        #region PackageCharges Header
         public static void ShipmentOrderConfiguration(this ModelBuilder builder)
         {
             builder.Entity<ShipmentOrder>(entity =>
@@ -217,9 +217,9 @@ namespace Transenvios.Shipping.Api.Infraestructure
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
-        #endregion Shipment Header
+        #endregion PackageCharges Header
 
-        #region Shipment Packages
+        #region PackageCharges Packages
         public static void ShipmentOrderItemConfiguration(this ModelBuilder builder)
         {
             builder.Entity<ShipmentOrderItem>(entity =>
@@ -246,7 +246,7 @@ namespace Transenvios.Shipping.Api.Infraestructure
                     .HasConstraintName("ShipmentOrderItems_ShipmentOrder_FK");
             });
         }
-        #endregion Shipment Packages
+        #endregion PackageCharges Packages
 
         #region General settings
         private static void HasGuidKey<T>(EntityTypeBuilder<T> entity) where T : BaseEntity<Guid>

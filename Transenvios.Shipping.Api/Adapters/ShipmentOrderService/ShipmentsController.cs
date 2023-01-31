@@ -12,18 +12,18 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
     [Route("api/[controller]")]
     public class ShipmentsController : ControllerBase
     {
-        private readonly ShipmentOrderProcessor _orderProcessor;
+        private readonly ShipmentOrderProcessor _processor;
 
         public ShipmentsController(
             ShipmentOrderProcessor orderProcessor)
         {
-            _orderProcessor = orderProcessor ?? throw new ArgumentNullException(nameof(orderProcessor));
+            _processor = orderProcessor ?? throw new ArgumentNullException(nameof(orderProcessor));
         }
 
         [HttpPost("Calculate")]
         public async Task<ActionResult<ShipmentOrderSubmitResponse>> CalculateChargesAsync(ShipmentOrderRequest? order)
         {
-            var response = await _orderProcessor.CalculateAsync(order);
+            var response = await _processor.CalculateAsync(order);
 
             return !string.IsNullOrEmpty(response.ErrorMessage)
                 ? response.ResultCode switch
@@ -37,7 +37,7 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         [HttpPost]
         public async Task<ActionResult<ShipmentOrderSubmitResponse>> SubmitOrderAsync(ShipmentOrderRequest? order)
         {
-            var response = await _orderProcessor.SubmitOrderAsync(order);
+            var response = await _processor.SubmitOrderAsync(order);
 
             return !string.IsNullOrEmpty(response.ErrorMessage)
                 ? response.ResultCode switch
@@ -51,28 +51,28 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         [HttpGet("Catalogs")]
         public async Task<ActionResult<CatalogResponse>> GetCatalogAsync()
         {
-            var response = await _orderProcessor.GetCatalogAsync();
+            var response = await _processor.GetCatalogAsync();
             return Ok(response);
         }
 
         [HttpGet("{date}/Orders")]
-        public async Task<ActionResult<ShipmentOrderListResponse>> GetShipmentListAsync(string date)
+        public async Task<IList<ShipmentOrderListItemResponse>> GetShipmentListAsync(string date)
         {
-            var response = await _orderProcessor.GetShipmentOrders(date);
-            return response;
+            var response = await _processor.GetShipmentOrders(date);
+            return response.Items;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ShipmentOrderEditResponse>> GetShipmentAsync(long id)
         {
-            var response = await _orderProcessor.GetShipmentAsync(id);
+            var response = await _processor.GetShipmentAsync(id);
             return response!;
         }
 
         [HttpPut]
         public async Task<ActionResult<ShipmentOrderResponse>> UpdateOrderAsync(ShipmentUpdateRequest? order)
         {
-            var response = await _orderProcessor.UpdateOrderAsync(order);
+            var response = await _processor.UpdateOrderAsync(order);
 
             return !string.IsNullOrEmpty(response.ErrorMessage)
                 ? response.ResultCode switch
@@ -81,6 +81,13 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
                     _ => new BadRequestObjectResult(response.ErrorMessage)
                 }
                 : Ok(response);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<int>> DeleteAsync(long id)
+        {
+            var response = await _processor.DeleteOrderAsync(id);
+            return Ok(response);
         }
     }
 }

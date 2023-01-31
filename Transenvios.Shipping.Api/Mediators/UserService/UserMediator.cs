@@ -21,7 +21,10 @@ namespace Transenvios.Shipping.Api.Mediators.UserService
 
         public async Task<IList<User>> GetAllAsync()
         {
-            return await _context.Users!.ToListAsync();
+            return await _context.Users!
+                .OrderBy(u => u.FirstName)
+                .ThenBy(u => u.LastName)
+                .ToListAsync();
         }
 
         public async Task<User> GetAsync(Guid id)

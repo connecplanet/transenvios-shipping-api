@@ -117,6 +117,10 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
                 return response;
             }
 
+            order!.BasePrice = response.BasePrice;
+            order!.Taxes = response.Taxes;
+            order!.Total = response.Total;
+
             return await _orderMediator.SubmitAsync(order);
         }
 
@@ -192,6 +196,11 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             return updates > 0 
                 ? orderResponse.Configure(HttpStatusCode.OK, null) 
                 : orderResponse.Configure(HttpStatusCode.NotModified, $"Order {orderRequest!.Id} does not modified");
+        }
+
+        public async Task<int> DeleteOrderAsync(long orderId)
+        {
+            return await _orderMediator.DeleteAsync(orderId);
         }
     }
 }

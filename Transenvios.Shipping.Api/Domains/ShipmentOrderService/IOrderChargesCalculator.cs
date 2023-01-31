@@ -8,8 +8,8 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
     {
         decimal CalculateChargeByWeight(ShipmentRoute route, decimal weight);
         decimal CalculateChargeByVolume(ShipmentRoute route, decimal height, decimal length, decimal width);
-        decimal CalculateInitialPayment(ShipmentRoute route, ShipmentOrderItemRequest item);
-        decimal CalculateAdditionalCharges(ShipmentRoute route, ShipmentOrderItemRequest item, decimal basePrice);
+        decimal CalculateInitialPayment(ShipmentRoute route, ShipmentOrderItemRequest package);
+        decimal CalculateAdditionalCharges(ShipmentRoute route, ShipmentOrderItemRequest package, decimal basePrice);
         ShipmentOrderSubmitResponse CalculateCharges(ShipmentRoute route, ShipmentOrderRequest? order);
     }
 }

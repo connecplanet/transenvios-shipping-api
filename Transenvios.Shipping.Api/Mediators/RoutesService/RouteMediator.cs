@@ -21,7 +21,10 @@ namespace Transenvios.Shipping.Api.Mediators.RoutesService
 
         public async Task<IList<ShipmentRoute>> GetAllAsync()
         {
-            var routes = await _context.Routes!.ToListAsync();
+            var routes = await _context.Routes!
+                .OrderBy(e => e.FromCityCode)
+                .ThenBy(e => e.ToCityCode)
+                .ToListAsync();
             routes.ForEach(e =>
             {
                 e.InitialKiloPrice = Math.Round(e.InitialKiloPrice ?? 0, 2);
