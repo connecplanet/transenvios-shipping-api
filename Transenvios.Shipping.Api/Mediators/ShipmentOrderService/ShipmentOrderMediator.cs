@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Transenvios.Shipping.Api.Domains.CatalogService;
 using Transenvios.Shipping.Api.Domains.ClientService;
@@ -13,7 +12,7 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
 {
     public class ShipmentOrderMediator : IOrderChargesCalculator, IOrderStorage
     {
-        private readonly ShipmentSettings _settings;
+        private readonly PackageAdditionCharges _additionCharges;
         private readonly IDbContext _context;
         private readonly ICatalogStorage<City> _getCity;
         private readonly IClientMediator _clientMediator;
@@ -25,15 +24,14 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             IClientMediator clientMediator)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-            _settings = appSettings.Value.Shipment ?? throw new ArgumentNullException(nameof(appSettings));
+            _additionCharges = appSettings.Value.PackageCharges ?? throw new ArgumentNullException(nameof(appSettings));
             _getCity = getCity ?? throw new ArgumentNullException(nameof(getCity));
             _clientMediator = clientMediator ?? throw new ArgumentNullException(nameof(clientMediator));
         }
 
         public decimal CalculateChargeByWeight(ShipmentRoute route, decimal weight)
         {
-            decimal price = (route.InitialKiloPrice ?? 0) +
-                (weight - 1) * (route.AdditionalKiloPrice ?? 0);
+            var price = (route.InitialKiloPrice ?? 0) + (weight - 1) * (route.AdditionalKiloPrice ?? 0);
             return price;
         }
 
@@ -41,22 +39,24 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
         {
             var volume = height * length * width;
             var price = volume * (route.PriceCm3 ?? 0);
+
             return price;
         }
 
-        public decimal CalculateInitialPayment(ShipmentRoute route, ShipmentOrderItemRequest item)
+        public decimal CalculateInitialPayment(ShipmentRoute route, ShipmentOrderItemRequest package)
         {
-            var chargesByWeight = CalculateChargeByWeight(route, item.Weight ?? 0);
-            var chargesByVolume = CalculateChargeByVolume(
-                route, item.Height ?? 0, item.Length ?? 0, item.Width ?? 0);
+            var chargesByWeight = CalculateChargeByWeight(route, package.Weight ?? 0);
+            var chargesByVolume = CalculateChargeByVolume(route, package.Height ?? 0, package.Length ?? 0, package.Width ?? 0);
+
             return chargesByWeight > chargesByVolume ? chargesByWeight : chargesByVolume;
         }
 
-        public decimal CalculateAdditionalCharges(ShipmentRoute route, ShipmentOrderItemRequest item, decimal initialCharge)
+        public decimal CalculateAdditionalCharges(ShipmentRoute route, ShipmentOrderItemRequest package, decimal basePrice)
         {
-            var insuredAmount = item.InsuredAmount > 0 ? item.InsuredAmount * (_settings.InsuredAmountRatio / 100M) : 0;
-            var urgentAmount = item.IsUrgent ? initialCharge * (_settings.UrgentAmountRatio / 100M) : 0;
-            var fragileAmount = item.IsFragile ? initialCharge * (_settings.FragileAmountRatio / 100M) : 0;
+            var insuredAmount = package.InsuredAmount > 0 ? package.InsuredAmount * (_additionCharges.InsuredCharge / 100M) : 0;
+            var urgentAmount = package.IsUrgent ? basePrice * (_additionCharges.UrgentCharge / 100M) : 0;
+            var fragileAmount = package.IsFragile ? basePrice * (_additionCharges.FragileCharge / 100M) : 0;
+
             return (insuredAmount ?? 0) + urgentAmount + fragileAmount;
         }
 
@@ -69,19 +69,20 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
                 Total = 0M
             };
 
-            if (order.Items == null)
+            if (order?.Items == null)
             {
                 return charges;
             }
 
-            foreach (var orderItem in order.Items)
+            foreach (var package in order.Items)
             {
-                var basePrice = CalculateInitialPayment(route, orderItem);
-                var additionalCharges = CalculateAdditionalCharges(route, orderItem, basePrice);
-                charges.BasePrice += basePrice + additionalCharges;
+                var basePrice = CalculateInitialPayment(route, package);
+                var additionalCharges = CalculateAdditionalCharges(route, package, basePrice);
+                var initialPrice = basePrice + additionalCharges;
+                charges.BasePrice += initialPrice;
             }
 
-            charges.Taxes = charges.BasePrice * (_settings.TaxAmountRatio / 100M);
+            charges.Taxes = charges.BasePrice * (_additionCharges.TaxCharge / 100M);
             charges.Total = charges.BasePrice + charges.Taxes;
 
             charges.BasePrice = Math.Round(charges.BasePrice, 2);
@@ -171,6 +172,7 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
                     ShipmentState = order.ShipmentState.GetEnumDescription(),
                     ShipmentPrice = order.TotalPrice.ToString("#,###")
                 })
+                .OrderBy(o => o.Id)
                 .ToListAsync();
 
             response.Items = orders;
@@ -198,19 +200,39 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
             return await _context.SaveChangesAsync();
         }
 
+        public async Task<int> DeleteAsync(long orderId)
+        {
+            var order = await GetAsync(orderId);
+
+            if (order == null)
+            {
+                return 0;
+            }
+
+            var items = await _context.ShipmentOrderItems!
+                .Where(i => i.OrderId == orderId)
+                .ToListAsync();
+
+            _context.ShipmentOrderItems!.RemoveRange(items);
+            _context.ShipmentOrders!.Remove(order);
+            return await _context.SaveChangesAsync();
+        }
+
         private async Task GetShipmentOrderEditPackages(long id, ShipmentOrderEditResponse? order)
         {
             if (order != null)
             {
                 order.Packages = await _context.ShipmentOrderItems!
                     .Where(o => o.OrderId == id)
-                    .Select(item => new ShipmentOrderItemEditResponse
+                    .Select(package => new ShipmentOrderItemEditResponse
                     {
-                        Height = $"{item.Height:#,###} cm",
-                        Width = $"{item.Width:#,###} cm",
-                        Length = $"{item.Length:#,###} cm",
-                        Weight = $"{item.Weight:#,###} Kg",
-                        IsFragile = item.IsFragile,
+                        Id = package.Id,
+                        Height = $"{package.Height:#,###} cm",
+                        Width = $"{package.Width:#,###} cm",
+                        Length = $"{package.Length:#,###} cm",
+                        Weight = $"{package.Weight:#,###} Kg",
+                        IsFragile = package.IsFragile,
+                        IsUrgent = package.IsUrgent,
                         Quantity = 1
                     }).ToListAsync();
             }
@@ -379,7 +401,7 @@ namespace Transenvios.Shipping.Api.Mediators.ShipmentOrderService
 
             if (_context.ShipmentOrders == null)
             {
-                throw new ArgumentException("Shipment Order context is invalid");
+                throw new ArgumentException("PackageCharges Order context is invalid");
             }
 
             await _context.ShipmentOrders.AddAsync(shipmentOrder);

@@ -108,24 +108,14 @@ namespace Transenvios.Shipping.Api.Domains.CatalogService
                 throw new AppException(HttpStatusCode.NotFound);
             }
 
-            try
-            {
-                var itemsAffected = await _mediator.DeleteAsync(model);
+            var itemsAffected = await _mediator.DeleteAsync(model);
 
-                return new CatalogStateResponse
-                {
-                    Id = model.Id,
-                    Items = itemsAffected,
-                    Message = $"{HttpStatusCode.OK}"
-                };
-            }
-            catch (Exception error)
+            return new CatalogStateResponse
             {
-                return new CatalogStateResponse
-                {
-                    Message = error.GetBaseException().Message
-                };
-            }
+                Id = model.Id,
+                Items = itemsAffected,
+                Message = $"{HttpStatusCode.OK}"
+            };
         }
     }
 }

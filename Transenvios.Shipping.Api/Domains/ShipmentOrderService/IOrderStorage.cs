@@ -11,5 +11,6 @@
         Task<ShipmentOrderEditResponse?> GetOneAsync(long id);
         Task<ShipmentOrder?> GetAsync(long id);
         Task<int> UpdateAsync(ShipmentOrder order);
+        Task<int> DeleteAsync(long orderId);
     }
 }

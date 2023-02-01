@@ -15,7 +15,10 @@ namespace Transenvios.Shipping.Api.Mediators.DriverService
 
         public async Task<IList<Driver>> GetAllAsync()
         {
-            return await _context.Drivers.ToListAsync();
+            return await _context.Drivers!
+                .OrderBy(d => d.FirstName)
+                .ThenBy(d => d.LastName)
+                .ToListAsync();
         }
         
         public async Task<int> UpdateAsync(Driver driver)

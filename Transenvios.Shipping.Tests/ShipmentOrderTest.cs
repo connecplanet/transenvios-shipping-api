@@ -161,12 +161,12 @@ public class ShipmentOrderTest
     {
         IOptions<AppSettings> settings = Options.Create(new AppSettings()
         {
-            Shipment = new ShipmentSettings
+            PackageCharges = new PackageAdditionCharges
             {
-                InsuredAmountRatio = 1.0M,
-                UrgentAmountRatio = 50.0M,
-                FragileAmountRatio = 20.0M,
-                TaxAmountRatio = 19.0M
+                InsuredCharge = 1.0M,
+                UrgentCharge = 50.0M,
+                FragileCharge = 20.0M,
+                TaxCharge = 19.0M
             }
         });
         return settings;

@@ -280,16 +280,6 @@
 						{
 							"name": "CityAdd",
 							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{access_token}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
 								"header": [],
 								"body": {
@@ -458,14 +448,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/Cities/025510c5-d51e-4ee1-90e5-6f67f0b11d3c",
+									"raw": "{{base_url}}/api/Cities/08da7364-d15d-4ec3-8093-6ee1f723669d",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
 										"Cities",
-										"025510c5-d51e-4ee1-90e5-6f67f0b11d3c"
+										"08da7364-d15d-4ec3-8093-6ee1f723669d"
 									]
 								}
 							},
@@ -649,7 +639,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n        \"documentType\": \"CC\",\r\n        \"documentId\": \"123456789\",\r\n        \"firstName\": \"JuanCho\",\r\n        \"lastName\": \"Carrancho\",\r\n        \"email\": \"juancho.carrancho@elcafe.com\",\r\n        \"countryCode\": \"57\",\r\n        \"phone\": \"3006004080\",\r\n        \"pickUpAddress\": \"Calle 10 # 14 Sur - 50\",\r\n        \"pickUpCityId\": \"08da7364-d15d-4ec3-8093-6ee1f723669d\",\r\n        \"active\": true,\r\n        \"id\": \"c3f45285-a5c0-4b3c-957f-e097d1281f94\"\r\n    }",
+									"raw": "{\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": \"123456789\",\r\n    \"firstName\": \"JuanCho\",\r\n    \"lastName\": \"Carrancho\",\r\n    \"email\": \"juancho.carrancho@elcafe.com\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"3006004080\",\r\n    \"pickUpAddress\": \"Calle 10 # 14 Sur - 50\",\r\n    \"pickUpCityId\": \"08da7364-d15d-4ec3-8093-6ee1f723669d\",\r\n    \"active\": true,\r\n    \"id\": \"c3f45285-a5c0-4b3c-957f-e097d1281f94\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -657,14 +647,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/drivers/c3f45285-a5c0-4b3c-957f-e097d1281f94",
+									"raw": "{{base_url}}/api/drivers/989986f0-3877-4fe7-beb6-dc22745df6bc",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
 										"drivers",
-										"c3f45285-a5c0-4b3c-957f-e097d1281f94"
+										"989986f0-3877-4fe7-beb6-dc22745df6bc"
 									]
 								}
 							},
@@ -714,14 +704,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/drivers/c3f45285-a5c0-4b3c-957f-e097d1281f94",
+									"raw": "{{base_url}}/api/drivers/4e57b024-0c60-429b-95ae-594c65c76d5e",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
 										"drivers",
-										"c3f45285-a5c0-4b3c-957f-e097d1281f94"
+										"4e57b024-0c60-429b-95ae-594c65c76d5e"
 									]
 								}
 							},
@@ -770,7 +760,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"fromCityCode\": \"ITA\",\r\n    \"toCityCode\": \"MDE\",\r\n    \"initialKiloPrice\": 10.00,\r\n    \"additionalKiloPrice\": 20.00,\r\n    \"priceCm3\": 20.00,\r\n    \"active\": true\r\n}",
+									"raw": "{\r\n    \"fromCityCode\": \"MTR\",\r\n    \"toCityCode\": \"MDE\",\r\n    \"initialKiloPrice\": 15000.00,\r\n    \"additionalKiloPrice\": 1500.00,\r\n    \"priceCm3\": 0.30,\r\n    \"active\": true\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -817,16 +807,6 @@
 								"disableBodyPruning": true
 							},
 							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{access_token}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "GET",
 								"header": [],
 								"body": {
@@ -937,21 +917,11 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{access_token}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "PUT",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"fromCityCode\": \"ITA\",\r\n    \"toCityCode\": \"MDE\",\r\n    \"initialKiloPrice\": 10.00,\r\n    \"additionalKiloPrice\": 20.00,\r\n    \"priceCm3\": 20.00,\r\n    \"active\": true,\r\n    \"id\": \"08daf5ac-7306-468e-8af8-bb86d20ab1c7\"\r\n}",
+									"raw": "{\r\n    \"fromCityCode\": \"ITA\",\r\n    \"toCityCode\": \"PAS\",\r\n    \"initialKiloPrice\": 2500.00,\r\n    \"additionalKiloPrice\": 1800.00,\r\n    \"priceCm3\": 15.00,\r\n    \"active\": true,\r\n    \"id\": \"08dae06c-db50-49aa-8791-00b042ebe9dc\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -959,14 +929,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/ShipmentRoute/08daf5ac-7306-468e-8af8-bb86d20ab1c7",
+									"raw": "{{base_url}}/api/ShipmentRoute/08dae06c-db50-49aa-8791-00b042ebe9dc",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
 										"ShipmentRoute",
-										"08daf5ac-7306-468e-8af8-bb86d20ab1c7"
+										"08dae06c-db50-49aa-8791-00b042ebe9dc"
 									]
 								}
 							},
@@ -1156,14 +1126,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/clients/08daf5ab-8b61-4b03-8c64-074ac6318584",
+									"raw": "{{base_url}}/api/clients/08da7363-af5e-44d0-81ae-3cdd076fdcbc",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
 										"clients",
-										"08daf5ab-8b61-4b03-8c64-074ac6318584"
+										"08da7363-af5e-44d0-81ae-3cdd076fdcbc"
 									]
 								}
 							},
@@ -1177,16 +1147,6 @@
 						{
 							"name": "UserGetAll",
 							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{access_token}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
@@ -1294,20 +1254,50 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/users/08daf5ab-9aea-467e-8a7c-e1ce6509088b",
+									"raw": "{{base_url}}/api/users/08da8e8c-0989-4d8f-8d80-2044aafada16",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
 										"users",
-										"08daf5ab-9aea-467e-8a7c-e1ce6509088b"
+										"08da8e8c-0989-4d8f-8d80-2044aafada16"
 									]
 								}
 							},
 							"response": []
 						}
 					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{access_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		},
@@ -1338,21 +1328,11 @@
 						}
 					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"route\": {\r\n    \"pickUp\": {\r\n      \"cityCode\": \"MDE\",\r\n      \"address\": \"CL 4 # 2 - 4\"\r\n    },\r\n    \"dropOff\": {\r\n      \"cityCode\": \"MTR\",\r\n      \"address\": \"CL 44 # 3 - 5\"\r\n    }\r\n  },\r\n  \"items\": [\r\n    {\r\n      \"id\": 0,\r\n      \"idOrder\": 0,\r\n      \"weight\": 20,\r\n      \"height\": 100,\r\n      \"length\": 20,\r\n      \"width\": 20,\r\n      \"insuredAmount\":15000,\r\n      \"isFragile\": true,\r\n      \"isUrgent\": true\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"route\": {\r\n    \"pickUp\": {\r\n      \"cityCode\": \"MTR\",\r\n      \"address\": \"CL 4 # 2 - 4\"\r\n    },\r\n    \"dropOff\": {\r\n      \"cityCode\": \"MDE\",\r\n      \"address\": \"CL 44 # 3 - 5\"\r\n    }\r\n  },\r\n  \"items\": [\r\n    {\r\n      \"id\": 0,\r\n      \"idOrder\": 0,\r\n      \"weight\": 20,\r\n      \"height\": 100,\r\n      \"length\": 20,\r\n      \"width\": 20,\r\n      \"insuredAmount\": 229900,\r\n      \"isFragile\": true,\r\n      \"isUrgent\": true\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1360,14 +1340,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/Shipments/Calculate",
+							"raw": "{{base_url}}/api/shipments/calculate",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"Shipments",
-								"Calculate"
+								"shipments",
+								"calculate"
 							]
 						},
 						"description": "Calcute Values"
@@ -1401,16 +1381,6 @@
 						"disableBodyPruning": true
 					},
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"body": {
@@ -1423,21 +1393,21 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/Shipments/Catalogs",
+							"raw": "{{base_url}}/api/shipments/catalogs",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"Shipments",
-								"Catalogs"
+								"shipments",
+								"catalogs"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "ShipmentSubmitOrder",
+					"name": "ShipmentAdd",
 					"event": [
 						{
 							"listen": "test",
@@ -1460,21 +1430,11 @@
 						}
 					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"route\": {\r\n    \"pickUp\": {\r\n      \"cityCode\": \"MDE\",\r\n      \"address\": \"CL 4 # 2 - 4\"\r\n    },\r\n    \"dropOff\": {\r\n      \"cityCode\": \"MTR\",\r\n      \"address\": \"CL 44 # 3 - 5\"\r\n    }\r\n  },\r\n  \"items\": [\r\n    {\r\n      \"height\": 15,\r\n      \"length\": 30,\r\n      \"width\": 30,\r\n      \"weight\": 3,\r\n      \"insuredAmount\": 125000,\r\n      \"isFragile\": true,\r\n      \"isUrgent\": true\r\n    }\r\n  ],\r\n  \"sender\": {\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": \"123\",\r\n    \"firstName\": \"David Fernando\",\r\n    \"lastName\": \"Ciro\",\r\n    \"email\": \"Tom.Welling@gmail.com\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"318466618\",\r\n    \"isClient\": true\r\n  },\r\n  \"recipient\": {\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": \"456\",\r\n    \"firstName\": \"Juan\",\r\n    \"lastName\": \"Vasquez\",\r\n    \"email\": \"camilooo@gmail.com\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"6046050769\",\r\n    \"isClient\": false\r\n  },\r\n  \"basePrice\": 74100,\r\n  \"taxes\": 14079,\r\n  \"total\": 88179,\r\n  \"applicantEmail\": \"Tom.Welling@gmail.com\"\r\n}",
+							"raw": "{\r\n  \"route\": {\r\n    \"pickUp\": {\r\n      \"cityCode\": \"MTR\",\r\n      \"address\": \"CL 4 # 2 - 4\"\r\n    },\r\n    \"dropOff\": {\r\n      \"cityCode\": \"MDE\",\r\n      \"address\": \"CL 44 # 3 - 5\"\r\n    }\r\n  },\r\n  \"items\": [\r\n    {\r\n      \"height\": 100,\r\n      \"length\": 20,\r\n      \"width\": 20,\r\n      \"weight\": 20,\r\n      \"insuredAmount\": 229900,\r\n      \"isFragile\": true,\r\n      \"isUrgent\": true\r\n    },\r\n    {\r\n      \"height\": 100,\r\n      \"length\": 20,\r\n      \"width\": 20,\r\n      \"weight\": 20,\r\n      \"insuredAmount\": 229900,\r\n      \"isFragile\": false,\r\n      \"isUrgent\": true\r\n    },\r\n    {\r\n      \"height\": 100,\r\n      \"length\": 20,\r\n      \"width\": 20,\r\n      \"weight\": 20,\r\n      \"insuredAmount\": 229900,\r\n      \"isFragile\": false,\r\n      \"isUrgent\": false\r\n    },\r\n    {\r\n      \"height\": 100,\r\n      \"length\": 20,\r\n      \"width\": 20,\r\n      \"weight\": 20,\r\n      \"insuredAmount\": 0,\r\n      \"isFragile\": false,\r\n      \"isUrgent\": false\r\n    }\r\n  ],\r\n  \"sender\": {\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": \"1234\",\r\n    \"firstName\": \"Diego\",\r\n    \"lastName\": \"Perez\",\r\n    \"email\": \"diegoperez@gmail.com\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"318466619\",\r\n    \"isClient\": true\r\n  },\r\n  \"recipient\": {\r\n    \"documentType\": \"CC\",\r\n    \"documentId\": \"4567\",\r\n    \"firstName\": \"Yeni\",\r\n    \"lastName\": \"Loaiza\",\r\n    \"email\": \"yeni@mail.com\",\r\n    \"countryCode\": \"57\",\r\n    \"phone\": \"6046050770\",\r\n    \"isClient\": false\r\n  },\r\n  \"basePrice\": 74100,\r\n  \"taxes\": 14079,\r\n  \"total\": 88179,\r\n  \"applicantEmail\": \"inforfercho@gmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1482,13 +1442,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/Shipments",
+							"raw": "{{base_url}}/api/shipments",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"Shipments"
+								"shipments"
 							]
 						}
 					},
@@ -1497,32 +1457,18 @@
 				{
 					"name": "ShipmentGetAll",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/Shipments?limit=10",
+							"raw": "{{base_url}}/api/shipments/20230119/orders",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"Shipments"
-							],
-							"query": [
-								{
-									"key": "limit",
-									"value": "10"
-								}
+								"shipments",
+								"20230119",
+								"orders"
 							]
 						}
 					},
@@ -1530,6 +1476,52 @@
 				},
 				{
 					"name": "ShipmentGetOne",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/shipments/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"shipments",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ShipmentUpdate",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 1,\r\n  \"paymentState\": 1,\r\n  \"shipmentState\": 1,\r\n  \"transporterId\": \"4e57b024-0c60-429b-95ae-594c65c76d5e\",\r\n  \"employeeId\": \"08da8e8c-0989-4d8f-8d80-2044aafada16\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/shipments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"shipments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ShipmentDelete",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1541,21 +1533,60 @@
 								}
 							]
 						},
-						"method": "GET",
+						"method": "DELETE",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{base_url}}/api/Shipments/1",
+							"raw": "{{base_url}}/api/shipments/5",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"Shipments",
-								"1"
+								"shipments",
+								"5"
 							]
 						}
 					},
 					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{access_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		}

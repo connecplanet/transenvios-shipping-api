@@ -20,7 +20,10 @@ namespace Transenvios.Shipping.Api.Mediators.ClientService
 
         public async Task<IList<Client>> GetAllAsync()
         {
-            return await _context.Clients!.ToListAsync();
+            return await _context.Clients!
+                .OrderBy(c => c.FirstName)
+                .ThenBy(c => c.LastName)
+                .ToListAsync();
         }
 
         public async Task<Client> GetAsync(Guid id)

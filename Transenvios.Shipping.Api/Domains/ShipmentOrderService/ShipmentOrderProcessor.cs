@@ -77,7 +77,9 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
                     Id = c.Id,
                     Code = c.Code,
                     Name = c.Name
-                }).ToList();
+                })
+                .OrderBy(c => c.Name)
+                .ToList();
 
             var idTypes = (await _idTypeMediator.GetAllAsync())
                 .Where(c => c.Active == true)
@@ -86,7 +88,9 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
                     Id = c.Id,
                     Code = c.Code,
                     Name = c.Name
-                }).ToList();
+                })
+                .OrderBy(c => c.Name)
+                .ToList();
 
             var cities = (await _cityMediator.GetAllAsync())
                 .Where(c => c.Active == true)
@@ -95,11 +99,16 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
                     Id = c.Id,
                     Code = c.Code,
                     Name = c.Name
-                }).ToList();
+                })
+                .OrderBy(c => c.Name)
+                .ToList();
 
             var catalog = new CatalogResponse
             {
-                Routes = await _routeStorage.GetAllAsync(true),
+                Routes = (await _routeStorage.GetAllAsync(true))
+                    .OrderBy(c => c.FromCityCode)
+                    .ThenBy(c => c.ToCityCode)
+                    .ToList(),
                 Cities = cities,
                 Countries = countries,
                 IdTypes = idTypes
@@ -116,6 +125,10 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             {
                 return response;
             }
+
+            order!.BasePrice = response.BasePrice;
+            order!.Taxes = response.Taxes;
+            order!.Total = response.Total;
 
             return await _orderMediator.SubmitAsync(order);
         }
@@ -192,6 +205,11 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             return updates > 0 
                 ? orderResponse.Configure(HttpStatusCode.OK, null) 
                 : orderResponse.Configure(HttpStatusCode.NotModified, $"Order {orderRequest!.Id} does not modified");
+        }
+
+        public async Task<int> DeleteOrderAsync(long orderId)
+        {
+            return await _orderMediator.DeleteAsync(orderId);
         }
     }
 }

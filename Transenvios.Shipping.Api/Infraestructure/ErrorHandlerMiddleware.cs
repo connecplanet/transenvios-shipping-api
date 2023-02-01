@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Text.Json;
 
 namespace Transenvios.Shipping.Api.Infraestructure
@@ -25,17 +26,22 @@ namespace Transenvios.Shipping.Api.Infraestructure
 
                 switch (error)
                 {
-                    case AppException e:
-                        // custom application error
+                    case AppException e: // custom application error
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        error = e.GetBaseException();
                         break;
-                    case KeyNotFoundException e:
-                        // not found error
+                    case KeyNotFoundException e: // not found error
                         response.StatusCode = (int)HttpStatusCode.NotFound;
+                        error = e.GetBaseException();
+                        break;
+                    case DbUpdateException e: // Db Error
+                        response.StatusCode = (int)HttpStatusCode.FailedDependency;
+                        error = e.GetBaseException();
                         break;
                     default:
                         // unhandled error
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        error = error.GetBaseException();
                         break;
                 }
 
