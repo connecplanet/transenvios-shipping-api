@@ -448,14 +448,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/Cities/025510c5-d51e-4ee1-90e5-6f67f0b11d3c",
+									"raw": "{{base_url}}/api/Cities/08da7364-d15d-4ec3-8093-6ee1f723669d",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
 										"Cities",
-										"025510c5-d51e-4ee1-90e5-6f67f0b11d3c"
+										"08da7364-d15d-4ec3-8093-6ee1f723669d"
 									]
 								}
 							},
@@ -1126,14 +1126,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/clients/08daf5bb-02b2-481f-8215-7bca159fc6a5",
+									"raw": "{{base_url}}/api/clients/08da7363-af5e-44d0-81ae-3cdd076fdcbc",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
 										"clients",
-										"08daf5bb-02b2-481f-8215-7bca159fc6a5"
+										"08da7363-af5e-44d0-81ae-3cdd076fdcbc"
 									]
 								}
 							},
@@ -1254,14 +1254,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/users/08daf5ab-9aea-467e-8a7c-e1ce6509088b",
+									"raw": "{{base_url}}/api/users/08da8e8c-0989-4d8f-8d80-2044aafada16",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
 										"users",
-										"08daf5ab-9aea-467e-8a7c-e1ce6509088b"
+										"08da8e8c-0989-4d8f-8d80-2044aafada16"
 									]
 								}
 							},
@@ -1545,14 +1545,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/shipments/2",
+							"raw": "{{base_url}}/api/shipments/5",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"shipments",
-								"2"
+								"5"
 							]
 						}
 					},

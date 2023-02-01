@@ -87,6 +87,12 @@ namespace Transenvios.Shipping.Api.Adapters.ShipmentOrderService
         public async Task<ActionResult<int>> DeleteAsync(long id)
         {
             var response = await _processor.DeleteOrderAsync(id);
+
+            if (response == 0)
+            {
+                return NotFound();
+            }
+
             return Ok(response);
         }
     }

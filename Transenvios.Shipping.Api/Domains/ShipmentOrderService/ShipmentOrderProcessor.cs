@@ -77,7 +77,9 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
                     Id = c.Id,
                     Code = c.Code,
                     Name = c.Name
-                }).ToList();
+                })
+                .OrderBy(c => c.Name)
+                .ToList();
 
             var idTypes = (await _idTypeMediator.GetAllAsync())
                 .Where(c => c.Active == true)
@@ -86,7 +88,9 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
                     Id = c.Id,
                     Code = c.Code,
                     Name = c.Name
-                }).ToList();
+                })
+                .OrderBy(c => c.Name)
+                .ToList();
 
             var cities = (await _cityMediator.GetAllAsync())
                 .Where(c => c.Active == true)
@@ -95,11 +99,16 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
                     Id = c.Id,
                     Code = c.Code,
                     Name = c.Name
-                }).ToList();
+                })
+                .OrderBy(c => c.Name)
+                .ToList();
 
             var catalog = new CatalogResponse
             {
-                Routes = await _routeStorage.GetAllAsync(true),
+                Routes = (await _routeStorage.GetAllAsync(true))
+                    .OrderBy(c => c.FromCityCode)
+                    .ThenBy(c => c.ToCityCode)
+                    .ToList(),
                 Cities = cities,
                 Countries = countries,
                 IdTypes = idTypes
