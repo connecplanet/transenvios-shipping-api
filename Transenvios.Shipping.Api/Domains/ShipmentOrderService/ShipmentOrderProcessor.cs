@@ -133,31 +133,11 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             return await _orderMediator.SubmitAsync(order);
         }
 
-        public async Task<ShipmentOrderListResponse> GetShipmentOrders(string filterMonth)
+        public async Task<ShipmentOrderListResponse> GetShipmentOrders(int fetchLastDays)
         {
-            DateTime filterDate;
-            var validFormats = new[] {
-                "yyyyMMdd",
-                "MM/dd/yyyy", "MM-dd-yyyy",
-                "yyyy/MM/dd", "yyyy-MM-dd",
-                "MM/dd/yyyy HH:mm:ss", "MM-dd-yyyy HH:mm:ss",
-                "MM/dd/yyyy hh:mm tt", "MM-dd-yyyy hh:mm tt",
-                "yyyy-MM-dd HH:mm:ss, fff", "yyyy/MM/dd HH:mm:ss, fff"
-            };
-
-            var provider = new CultureInfo("en-US");
-
-            try
-            {
-                filterDate = DateTime.ParseExact(filterMonth, validFormats, provider);
-            }
-            catch (FormatException)
-            {
-                filterDate = DateTime.Today;
-            }
-
-            var startDate = new DateTime(filterDate.Year, filterDate.Month, 1);
-            var endDate = startDate.AddMonths(1);
+            var fetchLasMonths = Math.Abs(fetchLastDays) / 30;
+            var endDate = DateTime.Today;
+            var startDate = endDate.AddMonths(-fetchLasMonths);
 
             return await _orderMediator.GetAllAsync(startDate, endDate);
         }
