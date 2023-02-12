@@ -99,3 +99,7 @@ $ dotnet ef database update --context MySqlDataContext
 [Configure One-to-Many Relationships using Fluent API in Entity Framework Core](https://www.entityframeworktutorial.net/efcore/configure-one-to-many-relationship-using-fluent-api-in-ef-core.aspx)
 [Creating a Database with Code First in EF Core](https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core-example.html)
 [Configuring One To One Relationships EF](https://www.learnentityframeworkcore.com/configuration/one-to-one-relationship-configuration)
+
+### Rest API articles
+
+[Create a REST API with Attribute Routing in ASP.NET Web API 2](https://learn.microsoft.com/en-us/aspnet/web-api/overview/web-api-routing-and-actions/create-a-rest-api-with-attribute-routing)
