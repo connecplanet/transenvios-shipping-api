@@ -23,6 +23,22 @@ namespace Transenvios.Shipping.Api.Adapters.DriverService
             return Ok(response);
         }
 
+        [HttpGet("Catalog")]
+        public async Task<ActionResult<IList<DriverDto>>> GetDrivers()
+        {
+            var response = (await _processor.GetAsync())
+                .Where(d => d.Active == true)
+                .Select(d => new DriverDto
+                {
+                    Id = d.Id,
+                    FirstName = d.FirstName,
+                    LastName = d.LastName,
+                })
+                .OrderBy(d => d.FullName);
+            return Ok(response);
+        }
+
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Driver>> GetAsync(Guid id)
         {
