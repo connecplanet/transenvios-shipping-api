@@ -178,7 +178,6 @@ namespace Transenvios.Shipping.Api.Domains.ShipmentOrderService
             orderEntry.ShipmentState = orderRequest.ShipmentState;
             orderEntry.TransporterId = orderRequest.TransporterId;
             orderEntry.ModifyUserId = orderRequest.EmployeeId;
-            orderEntry.ApplicationDate = DateTime.Now;
 
             var updates = await _orderMediator.UpdateAsync(orderEntry);
 
